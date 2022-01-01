@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie List</title>
+</head>
+<body>
+    <h1>Movies Page</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Movie Title</th>
+                <th>Movie Rating</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <% for (let movie of movies_list) { %> 
+                <tr>
+                    <td><%= movie.title %> </td>
+                    <td><%= movie.rating %> </td>
+                    <td><a href="/movies/<%= movie.id %> ">details</a></td>
+                </tr>
+            <% } %> 
+        </tbody>
+    </table>
+    <a href="/movies/new">New Movie</a>
+</body>
+</html>

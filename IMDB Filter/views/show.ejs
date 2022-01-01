@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show</title>
+</head>
+<body>
+    <h1><%= movie.title %> </h1>
+    <li>Rating: <%= movie.rating %> </li>
+    <td><a href="/movies/<%= movie.id %>/edit ">Edit Rating</a></td>
+    <a href="/comments">Back to movies list</a>
+    <form method="post" action="/movies/<%= movie.id %>?_method=DELETE">
+        <button>Delete</button>
+    </form>
+</body>
+</html>
