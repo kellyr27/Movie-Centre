@@ -1,9 +1,12 @@
 const express = require('express')
-const res = require('express/lib/response')
+const fileUpload = require('express-fileupload')
 const methodOverride = require('method-override')
 const app = express()
 const path = require('path')
+const fs = require('fs');
 const { v4: uuid } = require('uuid')
+
+app.use(fileUpload())
 
 //To parse form data in POST request body:
 app.use(express.urlencoded({ extended: true }))
@@ -22,6 +25,31 @@ let movies_list = [{id: uuid(), title: "Star Trek", rating: 3},
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
 
+
+app.get('/upload', (req, res) => {
+    res.render('upload')
+})
+
+app.post('/upload', function(req, res) {
+    let sampleFile;
+    let uploadPath;
+  
+    if (!req.files || Object.keys(req.files).length === 0) {
+      return res.status(400).send('No files were uploaded.');
+    }
+  
+    // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+    sampleFile = req.files.sampleFile;
+    uploadPath = __dirname + '/uploads/' + sampleFile.name;
+  
+    // Use the mv() method to place the file somewhere on your server
+    sampleFile.mv(uploadPath, function(err) {
+      if (err)
+        return res.status(500).send(err);
+  
+      res.send('File uploaded!');
+    });
+  });
 
 app.get('/movies', (req, res) => {
     res.render('index', { movies_list })
@@ -66,6 +94,22 @@ app.post('/movies', (req, res) => {
 
 app.listen(3000, () => {
     console.log('Listening on Port 3000')
+
+    const directory = path.join(__dirname, '/uploads');
+
+    fs.readdir(directory, (err, files) => {
+        if (err) {
+            throw err;
+        }
+
+        for (const file of files) {
+            fs.unlink(path.join(directory, file), err => {
+                if (err) {
+                    throw err;
+                }
+            });
+        }
+    });
 })
 
 
