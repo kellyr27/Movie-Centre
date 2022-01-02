@@ -11,17 +11,18 @@
     <table>
         <thead>
             <tr>
-                <th>Movie Title</th>
-                <th>Movie Rating</th>
+                <th><%= titles[3] %></th>
+                <th><%= titles[6] %></th>
+                <th><%= titles[8] %></th>
             </tr>
         </thead>
 
         <tbody>
-            <% for (let movie of movies_list) { %> 
+            <% for (let movie of master_list) { %> 
                 <tr>
-                    <td><%= movie.title %> </td>
-                    <td><%= movie.rating %> </td>
-                    <td><a href="/movies/<%= movie.id %> ">details</a></td>
+                    <td><a href="/movies/<%= movie["Const_IMDB"] %> "><%= movie["Title"] %></a></td>
+                    <td><%= movie["IMDb Rating"] %> </td>
+                    <td><%= movie["Year"] %> </td>
                 </tr>
             <% } %> 
         </tbody>

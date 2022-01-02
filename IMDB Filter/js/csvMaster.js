@@ -8,32 +8,6 @@ let master_list = []
 
 // joining path of directory 
 const directoryPath = path.join(__dirname, '../uploads')
-// passsing directoryPath and callback function
-// fs.readdir(directoryPath, function (err, files) {
-//     //handling error
-//     if (err) {
-//         return console.log('Unable to scan directory: ' + err)
-//     } 
-//     // listing all files using forEach
-//     files.forEach(function (file) {
-//       // Do whatever you want to do with the file
-//       csvConverter(file)
-//     });
-// });
-
-// Node.js program to demonstrate the
-// fs.readdirSync() method
-  
-// Function to get current filenames
-// in directory
-filenames = fs.readdirSync(directoryPath);
-  
-console.log("\nCurrent directory filenames:");
-filenames.forEach(file => {
-  csvConverter(file)
-});
-
-console.log(master_list.length)
 
 
 function containsDuplicate(Const_IMDB, master_list) {
@@ -48,8 +22,7 @@ function containsDuplicate(Const_IMDB, master_list) {
 
 function csvConverter(file) {
 
-  const data = fs.readFileSync(`../uploads/${file}`, {encoding:'utf8', flag:'r'});
-
+  const data = fs.readFileSync(directoryPath+"\\"+file, {encoding:'utf8', flag:'r'});
   // Split data by line breaks into an array
   let fileArray = data.split("\r\n")
   let modifiedfileArray = []
@@ -114,3 +87,13 @@ function csvConverter(file) {
     }
   }
 }
+
+const runMaster = function() {
+  filenames = fs.readdirSync(directoryPath);
+  filenames.forEach(file => {
+    csvConverter(file)
+  });
+  return master_list
+}
+
+module.exports = runMaster

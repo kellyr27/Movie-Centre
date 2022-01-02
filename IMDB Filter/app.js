@@ -6,6 +6,9 @@ const path = require('path')
 const fs = require('fs');
 const { v4: uuid } = require('uuid')
 
+const csv = require("../IMDB Filter/js/csvMaster.js")
+
+
 app.use(fileUpload())
 
 //To parse form data in POST request body:
@@ -17,6 +20,8 @@ app.use(express.json())
 // To 'fake' put/patch/delete requests:
 app.use(methodOverride('_method'))
 
+let master_list = []
+const titles = ['Const_IMDB', 'Your Rating', 'Date Rated',  'Title', 'URL', 'Title Type', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Genres', 'Num Votes', 'Release Date', 'Directors']
 let movies_list = [{id: uuid(), title: "Star Trek", rating: 3},
     {id: uuid(), title: "Moon", rating: 5}, 
     {id: uuid(), title: "Pokemon", rating: 4}]
@@ -44,15 +49,20 @@ app.post('/upload', function(req, res) {
   
     // Use the mv() method to place the file somewhere on your server
     sampleFile.mv(uploadPath, function(err) {
-      if (err)
-        return res.status(500).send(err);
-  
+      if (err) {
+        return res.status(500).send(err)
+      }
+      
       res.send('File uploaded!');
     });
+    setTimeout(() => {
+        master_list = csv()
+        // console.log(master_list)
+    }, 2000) 
   });
 
 app.get('/movies', (req, res) => {
-    res.render('index', { movies_list })
+    res.render('index', { master_list, titles })
 })
 
 app.get('/movies/new', (req, res) => {
@@ -61,8 +71,8 @@ app.get('/movies/new', (req, res) => {
 
 app.get('/movies/:id', (req, res) => {
     const { id } = req.params
-    const movie = movies_list.find(m => m.id === id)
-    res.render('show', {movie})
+    const movie = master_list.find(m => m["Const_IMDB"] === id)
+    res.render('show', {movie, titles})
 })
 
 app.get('/movies/:id/edit', (req, res) => {
