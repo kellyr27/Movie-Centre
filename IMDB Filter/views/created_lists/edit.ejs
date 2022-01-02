@@ -7,11 +7,12 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Editing <%= movie.title %> </h1>
+    <h1>Editing <%= selected_list["list_name"] %> </h1>
     
-    <form method="post" action="/movies/<%= movie.id %>?_method=PATCH">
+    <form method="post" action="/created_lists/<%= selected_list.id %>?_method=PATCH">
 
-        <input type="number" name="rating" min="0" max="5" value="<%= movie.rating %>">
+        <label for="editName">Edit name of list: </label>
+        <input type="text" name="editName" value="<%= selected_list["list_name"] %>">
         <button>Save</button>
     </form>
 

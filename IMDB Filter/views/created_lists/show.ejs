@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= selected_list["list_name"] %> </title>
+</head>
+<body>
+    <h1><%= selected_list["list_name"] %> </h1>
+    <a href="/created_lists/<%= selected_list["id"] %>/edit">Edit List</a>
+    <form method="post" action="/created_lists/<%= selected_list["id"] %>?_method=DELETE" >
+        <button>Delete</button>
+    </form>
+    <a href="/created_lists%>">Back to created lists</a>
+</body>
+</html>

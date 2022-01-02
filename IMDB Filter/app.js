@@ -22,9 +22,8 @@ app.use(methodOverride('_method'))
 
 let master_list = []
 const titles = ['Const_IMDB', 'Your Rating', 'Date Rated',  'Title', 'URL', 'Title Type', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Genres', 'Num Votes', 'Release Date', 'Directors']
-let movies_list = [{id: uuid(), title: "Star Trek", rating: 3},
-    {id: uuid(), title: "Moon", rating: 5}, 
-    {id: uuid(), title: "Pokemon", rating: 4}]
+let created_lists = []
+
 
 // Views folder and EJS setup:
 app.set('views', path.join(__dirname, 'views'))
@@ -59,14 +58,18 @@ app.post('/upload', function(req, res) {
         master_list = csv()
         // console.log(master_list)
     }, 2000) 
-  });
+});
 
 app.get('/movies', (req, res) => {
-    res.render('index', { master_list, titles })
+    res.render('master', { master_list, titles })
 })
 
-app.get('/movies/new', (req, res) => {
-    res.render('new')
+app.get('/created_lists', (req, res) => {
+    res.render('./created_lists/index', {created_lists})
+})
+
+app.get('/created_lists/new', (req, res) => {
+    res.render('./created_lists/new')
 })
 
 app.get('/movies/:id', (req, res) => {
@@ -75,31 +78,37 @@ app.get('/movies/:id', (req, res) => {
     res.render('show', {movie, titles})
 })
 
-app.get('/movies/:id/edit', (req, res) => {
+app.get('/created_lists/:id', (req, res) => {
     const { id } = req.params
-    const movie = movies_list.find(m => m.id === id)
-    res.render('edit', {movie})
+    const selected_list = created_lists.find(m => m["id"] === id)
+    res.render('./created_lists/show', {selected_list})
 })
 
-app.patch('/movies/:id', (req, res) => {
+app.get('/created_lists/:id/edit', (req, res) => {
     const { id } = req.params
-    const newMovieRating = req.body.rating
-    console.log(newMovieRating)
-    const movie = movies_list.find(m => m.id === id)
-    movie.rating = parseInt(newMovieRating)
-    res.redirect('/movies')
+    const selected_list = created_lists.find(m => m.id === id)
+    res.render('./created_lists/edit', {selected_list})
 })
 
-app.delete('/movies/:id', (req, res) => {
+app.patch('/created_lists/:id', (req, res) => {
     const { id } = req.params
-    movies_list = movies_list.filter(m => m.id !== id);
-    res.redirect('/movies')
+    const newListName = req.body.editName
+    console.log(newListName)
+    const selected_list = created_lists.find(m => m.id === id)
+    selected_list.list_name = newListName
+    res.redirect('/created_lists')
 })
 
-app.post('/movies', (req, res) => {
-    const {movieTitle, movieRating} = req.body
-    movies_list.push({title: movieTitle, rating: movieRating, id: uuid()})
-    res.redirect('/movies')
+app.delete('/created_lists/:id', (req, res) => {
+    const { id } = req.params
+    created_lists = created_lists.filter(m => m.id !== id);
+    res.redirect('/created_lists')
+})
+
+app.post('/created_lists', (req, res) => {
+    const {listName} = req.body
+    created_lists.push({list_name: listName, id: uuid()})
+    res.redirect('/created_lists')
 })
 
 app.listen(3000, () => {
