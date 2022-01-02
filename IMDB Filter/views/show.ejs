@@ -1,24 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Show</title>
-</head>
-<body>
-    <h1><%= movie.Title %> </h1>
-    <table>
-    <% for (let i = 0; i < titles.length; i++) { %> 
-        <tr>
-            <td><%= titles[i] %> </td>
-            <% if (titles[i] === "URL") { %>
-                <td><a href="<%= movie[titles[i]] %>"><%= movie[titles[i]] %></a></td>
-            <% } else { %> 
-                <td><%= movie[titles[i]] %> </td>
-            <% } %> 
-        </tr>
-    <% } %> 
-    </table>
-    <a href="/movies">Back to Master List</a>
-</html>
+<% layout('layouts/boilerplate') %>
+<h1><%= movie.Title %> </h1>
+<table>
+<% for (let i = 0; i < titles.length; i++) { %> 
+    <tr>
+        <td><%= titles[i] %> </td>
+        <% if (titles[i] === "URL") { %>
+            <td><a href="<%= movie[titles[i]] %>"><%= movie[titles[i]] %></a></td>
+        <% } else { %> 
+            <td><%= movie[titles[i]] %> </td>
+        <% } %> 
+    </tr>
+<% } %> 
+</table>
+<a href="/movies">Back to Master List</a>

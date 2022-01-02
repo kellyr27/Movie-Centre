@@ -1,23 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>Created Lists</h1>
-    <form action="post" ></form>
-    <% if (created_lists.length === 0) { %>
-        <p>You have no created lists!</p>
-    <% } else { %>
-        <ol>
-        <% for (let i = 0; i < created_lists.length; i++) { %>
-            <li><a href="/created_lists/<%= created_lists[i]['id']%>"><%= created_lists[i]['list_name'] %></a></li>
-        <% } %> 
-        </ol>
+<% layout('layouts/boilerplate') %>
+<h1>Created Lists</h1>
+<form action="post" ></form>
+<% if (created_lists.length === 0) { %>
+    <p>You have no created lists!</p>
+<% } else { %>
+    <ol>
+    <% for (let i = 0; i < created_lists.length; i++) { %>
+        <li><a href="/created_lists/<%= created_lists[i]['id']%>"><%= created_lists[i]['list_name'] %></a></li>
     <% } %> 
-    <a href="/created_lists/new">Create new list</a>
-</body>
-</html>
+    </ol>
+<% } %> 
+<a href="/created_lists/new">Create new list</a>

@@ -1,32 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movie List</title>
-</head>
-<body>
-    <h1>Movies Page</h1>
-    <table>
-        <thead>
-            <tr>
-                <th><%= titles[3] %></th>
-                <th><%= titles[6] %></th>
-                <th><%= titles[8] %></th>
-            </tr>
-        </thead>
+<% layout('layouts/boilerplate') %>
+<h1>Movies Page</h1>
+<table>
+    <thead>
+        <tr>
+            <th><%= titles[3] %></th>
+            <th><%= titles[6] %></th>
+            <th><%= titles[8] %></th>
+        </tr>
+    </thead>
 
-        <tbody>
-            <% for (let movie of master_list) { %> 
-                <tr>
-                    <td><a href="/movies/<%= movie["Const_IMDB"] %> "><%= movie["Title"] %></a></td>
-                    <td><%= movie["IMDb Rating"] %> </td>
-                    <td><%= movie["Year"] %> </td>
-                </tr>
-            <% } %> 
-        </tbody>
-    </table>
-    <a href="/movies/new">New Movie</a>
-</body>
-</html>
+    <tbody>
+        <% for (let movie of master_list) { %> 
+            <tr>
+                <td><a href="/movies/<%= movie["Const_IMDB"] %> "><%= movie["Title"] %></a></td>
+                <td><%= movie["IMDb Rating"] %> </td>
+                <td><%= movie["Year"] %> </td>
+            </tr>
+        <% } %> 
+    </tbody>
+</table>
+<a href="/movies/new">New Movie</a>

@@ -5,6 +5,7 @@ const app = express()
 const path = require('path')
 const fs = require('fs');
 const { v4: uuid } = require('uuid')
+const ejsMate = require('ejs-mate')
 
 const csv = require("../IMDB Filter/js/csvMaster.js")
 
@@ -19,6 +20,9 @@ app.use(express.json())
 
 // To 'fake' put/patch/delete requests:
 app.use(methodOverride('_method'))
+
+app.engine('ejs', ejsMate)
+
 
 let master_list = []
 const titles = ['Const_IMDB', 'Your Rating', 'Date Rated',  'Title', 'URL', 'Title Type', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Genres', 'Num Votes', 'Release Date', 'Directors']

@@ -1,4 +1,3 @@
-const { type } = require("express/lib/response")
 
 let a = {director: "Kelly", year: 2014, name: "Lily", genre: ["red", "violet", "blue"], description: "Yellow House"}
 
@@ -44,8 +43,56 @@ function movieStrings(movieObj) {
             }
         }
     }
+
     return movieObjSubstrings
 }
 
 
-console.log(movieStrings(a))
+// console.log(movieStrings(a))
+
+// Trie Data Structure
+class trieNode {
+    constructor (value) {
+        this.value = value
+        this.children = []
+        this.movies = []
+    }
+
+    addMovie (id) {
+        this.movies.push(id)
+    }
+
+    addChild (childNode) {
+        this.children.push(childNode)
+    }
+
+}
+
+class trie {
+    constructor () {
+        this.root = new trieNode('')
+    }
+
+    addWord (word, movie) {
+        let currentNode = this.root
+        let found = false
+        for (char of word) {
+
+            for (let i = 0; i < currentNode.children.length; i++) {
+                if (char === currentNode.children[i].value) {
+                    currentNode = currentNode.children[i]
+                    found = true
+                    break
+                }
+            }
+            
+            if (!found) {
+                let newNode = new trieNode(char)
+                currentNode.children.push(newNode)
+                currentNode = newNode
+            }
+
+            currentNode.movies.push(movie)
+        }
+    }
+}
