@@ -9,8 +9,8 @@ const path = require('path')                                // Path module
 const fs = require('fs')                                    // File System module
 
 // Personal libraries
-const csv = require("../IMDB Filter/js/csvMaster.js")       // Function converts CSV data to a list of objects
-
+const csv = require('../IMDB Filter/js/csvMaster.js')                       // Function converts CSV data to a list of objects
+const {searchTrie, createTrie} = require('../IMDB Filter/js/trie.js')       // Functions to create and search tries for searching
 
 const app = express()
 app.use(fileUpload())
@@ -25,8 +25,10 @@ app.engine('ejs', ejsMate)                                  // Use ejsMate with 
 const titles = ['Const_IMDB', 'Your Rating', 'Date Rated', 'Title', 'URL', 'Title Type', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Genres', 'Num Votes', 'Release Date', 'Directors']
 
 // Variables
+let master_trie
 let master_list = []                                        // List of all movies uploaded
 let created_lists = []                                      // List of all lists created
+let search_results = []
 
 // -------------------------------/UPLOAD-----------------------------------------------------------------------------------------
 
@@ -49,17 +51,19 @@ app.post('/upload', function(req, res) {
       if (err) {
         return res.status(500).send(err)
       }
-      res.send('File uploaded!')                                    // Successfully uploaded file
+      // res.send('File uploaded!')                                    // Successfully uploaded file
+      res.redirect('/movies')
     })
     setTimeout(() => {
         master_list = csv()                                         // 2 second delay to convert the uploaded file to the master_list
+        master_trie = createTrie(master_list)
     }, 2000)
 })
 
 // -------------------------------/MOVIES-----------------------------------------------------------------------------------------
 
 app.get('/movies', (req, res) => {
-    res.render('master', { master_list, titles })
+    res.render('master', { master_list, titles, search_results })
 })
 
 // Show movie details
@@ -67,6 +71,17 @@ app.get('/movies/:id', (req, res) => {
     const { id } = req.params
     const movie = master_list.find(m => m["Const_IMDB"] === id)
     res.render('show', {movie, titles})
+})
+
+app.post('/movies/search', (req, res) => {
+    search_results = searchTrie(master_trie, req.body['searchTerm'])
+    // Printing out search results
+    console.log('SEARCH RESULTS ARE: ')
+    for (let i = 0; i < search_results.length; i++) {
+
+        console.log(search_results[i])
+        
+    }
 })
 
 // -------------------------------/CREATED_LISTS-----------------------------------------------------------------------------------------
@@ -97,7 +112,6 @@ app.get('/created_lists/:id/edit', (req, res) => {
 app.patch('/created_lists/:id', (req, res) => {
     const { id } = req.params
     const newListName = req.body.editName
-    console.log(newListName)
     const selected_list = created_lists.find(m => m.id === id)
     selected_list.list_name = newListName
     res.redirect('/created_lists')

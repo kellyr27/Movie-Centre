@@ -1,0 +1,40 @@
+<div>
+    <h3>Search</h3>
+    <form action="post">
+        <input type="text" name="searchtext" id="searchtext">
+    </form>
+    <p id="log"></p>
+    <h4><i>Search Results</i></h4>
+
+</div>
+
+<script>
+    let input = document.getElementById('searchtext')
+    let log = document.getElementById('log')
+    input.oninput = handleInput;
+
+    let lastSearchedTerm = ""
+    let currentSearchTerm = ""
+    let intervalID = window.setInterval(checkSearch, 2000)
+
+    function checkSearch() {
+        if (lastSearchedTerm !== currentSearchTerm) {
+            
+            lastSearchedTerm = currentSearchTerm
+            axios.post(`${document.location.href.slice(document.location.origin.length, document.location.href.length)}/search`, {
+                searchTerm: lastSearchedTerm
+            }).then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+
+            
+        }
+
+    }
+    function handleInput(e) {
+        currentSearchTerm = e.target.value
+    }
+</script>
