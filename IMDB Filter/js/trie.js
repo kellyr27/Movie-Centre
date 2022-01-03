@@ -25,20 +25,18 @@ function movieStrings(movieObj) {
         if (typeof(movieObj[property]) === "number") {
             let temp = movieObj[property].toString()
             let tempSet = buildSubstrings(temp)
-            console.log(tempSet);
             movieObjSubstrings = addSets(movieObjSubstrings, tempSet)
 
         }
         if (typeof(movieObj[property]) === "string") {
-            let tempSet = buildSubstrings(movieObj[property])
-            console.log(tempSet);
+            
+            let tempSet = buildSubstrings(movieObj[property].toLowerCase())
             movieObjSubstrings = addSets(movieObjSubstrings, tempSet)
 
         }
         if (typeof(movieObj[property]) === "object") {
             for (let str of movieObj[property]) {
-                let tempSet = buildSubstrings(str);
-                console.log(tempSet);
+                let tempSet = buildSubstrings(str.toLowerCase());
                 movieObjSubstrings = addSets(movieObjSubstrings, tempSet)
             }
         }
@@ -46,9 +44,6 @@ function movieStrings(movieObj) {
 
     return movieObjSubstrings
 }
-
-
-// console.log(movieStrings(a))
 
 // Trie Data Structure
 class trieNode {
@@ -59,7 +54,9 @@ class trieNode {
     }
 
     addMovie (id) {
-        this.movies.push(id)
+        if (!this.movies.includes(id)) {
+            this.movies.push(id)
+        }
     }
 
     addChild (childNode) {
@@ -76,8 +73,8 @@ class trie {
     addWord (word, movie) {
         let currentNode = this.root
         let found = false
-        for (char of word) {
-
+        for (let char of word) {
+            found = false
             for (let i = 0; i < currentNode.children.length; i++) {
                 if (char === currentNode.children[i].value) {
                     currentNode = currentNode.children[i]
@@ -92,7 +89,26 @@ class trie {
                 currentNode = newNode
             }
 
-            currentNode.movies.push(movie)
+            currentNode.addMovie(movie)
         }
     }
+}
+
+
+let strings1 = movieStrings(a)
+let search_trie = new trie()
+
+search_trie.addWord('kelly', 'tt11')
+search_trie.addWord('ker', 'tt11')
+
+
+function createTrie(listMovies) {
+    let search_trie = new trie()
+    for (obj of listMovies) {
+        let temp = movieStrings(obj)
+        for (let word of temp) {
+            search_trie.addWord(word.trim(), temp['Title'])
+        }
+    }
+    return search_trie
 }
