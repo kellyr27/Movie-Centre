@@ -12,4 +12,17 @@
     </tr>
 <% } %> 
 </table>
+<div>
+    <p><b><i>Appears in the following lists: </i></b></p>
+    <ul>
+        <% for (let i = 0; i < created_lists.length; i++) { %>            
+            <% for (let j = 0; j < created_lists[i]['movies'].length; j++) { %> 
+                <% if (movie['Const_IMDB'] === created_lists[i]['movies'][j]['Const_IMDB']) { %> 
+                    <li><a href="/created_lists/<%= created_lists[i]['id'] %>"><%= created_lists[i]['list_name'] %></a></li>
+                <% } %> 
+            <% } %>
+        <% } %> 
+    </ul>
+
+</div>
 <a href="/movies">Back to Master List</a>

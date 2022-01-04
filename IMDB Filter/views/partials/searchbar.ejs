@@ -1,18 +1,30 @@
 <div>
     <h3>Search</h3>
-    <form action="/movies/search" method="post">
-        <input type="text" name="searchtext" id="searchtext">
+    <form method="get" id="searchForm">
+        <input type="text" name="q" id="searchtext">
     </form>
     
     <h4><i>Search Results</i></h4>
     <ul>
         <% for (let i = 0; i < search_results.length; i++) { %>
             <li><%= search_results[i]['Title'] %>
-                <form action="" method="post">
-                    <button>Add To List</button>
+                <form method="post" id="movieSelector">
+                    <input type="hidden" name="currentTypedListName">
+                    <button name="addID" value="<%= search_results[i]['Const_IMDB'] %>">Add To List</button>
                 </form>
             </li>
         <% } %>  
     </ul>
 
 </div>
+<script>
+    let input = document.getElementById("searchtext")
+    let searchForm = document.querySelector("#searchForm")
+    input.oninput = handleInput
+    let currentSearchTerm = ""
+    function handleInput(e) {
+        currentSearchTerm = e.target.value
+        searchForm.action = document.location.href + '/search'
+    }
+
+</script>

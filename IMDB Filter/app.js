@@ -29,6 +29,24 @@ let master_trie
 let master_list = []                                        // List of all movies uploaded
 let created_lists = []                                      // List of all lists created
 let search_results = []
+let movies_for_current_list = []
+let currentTypedListName = []
+// Functions
+
+// Removes duplicates
+function addMovieToCurrentList(current_list, addMovie) {
+    let found = false
+
+    for (let i = 0; i < current_list.length; i++) {
+        if (current_list[i]['Const_IMDB'] === addMovie['Const_IMDB']) {
+            found = true
+        }
+    }
+
+    if (!found) {
+        movies_for_current_list.push(addMovie)
+    }
+}
 
 // -------------------------------/UPLOAD-----------------------------------------------------------------------------------------
 
@@ -76,7 +94,6 @@ app.get('/movies/search?q=:searchQuery', (req, res) => {
 // Show movie details
 app.get('/movies/:str', (req, res) => {
     const { str } = req.params
-    console.log(str)
     if (str.startsWith('search')) {
         search_results = searchTrie(master_trie, req.query['q'])
         res.render('master', { display_list: search_results, titles, isMasterList: false})
@@ -84,7 +101,7 @@ app.get('/movies/:str', (req, res) => {
     }
     else {
         const movie = master_list.find(m => m["Const_IMDB"] === str)
-        res.render('show', {movie, titles})
+        res.render('show', {movie, titles, created_lists})
     }
 })
 
@@ -95,13 +112,31 @@ app.get('/created_lists', (req, res) => {
 })
 
 app.get('/created_lists/new', (req, res) => {
-    res.render('./created_lists/new')
+    res.render('./created_lists/new', {search_results, movies_for_current_list, currentTypedListName})
+})
+
+app.get('/created_lists/new/search', (req, res) => {
+    const {currentTypedListName} = req.body
+    console.log(req.body)
+    search_results = searchTrie(master_trie, req.query['q'].toLowerCase())
+    res.render('./created_lists/new', {search_results, movies_for_current_list, currentTypedListName})
+})
+
+app.post('/created_lists/new/search', (req, res) => {
+    const { addID, currentTypedListName } = req.body
+    let foundMovie = search_results.find(m => m['Const_IMDB'] === addID)
+
+    // Checking for duplicates
+    addMovieToCurrentList(movies_for_current_list, foundMovie)
+    res.render('./created_lists/new', {search_results, movies_for_current_list, currentTypedListName})
 })
 
 // Show selected list details
 app.get('/created_lists/:id', (req, res) => {
     const { id } = req.params
     const selected_list = created_lists.find(m => m["id"] === id)
+    console.log("Selected list is: ")
+    console.log(selected_list);
     res.render('./created_lists/show', {selected_list})
 })
 
@@ -131,7 +166,11 @@ app.delete('/created_lists/:id', (req, res) => {
 // Request to create a new list
 app.post('/created_lists', (req, res) => {
     const {listName} = req.body
-    created_lists.push({list_name: listName, id: uuid()})
+    let new_list = {list_name: listName, id: uuid(), movies: movies_for_current_list}
+    created_lists.push(new_list)
+    console.log("New list is")
+    console.log(new_list)
+    movies_for_current_list = []
     res.redirect('/created_lists')
 })
 

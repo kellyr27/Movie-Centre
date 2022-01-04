@@ -1,10 +1,32 @@
-<% layout('../layouts/boilerplate') %>
+<% layout('./layouts/boilerplate') %>
 <%- include("../partials/searchbar") %> 
 <h1>Add New List</h1>
-<form action="/created_lists" method="post">
+<form action="/created_lists" method="post" id="titleForm">
     <label for="listName">List Name: </label>
-    <input type="text" name="listName">
+    <input type="text" name="listName" id="inputTitle" value="<%= currentTypedListName %>" required>
+
+    <ol>
+        <% for (let mov of movies_for_current_list) { %>
+            <li><%= mov['Title'] %>, <%= mov['Year'] %>  </li>
+        <% } %>     
+    </ol>
 
     <button>Submit</button>
 </form>
 <a href="/created_lists">Back to Created Lists</a>
+<script>
+    let inputTitle = document.getElementById("inputTitle")
+    let titleForm = document.querySelector("#titleForm")
+    let name = document.getElementsByName("currentTypedListName")
+
+    inputTitle.oninput = handleInput2
+    let currentTitle = ""
+
+    function handleInput2(e) {
+        currentTitle = e.target.value
+        for (let el of name) {
+            el.value = currentTitle
+        }
+    }
+    
+</script>
