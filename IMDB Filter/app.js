@@ -63,24 +63,28 @@ app.post('/upload', function(req, res) {
 // -------------------------------/MOVIES-----------------------------------------------------------------------------------------
 
 app.get('/movies', (req, res) => {
-    res.render('master', { master_list, titles, search_results })
+    res.render('master', { display_list: master_list, titles, isMasterList: true})
+})
+
+app.get('/movies/search?q=:searchQuery', (req, res) => {
+    console.log(searchQuery)
+    search_results = searchTrie(master_trie, req.body['searchtext'])
+    // Printing out search results
+    res.render('master', { display_list: search_results, titles, isMasterList: false})
 })
 
 // Show movie details
-app.get('/movies/:id', (req, res) => {
-    const { id } = req.params
-    const movie = master_list.find(m => m["Const_IMDB"] === id)
-    res.render('show', {movie, titles})
-})
+app.get('/movies/:str', (req, res) => {
+    const { str } = req.params
+    console.log(str)
+    if (str.startsWith('search')) {
+        search_results = searchTrie(master_trie, req.query['q'])
+        res.render('master', { display_list: search_results, titles, isMasterList: false})
 
-app.post('/movies/search', (req, res) => {
-    search_results = searchTrie(master_trie, req.body['searchTerm'])
-    // Printing out search results
-    console.log('SEARCH RESULTS ARE: ')
-    for (let i = 0; i < search_results.length; i++) {
-
-        console.log(search_results[i])
-        
+    }
+    else {
+        const movie = master_list.find(m => m["Const_IMDB"] === str)
+        res.render('show', {movie, titles})
     }
 })
 

@@ -1,5 +1,10 @@
 <% layout('layouts/boilerplate') %>
 <h1>Movies Page</h1>
+<div>
+    <h3>Search</h3>
+    <form method="get">
+        <input type="text" name="q" id="searchtext">
+    </form>
 <table>
     <thead>
         <tr>
@@ -10,7 +15,7 @@
     </thead>
 
     <tbody>
-        <% for (let movie of master_list) { %> 
+        <% for (let movie of display_list) { %> 
             <tr>
                 <td><a href="/movies/<%= movie["Const_IMDB"] %> "><%= movie["Title"] %></a></td>
                 <td><%= movie["IMDb Rating"] %> </td>
@@ -19,3 +24,19 @@
         <% } %> 
     </tbody>
 </table>
+<% if (!isMasterList) { %>
+    <a href="/master">Back to master list</a>
+<% } %>
+<script>
+    let input = document.getElementById("searchtext")
+    let form = document.querySelector("form")
+    input.oninput = handleInput
+    let currentSearchTerm = ""
+    function handleInput(e) {
+        currentSearchTerm = e.target.value
+        form.action = '/movies/search?' + currentSearchTerm
+        console.log(form.action)
+    }
+
+
+</script>
