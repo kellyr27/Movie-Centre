@@ -6,11 +6,11 @@
     
     <h4><i>Search Results</i></h4>
     <ul>
-        <% for (let i = 0; i < search_results.length; i++) { %>
-            <li><%= search_results[i]['Title'] %>
+        <% for (let i = 0; i < searchResults.length; i++) { %>
+            <li><%= searchResults[i]['Title'] %>
                 <form method="post" id="movieSelector">
                     <input type="hidden" name="currentTypedListName">
-                    <button name="addID" value="<%= search_results[i]['Const_IMDB'] %>">Add To List</button>
+                    <button name="addID" value="<%= searchResults[i]['Const_IMDB'] %>">Add To List</button>
                 </form>
             </li>
         <% } %>  

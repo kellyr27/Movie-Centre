@@ -1,12 +1,12 @@
 <% layout('layouts/boilerplate') %>
 <h1>Created Lists</h1>
 <form action="post" ></form>
-<% if (created_lists.length === 0) { %>
+<% if (displayList.length === 0) { %>
     <p>You have no created lists!</p>
 <% } else { %>
     <ol>
-    <% for (let i = 0; i < created_lists.length; i++) { %>
-        <li><a href="/created_lists/<%= created_lists[i]['id']%>"><%= created_lists[i]['list_name'] %></a></li>
+    <% for (let i = 0; i < displayList.length; i++) { %>
+        <li><a href="/created_lists/<%= displayList[i]['id']%>"><%= displayList[i]['listName'] %></a></li>
     <% } %> 
     </ol>
 <% } %> 

@@ -6,8 +6,8 @@
     <input type="text" name="listName" id="inputTitle" value="<%= currentTypedListName %>" required>
 
     <ol>
-        <% for (let mov of movies_for_current_list) { %>
-            <li><%= mov['Title'] %>, <%= mov['Year'] %>  </li>
+        <% for (let movie of currentCreatedList) { %>
+            <li><%= movie['Title'] %>, <%= movie['Year'] %>  </li>
         <% } %>     
     </ol>
 

@@ -2,15 +2,16 @@
 const express = require('express')                          // Web pplication framework
 const fileUpload = require('express-fileupload')            // Middleware used to upload files with express
 const methodOverride = require('method-override')           // Middleware used to use HTTP verbs such as PUT or DELETE
-const { v4: uuid } = require('uuid')                        // Universally unique identifier for created_lists
+const { v4: uuid } = require('uuid')                        // Universally unique identifier for createdLists
 const ejsMate = require('ejs-mate')                         // Use templating with EJS
 
 const path = require('path')                                // Path module
 const fs = require('fs')                                    // File System module
 
 // Personal libraries
-const csv = require('../IMDB Filter/js/csvMaster.js')                       // Function converts CSV data to a list of objects
-const {searchTrie, createTrie} = require('../IMDB Filter/js/trie.js')       // Functions to create and search tries for searching
+const csv = require('../IMDB Filter/js/csvConverter.js')    // Function converts CSV data to a list of objects
+const {Trie} = require('./js/search.js')                    // Functions to create and search tries for searching
+
 
 const app = express()
 app.use(fileUpload())
@@ -25,27 +26,33 @@ app.engine('ejs', ejsMate)                                  // Use ejsMate with 
 const titles = ['Const_IMDB', 'Your Rating', 'Date Rated', 'Title', 'URL', 'Title Type', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Genres', 'Num Votes', 'Release Date', 'Directors']
 
 // Variables
-let master_trie
-let master_list = []                                        // List of all movies uploaded
-let created_lists = []                                      // List of all lists created
-let search_results = []
-let movies_for_current_list = []
+let masterTrie                                              // Trie of the masterList
+let masterList = []                                         // List of all movies uploaded
+let createdLists = []                                       // List of all lists created
+let searchResults = []
+let currentCreatedList = []
 let currentTypedListName = []
 // Functions
 
 // Removes duplicates
-function addMovieToCurrentList(current_list, addMovie) {
+function addMovieToCurrentList(currentList, addMovie) {
     let found = false
 
-    for (let i = 0; i < current_list.length; i++) {
-        if (current_list[i]['Const_IMDB'] === addMovie['Const_IMDB']) {
+    for (let i = 0; i < currentList.length; i++) {
+        if (currentList[i]['Const_IMDB'] === addMovie['Const_IMDB']) {
             found = true
         }
     }
 
     if (!found) {
-        movies_for_current_list.push(addMovie)
+        currentList.push(addMovie)
     }
+}
+
+function getRandomIntInclusive(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
 }
 
 // -------------------------------/UPLOAD-----------------------------------------------------------------------------------------
@@ -55,122 +62,153 @@ app.get('/upload', (req, res) => {
 })
 
 app.post('/upload', function(req, res) {
-    let sampleFile
-    let uploadPath
   
     if (!req.files || Object.keys(req.files).length === 0) {
-      return res.status(400).send('No files were uploaded.')
+        return res.status(400).send('No files were uploaded.')
     }
-  
-    sampleFile = req.files.sampleFile                               // The name of the input field ("sampleFile") is used to retrieve the uploaded file
-    uploadPath = __dirname + '/uploads/' + sampleFile.name
-  
-    sampleFile.mv(uploadPath, function(err) {                       // mv() method places the file somewhere in server
-      if (err) {
-        return res.status(500).send(err)
-      }
-      // res.send('File uploaded!')                                    // Successfully uploaded file
-      res.redirect('/movies')
-    })
+
+
+    let uploadFiles = req.files.uploadFiles                               // The name of the input field ("uploadFiles") is used to retrieve the uploaded file
+    let uploadPath = __dirname + '/uploads/'
+    let newFiles = []
+    
+    // If only one file uploaded
+    if (!Array.isArray(uploadFiles)) {
+        newFiles.push(uploadFiles.name)
+        
+        uploadFiles.mv(uploadPath + uploadFiles.name, function(err) {                       // mv() method places the file somewhere in server
+            if (err) {
+                return res.status(500).send(err)
+            }
+        })
+    }
+    // If there are multiple files uploaded
+    else {
+
+        for (let file of uploadFiles) {
+            newFiles.push(file.name)
+
+            file.mv(uploadPath + file.name, function(err) {                       // mv() method places the file somewhere in server
+                if (err) {
+                    return res.status(500).send(err)
+                }
+            })
+        }
+    }
+
+    res.redirect('/movies')
+
     setTimeout(() => {
-        master_list = csv()                                         // 2 second delay to convert the uploaded file to the master_list
-        master_trie = createTrie(master_list)
+        masterList = csv(masterList, false, newFiles)                             // 2 second delay to convert the uploaded file to the masterList
+        masterTrie = new Trie(masterList)
     }, 2000)
+})
+
+app.post('/upload-test-data', function(req, res) {
+    res.redirect('/movies')
+
+    setTimeout(() => {
+        masterList = csv([], true, [])                             // 2 second delay to convert the uploaded file to the masterList
+        masterTrie = new Trie(masterList)
+
+        // Create random lists
+        let testListNames = ['apple', 'KELLY27', '9873', 'Banana', 'X12Tron']
+
+        for (let name of testListNames) {
+            let testMovies = []
+
+            for (let i = 0; i < getRandomIntInclusive(10, 35); i++) {
+                let j = getRandomIntInclusive(0, 51)
+                addMovieToCurrentList(testMovies, masterList[j])
+            }
+
+            createdLists.push({listName: name, id: uuid(), movies: testMovies})
+        }
+    }, 2000)
+
 })
 
 // -------------------------------/MOVIES-----------------------------------------------------------------------------------------
 
 app.get('/movies', (req, res) => {
-    res.render('master', { display_list: master_list, titles, isMasterList: true})
-})
-
-app.get('/movies/search?q=:searchQuery', (req, res) => {
-    console.log(searchQuery)
-    search_results = searchTrie(master_trie, req.body['searchtext'])
-    // Printing out search results
-    res.render('master', { display_list: search_results, titles, isMasterList: false})
+    res.render('master', { displayList: masterList, titles, isMasterList: true})
 })
 
 // Show movie details
 app.get('/movies/:str', (req, res) => {
     const { str } = req.params
     if (str.startsWith('search')) {
-        search_results = searchTrie(master_trie, req.query['q'])
-        res.render('master', { display_list: search_results, titles, isMasterList: false})
-
+        searchResults = Trie.search(masterTrie, req.query['q'])
+        res.render('master', { displayList: searchResults, titles, isMasterList: false})
     }
     else {
-        const movie = master_list.find(m => m["Const_IMDB"] === str)
-        res.render('show', {movie, titles, created_lists})
+        const movie = masterList.find(m => m["Const_IMDB"] === str)
+        res.render('show', {movie, titles, displayList: createdLists})
     }
 })
 
 // -------------------------------/CREATED_LISTS-----------------------------------------------------------------------------------------
 
 app.get('/created_lists', (req, res) => {
-    res.render('./created_lists/index', {created_lists})
+    res.render('./created_lists/index', {displayList: createdLists})
 })
 
 app.get('/created_lists/new', (req, res) => {
-    res.render('./created_lists/new', {search_results, movies_for_current_list, currentTypedListName})
+    currentCreatedList = []
+    res.render('./created_lists/new', {searchResults, currentCreatedList, currentTypedListName})
 })
 
 app.get('/created_lists/new/search', (req, res) => {
     const {currentTypedListName} = req.body
-    console.log(req.body)
-    search_results = searchTrie(master_trie, req.query['q'].toLowerCase())
-    res.render('./created_lists/new', {search_results, movies_for_current_list, currentTypedListName})
+    searchResults = Trie.search(masterTrie, req.query['q'].toLowerCase())
+    res.render('./created_lists/new', {searchResults, currentCreatedList, currentTypedListName})
 })
 
 app.post('/created_lists/new/search', (req, res) => {
     const { addID, currentTypedListName } = req.body
-    let foundMovie = search_results.find(m => m['Const_IMDB'] === addID)
+    let foundMovie = searchResults.find(m => m['Const_IMDB'] === addID)
 
     // Checking for duplicates
-    addMovieToCurrentList(movies_for_current_list, foundMovie)
-    res.render('./created_lists/new', {search_results, movies_for_current_list, currentTypedListName})
+    addMovieToCurrentList(currentCreatedList, foundMovie)
+    res.render('./created_lists/new', {searchResults, currentCreatedList, currentTypedListName})
 })
 
 // Show selected list details
 app.get('/created_lists/:id', (req, res) => {
     const { id } = req.params
-    const selected_list = created_lists.find(m => m["id"] === id)
-    console.log("Selected list is: ")
-    console.log(selected_list);
-    res.render('./created_lists/show', {selected_list})
+    const selectedList = createdLists.find(m => m["id"] === id)
+    res.render('./created_lists/show', {selectedList})
 })
 
 // Edit selected list page
 app.get('/created_lists/:id/edit', (req, res) => {
     const { id } = req.params
-    const selected_list = created_lists.find(m => m.id === id)
-    res.render('./created_lists/edit', {selected_list})
+    const selectedList = createdLists.find(m => m.id === id)
+    res.render('./created_lists/edit', {selectedList})
 })
 
 // Request to edit selected list
 app.patch('/created_lists/:id', (req, res) => {
     const { id } = req.params
     const newListName = req.body.editName
-    const selected_list = created_lists.find(m => m.id === id)
-    selected_list.list_name = newListName
+    const selectedList = createdLists.find(m => m.id === id)
+    selectedList.listName = newListName
     res.redirect('/created_lists')
 })
 
 // Request to delete selected list
 app.delete('/created_lists/:id', (req, res) => {
     const { id } = req.params
-    created_lists = created_lists.filter(m => m.id !== id)
+    createdLists = createdLists.filter(m => m.id !== id)
     res.redirect('/created_lists')
 })
 
 // Request to create a new list
 app.post('/created_lists', (req, res) => {
     const {listName} = req.body
-    let new_list = {list_name: listName, id: uuid(), movies: movies_for_current_list}
-    created_lists.push(new_list)
-    console.log("New list is")
-    console.log(new_list)
-    movies_for_current_list = []
+    let newList = {listName: listName, id: uuid(), movies: currentCreatedList}
+    createdLists.push(newList)
+    currentCreatedList = []
     res.redirect('/created_lists')
 })
 
