@@ -26,12 +26,17 @@ app.engine('ejs', ejsMate)                                  // Use ejsMate with 
 const titles = ['Const_IMDB', 'Your Rating', 'Date Rated', 'Title', 'URL', 'Title Type', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Genres', 'Num Votes', 'Release Date', 'Directors']
 
 // Variables
-let masterTrie                                              // Trie of the masterList
+let searchTrie                                              // Trie of the masterList
 let masterList = []                                         // List of all movies uploaded
 let createdLists = []                                       // List of all lists created
 let searchResults = []
 let currentCreatedList = []
 let currentTypedListName = []
+let currentSearchSortFilters = {
+    search: new Set(),
+    sort: new Set(),
+    filters: new Set()
+}
 // Functions
 
 // Removes duplicates
@@ -100,7 +105,8 @@ app.post('/upload', function(req, res) {
 
     setTimeout(() => {
         masterList = csv(masterList, false, newFiles)                             // 2 second delay to convert the uploaded file to the masterList
-        masterTrie = new Trie(masterList)
+        searchResults = masterList
+        searchTrie = new Trie(searchResults)
     }, 2000)
 })
 
@@ -109,8 +115,9 @@ app.post('/upload-test-data', function(req, res) {
 
     setTimeout(() => {
         masterList = csv([], true, [])                             // 2 second delay to convert the uploaded file to the masterList
-        masterTrie = new Trie(masterList)
-
+        searchResults = masterList
+        searchTrie = new Trie(searchResults)
+        
         // Create random lists
         let testListNames = ['apple', 'KELLY27', '9873', 'Banana', 'X12Tron']
 
@@ -138,7 +145,16 @@ app.get('/movies', (req, res) => {
 app.get('/movies/:str', (req, res) => {
     const { str } = req.params
     if (str.startsWith('search')) {
-        searchResults = Trie.search(masterTrie, req.query['q'])
+        // Save search queries
+        if (req.query['q']) {
+            if (currentSearchSortFilters['search'] !== req.query['q']) {
+                currentSearchSortFilters['search'] = req.query['q']
+                searchResults = Trie.search(searchTrie, req.query['q'])
+            }
+        }
+
+
+        searchResults = Trie.search(searchTrie, req.query['q'])
         res.render('master', { displayList: searchResults, titles, isMasterList: false})
     }
     else {
@@ -160,7 +176,7 @@ app.get('/created_lists/new', (req, res) => {
 
 app.get('/created_lists/new/search', (req, res) => {
     const {currentTypedListName} = req.body
-    searchResults = Trie.search(masterTrie, req.query['q'].toLowerCase())
+    searchResults = Trie.search(searchTrie, req.query['q'].toLowerCase())
     res.render('./created_lists/new', {searchResults, currentCreatedList, currentTypedListName})
 })
 

@@ -115,6 +115,8 @@ class Trie {
     // Fill the Trie with all words from a list of Movies
     create (listMovies) {
 
+        this.root.movies = listMovies
+        
         // Iterate through all movies, get all substrings and add to the trie
         for (let list of listMovies) {
 

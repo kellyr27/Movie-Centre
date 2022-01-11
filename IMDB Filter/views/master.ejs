@@ -1,9 +1,15 @@
 <% layout('layouts/boilerplate') %>
 <h1>Movies Page</h1>
 <div>
-    <h3>Search</h3>
-    <form method="get">
-        <input type="text" name="q" id="searchtext">
+    <form method="get" action="/movies/search">
+        <div>
+            <label for="q">Search: </label>
+            <input type="text" name="q">
+        </div>
+        
+    </form>
+    <form action="/master">
+        <button>Clear Filters</button>
     </form>
 <table>
     <thead>
@@ -28,15 +34,8 @@
     <a href="/master">Back to master list</a>
 <% } %>
 <script>
-    let input = document.getElementById("searchtext")
-    let form = document.querySelector("form")
-    input.oninput = handleInput
-    let currentSearchTerm = ""
-    function handleInput(e) {
-        currentSearchTerm = e.target.value
-        form.action = '/movies/search?' + currentSearchTerm
-        console.log(form.action)
-    }
 
+    let filter = document.getElementsByName("filter")[0]
+    // for (let i = 0; i < )
 
 </script>
