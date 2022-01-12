@@ -10,7 +10,8 @@ const fs = require('fs')                                    // File System modul
 
 // Personal libraries
 const csv = require('../IMDB Filter/js/csvConverter.js')    // Function converts CSV data to a list of objects
-const {Trie} = require('./js/search.js')                    // Functions to create and search tries for searching
+const {Trie} = require('./js/trie.js')                    // Functions to create and search tries for searching
+const {MovieList} = require('./js/movieList.js')
 
 
 const app = express()
@@ -26,16 +27,18 @@ app.engine('ejs', ejsMate)                                  // Use ejsMate with 
 const titles = ['Const_IMDB', 'Your Rating', 'Date Rated', 'Title', 'URL', 'Title Type', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Genres', 'Num Votes', 'Release Date', 'Directors']
 
 // Variables
-let searchTrie                                              // Trie of the masterList
-let masterList = []                                         // List of all movies uploaded
+let masterMovieList = new MovieList()
+
+let searchTrie                                              // Trie of the masterList                   // DEFUNCT - TO REMOVE
+let masterList = []                                         // List of all movies uploaded              // DEFUNCT - TO REMOVE --- = masterMoveList.activeList
 let createdLists = []                                       // List of all lists created
-let searchResults = []
+let searchResults = []                                                                                  // DEFUNCT - TO REMOVE
 let currentCreatedList = []
 let currentTypedListName = []
 let currentSearchSortFilters = {
-    search: new Set(),
-    sort: new Set(),
-    filters: new Set()
+    search: [],
+    sort: [],
+    filters: []
 }
 // Functions
 
@@ -104,9 +107,14 @@ app.post('/upload', function(req, res) {
     res.redirect('/movies')
 
     setTimeout(() => {
+        masterMovieList.create(csv(masterList, false, newFiles))
+
+        // DEFUNCT
         masterList = csv(masterList, false, newFiles)                             // 2 second delay to convert the uploaded file to the masterList
         searchResults = masterList
         searchTrie = new Trie(searchResults)
+
+
     }, 2000)
 })
 
@@ -114,6 +122,9 @@ app.post('/upload-test-data', function(req, res) {
     res.redirect('/movies')
 
     setTimeout(() => {
+        masterMovieList.create(csv([], true, []))
+
+        // DEFUNCT - 3 LINES
         masterList = csv([], true, [])                             // 2 second delay to convert the uploaded file to the masterList
         searchResults = masterList
         searchTrie = new Trie(searchResults)
@@ -138,7 +149,15 @@ app.post('/upload-test-data', function(req, res) {
 // -------------------------------/MOVIES-----------------------------------------------------------------------------------------
 
 app.get('/movies', (req, res) => {
-    res.render('master', { displayList: masterList, titles, isMasterList: true})
+
+    currentSearchSortFilters = {
+        search: [],
+        sort: [],
+        filters: []
+    }
+
+    masterMovieList.reset()
+    res.render('master', { displayList: masterMovieList.activeList, titles, isMasterList: true})
 })
 
 // Show movie details
@@ -146,16 +165,13 @@ app.get('/movies/:str', (req, res) => {
     const { str } = req.params
     if (str.startsWith('search')) {
         // Save search queries
-        if (req.query['q']) {
-            if (currentSearchSortFilters['search'] !== req.query['q']) {
-                currentSearchSortFilters['search'] = req.query['q']
-                searchResults = Trie.search(searchTrie, req.query['q'])
-            }
-        }
 
+        
+        currentSearchSortFilters.search.push(req.query['q'])
+        console.log(currentSearchSortFilters)
+        masterMovieList.queryChange(currentSearchSortFilters)
 
-        searchResults = Trie.search(searchTrie, req.query['q'])
-        res.render('master', { displayList: searchResults, titles, isMasterList: false})
+        res.render('master', { displayList: masterMovieList.activeList, titles, isMasterList: false})
     }
     else {
         const movie = masterList.find(m => m["Const_IMDB"] === str)

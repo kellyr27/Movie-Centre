@@ -117,6 +117,11 @@ class Trie {
 
         this.root.movies = listMovies
         
+        // Empty edge case
+        if (!listMovies) {
+            return
+        }
+
         // Iterate through all movies, get all substrings and add to the trie
         for (let list of listMovies) {
 
@@ -129,9 +134,9 @@ class Trie {
     }
     
 
-    static search (trie, searchTerm) {
+    search (searchTerm) {
 
-        let currentNode = trie.root
+        let currentNode = this.root
 
         // If the node has no children, then there are no movies
         if (!currentNode.children) {
@@ -169,10 +174,8 @@ class Trie {
             }
     
         }
-
         return currentNode.movies
     }
-
 }
 
 
