@@ -130,18 +130,18 @@ app.post('/upload-test-data', function(req, res) {
         searchTrie = new Trie(searchResults)
         
         // Create random lists
-        let testListNames = ['apple', 'KELLY27', '9873', 'Banana', 'X12Tron']
+        // let testListNames = ['apple', 'KELLY27', '9873', 'Banana', 'X12Tron']
 
-        for (let name of testListNames) {
-            let testMovies = []
+        // for (let name of testListNames) {
+        //     let testMovies = []
 
-            for (let i = 0; i < getRandomIntInclusive(10, 35); i++) {
-                let j = getRandomIntInclusive(0, 51)
-                addMovieToCurrentList(testMovies, masterList[j])
-            }
+        //     for (let i = 0; i < getRandomIntInclusive(10, 35); i++) {
+        //         let j = getRandomIntInclusive(0, 51)
+        //         addMovieToCurrentList(testMovies, masterList[j])
+        //     }
 
-            createdLists.push({listName: name, id: uuid(), movies: testMovies})
-        }
+        //     createdLists.push({listName: name, id: uuid(), movies: testMovies})
+        // }
     }, 2000)
 
 })
@@ -157,7 +157,7 @@ app.get('/movies', (req, res) => {
     }
 
     masterMovieList.reset()
-    res.render('master', { displayList: masterMovieList.activeList, titles, isMasterList: true})
+    res.render('master', { displayList: masterMovieList, titles, isMasterList: true})
 })
 
 // Show movie details
@@ -167,11 +167,12 @@ app.get('/movies/:str', (req, res) => {
         // Save search queries
 
         
-        currentSearchSortFilters.search.push(req.query['q'])
-        console.log(currentSearchSortFilters)
-        masterMovieList.queryChange(currentSearchSortFilters)
+        // currentSearchSortFilters.search.push(req.query['q'])
+        // console.log(currentSearchSortFilters)
+        // masterMovieList.queryChange(currentSearchSortFilters)
+        masterMovieList.search(req.query['q'])
 
-        res.render('master', { displayList: masterMovieList.activeList, titles, isMasterList: false})
+        res.render('master', { displayList: masterMovieList, titles, isMasterList: false})
     }
     else {
         const movie = masterList.find(m => m["Const_IMDB"] === str)
@@ -187,22 +188,21 @@ app.get('/created_lists', (req, res) => {
 
 app.get('/created_lists/new', (req, res) => {
     currentCreatedList = []
-    res.render('./created_lists/new', {searchResults, currentCreatedList, currentTypedListName})
+    res.render('./created_lists/new', {searchResults: masterMovieList.activeList, currentCreatedList, currentTypedListName})
 })
 
 app.get('/created_lists/new/search', (req, res) => {
     const {currentTypedListName} = req.body
-    searchResults = Trie.search(searchTrie, req.query['q'].toLowerCase())
-    res.render('./created_lists/new', {searchResults, currentCreatedList, currentTypedListName})
+    res.render('./created_lists/new', {searchResults: masterMovieList.activeList, currentCreatedList, currentTypedListName})
 })
 
-app.post('/created_lists/new/search', (req, res) => {
+app.post('/created_lists/new', (req, res) => {
     const { addID, currentTypedListName } = req.body
     let foundMovie = searchResults.find(m => m['Const_IMDB'] === addID)
 
     // Checking for duplicates
     addMovieToCurrentList(currentCreatedList, foundMovie)
-    res.render('./created_lists/new', {searchResults, currentCreatedList, currentTypedListName})
+    res.render('./created_lists/new', {searchResults: masterMovieList.activeList, currentCreatedList, currentTypedListName})
 })
 
 // Show selected list details

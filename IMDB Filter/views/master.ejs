@@ -4,13 +4,24 @@
     <form method="get" action="/movies/search">
         <div>
             <label for="q">Search: </label>
-            <input type="text" name="q">
+            <input type="text" name="q" required>
         </div>
         
     </form>
     <form method="get" action="/master">
-        <button>Clear Filters</button>
+        <button>Clear Search</button>
     </form>
+
+    <div>
+        <label for="sort">Sort by: </label>
+        <select name="sort" id="sort">
+            <% for (let i = 0; i < titles.length; i++) { %> 
+                <option value="<%= titles[i] %>"><%= titles[i] %></option>
+            <% } %> 
+        </select>
+        <button id="sortButton">Sort</button>
+    </div>
+</div>
 <table>
     <thead>
         <tr>
@@ -21,8 +32,8 @@
     </thead>
 
     <tbody>
-        <% if (displayList) { %> 
-            <% for (let movie of displayList) { %> 
+        <% if (displayList.activeList) { %> 
+            <% for (let movie of displayList.activeList) { %> 
                 <tr>
                     <td><a href="/movies/<%= movie["Const_IMDB"] %> "><%= movie["Title"] %></a></td>
                     <td><%= movie["IMDb Rating"] %> </td>
@@ -35,9 +46,136 @@
 <% if (!isMasterList) { %>
     <a href="/master">Back to master list</a>
 <% } %>
-<script>
+<script type='text/javascript'>
+    let displayList = <%- JSON.stringify(displayList.activeList)%>
+    
+    let sortTitle = document.getElementById('sort')
+    let sortButton = document.getElementById('sortButton')
+    
+    sortButton.addEventListener('click', () => {
+        
+        function arrayMove(fromIndex, toIndex) {
+                let element = displayList[fromIndex]
+                displayList.splice(fromIndex, 1)
+                displayList.splice(toIndex, 0, element)
+        }
 
-    let filter = document.getElementsByName("filter")[0]
-    // for (let i = 0; i < )
+
+        function insertionSortStrings (sortTitle) {
+
+            for (let i = 1; i < displayList.length; i++) {
+
+                for (let j = i - 1; j >= 0; j--) {
+
+                    // Lexicographical comparison of words
+                    if (displayList[i][sortTitle].toLowerCase() > displayList[j][sortTitle].toLowerCase()) {
+                        // Edge case - if already sorted in place
+                        if (j === i - 1) {
+                            break
+                        }
+                        else {
+                            arrayMove(i, j+1)
+                            break
+                        }
+                    }
+
+                    // Edge case 
+                    if (j === 0) {
+                        arrayMove(i, 0)
+                        break
+                    }
+                }
+            }
+        }
+
+        function insertionSortNum (sortTitle) {
+
+            for (let i = 1; i < displayList.length; i++) {
+
+                for (let j = i - 1; j >= 0; j--) {
+
+                    // Lexicographical comparison of words
+                    if (displayList[i][sortTitle] > displayList[j][sortTitle]) {
+                        // Edge case - if already sorted in place
+                        if (j === i - 1) {
+                            break
+                        }
+                        else {
+                            arrayMove(i, j+1)
+                            break
+                        }
+                    }
+
+                    // Edge case 
+                    if (j === 0) {
+                        arrayMove(i, 0)
+                        break
+                    }
+                }
+            }
+        }
+
+        function insertionSortDate (sortTitle) {
+
+            for (let i = 1; i < displayList.length; i++) {
+
+                for (let j = i - 1; j >= 0; j--) {
+
+                    // Conversion of dates to numeric
+                    let iDate = Date.parse(displayList[i][sortTitle].slice(6, 10) + '-' + displayList[i][sortTitle].slice(3,5) + '-' + displayList[i][sortTitle].slice(0,2))
+                    let jDate = Date.parse(displayList[j][sortTitle].slice(6, 10) + '-' + displayList[j][sortTitle].slice(3,5) + '-' + displayList[j][sortTitle].slice(0,2))
+
+
+                    if (iDate > jDate) {
+                        // Edge case - if already sorted in place
+                        if (j === i - 1) {
+                            break
+                        }
+                        else {
+                            arrayMove(i, j+1)
+                            break
+                        }
+                    }
+
+                    // Edge case 
+                    if (j === 0) {
+                        arrayMove(i, 0)
+                        break
+                    }
+                }
+            }
+        }       
+
+        function sort (sortTitle) {
+            // No sorting for list types
+            if (['URL', 'Genres', 'Directors'].includes(sortTitle)) {
+                return
+            }
+
+            // String sorts
+            if (['Title', 'Title Type', 'Const_IMDB'].includes(sortTitle)) {
+                // Insertion sort for strings
+                insertionSortStrings(sortTitle)
+                return
+            }
+
+            const titles = ['Date Rated', 'Release Date']
+
+            // Number sort
+            if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(sortTitle)) {
+                insertionSortNum(sortTitle)
+                return
+            }
+
+            // Dates sort
+            if (['Date Rated', 'Release Date'].includes(sortTitle)) {
+                insertionSortDate(sortTitle)
+                return
+            }
+        }
+
+        sort(sortTitle.value)
+    
+    })
 
 </script>

@@ -11,9 +11,9 @@ class MovieList {
         this.inactiveTrie = new Trie(this.inactiveList)
 
         this.searchSortFilter = {
-            search: [],
+            search: "",
             sort: [],
-            filter: []
+            filter: new Set()
         }
     }
 
@@ -28,9 +28,9 @@ class MovieList {
         this.#updateTries()
         
         this.searchSortFilter = {
-            search: [],
+            search: "",
             sort: [],
-            filter: []
+            filter: new Set()
         }
     }
 
@@ -40,59 +40,76 @@ class MovieList {
         this.activeTrie = new Trie(this.activeList)
     }
 
-    queryChange (alteredSearchSortFilter) {
-        // Search
-        let addedSearch = []
-        let removedSearch = []
-
-        // Search queries has been added
-        for (let i = 0; i < alteredSearchSortFilter.search.length; i++) {
-            if (!this.searchSortFilter.search.includes(alteredSearchSortFilter.search[i])) {
-                addedSearch.push(alteredSearchSortFilter.search[i])
-                this.search(addedSearch)
-            }
-        }
-
-        // Search queries has been removed
-        for (let i = 0; i < this.searchSortFilter.search.length; i++) {
-            if (!alteredSearchSortFilter.search.includes(this.searchSortFilter.search[i])) {
-                removedSearch.push(this.searchSortFilter.search[i])
-                this.unsearch(removedSearch)
-            }
-        }
-
-        // Sort
-
-
-        // Filter
-
-
-    }
-
     // Performs a search in place
-    search (addedQueries) {
-        for (let query of addedQueries) {
-            let foundMovies = this.activeTrie.search(query)
-            console.log(foundMovies);
-            for (let movie of this.activeList) {
-                // If a movie in the active display is not in the found movies, move to inactive list
-                if (!foundMovies.includes(movie)) {
-                    this.inactiveList.push(movie)
-                }
+    search (query) {
+
+        this.searchSortFilter.search = query
+        let foundMovies = this.activeTrie.search(query)
+
+        for (let movie of this.activeList) {
+
+            // If a movie in the active display is not in the found movies, move to inactive list
+            if (!foundMovies.includes(movie)) {
+                this.inactiveList.push(movie)
             }
-
-            this.activeList = foundMovies
-            this.#updateTries()
         }
+        this.activeList = foundMovies
+        this.#updateTries()
     }
 
-    unsearch (removedQuery) {
-
+    // Removes a search in place
+    clearSearch () {
+        
     }
 
-    sort () {
+    // #insertionSortStrings (title) {
 
-    }
+    //     function arrayMove(fromIndex, toIndex) {
+    //         let element = this.activeList[fromIndex];
+    //         this.activeList.splice(fromIndex, 1);
+    //         this.activeList.splice(toIndex, 0, element);
+    //     }
+
+    //     for (let i = 1; i < this.activeList.length; i++) {
+
+    //         for (let j = i - 1; j >= 0; j--) {
+
+    //             // Lexicographical comparison of words
+    //             if (this.activeList[i][title].toLowerCase() < this.activeList[j][title].toLowerCase()) {
+
+    //                 // Edge case - if already sorted in place
+    //                 if (j === i - 1) {
+    //                     break
+    //                 }
+    //                 else {
+    //                     arrayMove(i, j)
+    //                     break
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+    // sort (sortTitle) {
+
+    //     this.searchSortFilter.push(sortTitle)
+
+    //     // Constants
+    //     const titles = ['Const_IMDB', 'Your Rating', 'Date Rated', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes', 'Release Date']
+
+    //     // No sorting for list types
+    //     if (['URL', 'Genres', 'Directors'].includes(sortTitle)) {
+    //         return
+    //     }
+
+    //     // String sorts
+    //     if (['Title', 'Title Type'].includes(sortTitle)) {
+    //         // Insertion sort for strings
+    //         this.#insertionSortStrings(sortTitle)
+    //         return
+    //     }
+
+    // }
 
     unsort () {
 

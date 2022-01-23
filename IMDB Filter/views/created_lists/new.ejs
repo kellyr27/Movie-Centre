@@ -1,5 +1,17 @@
 <% layout('./layouts/boilerplate') %>
-<%- include("../partials/searchbar") %> 
+<h4><i>Search Results</i></h4>
+<ul>
+    <% for (let i = 0; i < searchResults.length; i++) { %>
+        <li><%= searchResults[i]['Title'] %>
+            <form method="post" id="movieSelector">
+                <input type="hidden" name="currentTypedListName">
+                <button name="addID" value="<%= searchResults[i]['Const_IMDB'] %>">Add To List</button>
+            </form>
+        </li>
+    <% } %>  
+</ul>
+
+
 <h1>Add New List</h1>
 <form action="/created_lists" method="post" id="titleForm">
     <label for="listName">List Name: </label>

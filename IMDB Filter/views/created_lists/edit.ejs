@@ -7,12 +7,17 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Editing <%= selected_list["list_name"] %> </h1>
+    <h1>Editing <%= selectedList["listName"] %> </h1>
     
-    <form method="post" action="/created_lists/<%= selected_list.id %>?_method=PATCH">
+    <form method="post" action="/created_lists/<%= selectedList.id %>?_method=PATCH">
 
         <label for="editName">Edit name of list: </label>
-        <input type="text" name="editName" value="<%= selected_list["list_name"] %>">
+        <input type="text" name="editName" value="<%= selectedList["listName"] %>">
+        <ol>
+        <% for (let i = 0; i < selectedList.movies.length; i++) { %>
+                <li><%= selectedList.movies[i]['Title'] %> </li>
+        <% } %> 
+        </ol>
         <button>Save</button>
     </form>
 
