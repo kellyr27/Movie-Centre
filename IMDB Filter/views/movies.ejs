@@ -19,7 +19,9 @@
         <label for="sort">Sort by: </label>
         <select name="sort" id="sort">
             <% for (let i = 0; i < titles.length; i++) { %> 
-                <option value="<%= titles[i] %>"><%= titles[i] %></option>
+                <% if (!['URL', 'Genres', 'Directors'].includes(titles[i])) { %> 
+                    <option value="<%= titles[i] %>"><%= titles[i] %></option>
+                <% } %> 
             <% } %> 
         </select>
         <button id="sortButton">Sort</button>
@@ -31,12 +33,14 @@
         <label for="filter">Filter by: </label>
         <select name="filter" id="filter">
             <% for (let i = 0; i < titles.length; i++) { %> 
-                <option value="<%= titles[i] %>"><%= titles[i] %></option>
+                <% if (!['URL'].includes(titles[i])) { %> 
+                    <option value="<%= titles[i] %>"><%= titles[i] %></option>
+                <% } %> 
             <% } %> 
         </select>
         <select name="filterOperator" id="filterOperator"></select>
         <span id="filterSpan"></span>
-        <button>Filter</button>
+        <button id="filterButton">Filter</button>
     </div>
 
     <!-- Clear filters -->
@@ -60,12 +64,12 @@
 </table>
 
 <%- include("./scripts/sorting") %> 
+<%- include("./scripts/filtering") %> 
 <script type='text/javascript'>
-
-    let displayList = <%- JSON.stringify(displayList.activeList) %>
+    let tableDisplay = document.getElementById('tableDisplay')
+    
     
     // Updates the table after sort/filter
-    let tableDisplay = document.getElementById('tableDisplay')
     function updateTable() {
 
         // Clear table
@@ -98,75 +102,9 @@
         }
     }
 
-
     // Onload functions
     window.onload = function () {
         updateTable()
     }
-
-    let filterOperators = ['greater than', 'less than', 'equal to', 'not equal to', 'between', 'not between', 'greater than or equal to', 'less than or equal to']
-    let filterOperatorSelector = document.getElementById('filterOperator')
-
-    for (let i = 0; i < filterOperators.length; i++) {
-        let newSelector = document.createElement('option')
-        newSelector.value = filterOperators[i]
-        newSelector.innerHTML = filterOperators[i]
-
-        filterOperatorSelector.appendChild(newSelector)
-    }
-
-    let filterOperator = document.getElementById('filterOperator')
-    let filterSpan = document.getElementById('filterSpan')
-    let filter = document.getElementById('filter')
-
-    filterOperator.addEventListener('change', () => {
-        while (filterSpan.firstChild) {
-            filterSpan.removeChild(filterSpan.firstChild)
-        }
-
-        let filterSelector = document.createElement('select')
-        filterSelector.id = "filterSelector"
-        filterSpan.appendChild(filterSelector)
-
-        if (['between', 'not between'].includes(filterOperator.value)) {
-            let filterSelector2 = document.createElement('select')
-            filterSelector2.id = "filterSelector2"
-            filterSpan.appendChild(filterSelector2)
-        }
-
-
-
-
-        for (let i = 0; i < displayList.length; i++) {
-            let newOption = document.createElement('option')
-            newOption.value = 'filter-' + displayList[i].Const_IMDB
-            newOption.innerHTML = displayList[i][filter.value]
-            filterSelector.appendChild(newOption)
-            if (['between', 'not between'].includes(filterOperator.value)) {
-                filterSelector2.appendChild(newOption.cloneNode(true))
-            }
-        }
-    })
-
-
-    // switch () {
-    //     case 'greater than':
-    //         break
-    //     case 'less than':
-    //         break
-    //     case 'equal to':
-    //         break
-    //     case 'not equal to':
-    //         break
-    //     case 'between':
-    //         break
-    //     case 'not between':
-    //         break
-    //     case 'greater than or equal to':
-    //         break
-    //     case 'less than or equal to':
-    //         break
-    //     default:
-    // }
 
 </script>

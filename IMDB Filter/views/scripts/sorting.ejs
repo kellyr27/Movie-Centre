@@ -1,26 +1,25 @@
 <script>
-    let sortTitle = document.getElementById('sort')
+
+    let sortEl = document.getElementById('sort')                  // Sorting variables
     let sortButton = document.getElementById('sortButton')
     let sortAscDes = document.getElementById('sortAscDes')
 
+    // When sort button by is clicked
     sortButton.addEventListener('click', () => {
-        
 
+        // MOves an element in an array to a different index
         function arrayMove(fromIndex, toIndex) {
                 let element = displayList[fromIndex]
                 displayList.splice(fromIndex, 1)
                 displayList.splice(toIndex, 0, element)
         }
 
-
-        function insertionSortStrings (sortTitle) {
-
+        // Insertion sort - strings
+        function insertionSortStrings (col) {
             for (let i = 1; i < displayList.length; i++) {
-
                 for (let j = i - 1; j >= 0; j--) {
-
                     // Lexicographical comparison of words
-                    if (displayList[i][sortTitle].toLowerCase() > displayList[j][sortTitle].toLowerCase()) {
+                    if (displayList[i][col].toLowerCase() > displayList[j][col].toLowerCase()) {
                         // Edge case - if already sorted in place
                         if (j === i - 1) {
                             break
@@ -30,8 +29,7 @@
                             break
                         }
                     }
-
-                    // Edge case 
+                    // Edge case - if less than all other previous elements
                     if (j === 0) {
                         arrayMove(i, 0)
                         break
@@ -40,14 +38,12 @@
             }
         }
 
-        function insertionSortNum (sortTitle) {
-
+        // Insertion sort - numbers
+        function insertionSortNum (col) {
             for (let i = 1; i < displayList.length; i++) {
-
                 for (let j = i - 1; j >= 0; j--) {
-
-                    // Lexicographical comparison of words
-                    if (displayList[i][sortTitle] > displayList[j][sortTitle]) {
+                    // Lexicographical comparison of numbers
+                    if (displayList[i][col] > displayList[j][col]) {
                         // Edge case - if already sorted in place
                         if (j === i - 1) {
                             break
@@ -57,8 +53,7 @@
                             break
                         }
                     }
-
-                    // Edge case 
+                    // Edge case - if less than all other previous elements
                     if (j === 0) {
                         arrayMove(i, 0)
                         break
@@ -67,16 +62,14 @@
             }
         }
 
-        function insertionSortDate (sortTitle) {
-
+        // Insertion sort - dates
+        function insertionSortDate (col) {
             for (let i = 1; i < displayList.length; i++) {
-
                 for (let j = i - 1; j >= 0; j--) {
 
                     // Conversion of dates to numeric
-                    let iDate = Date.parse(displayList[i][sortTitle].slice(6, 10) + '-' + displayList[i][sortTitle].slice(3,5) + '-' + displayList[i][sortTitle].slice(0,2))
-                    let jDate = Date.parse(displayList[j][sortTitle].slice(6, 10) + '-' + displayList[j][sortTitle].slice(3,5) + '-' + displayList[j][sortTitle].slice(0,2))
-
+                    let iDate = Date.parse(displayList[i][col].slice(6, 10) + '-' + displayList[i][col].slice(3,5) + '-' + displayList[i][col].slice(0,2))
+                    let jDate = Date.parse(displayList[j][col].slice(6, 10) + '-' + displayList[j][col].slice(3,5) + '-' + displayList[j][col].slice(0,2))
 
                     if (iDate > jDate) {
                         // Edge case - if already sorted in place
@@ -88,8 +81,7 @@
                             break
                         }
                     }
-
-                    // Edge case 
+                    // Edge case - if less than all other previous elements
                     if (j === 0) {
                         arrayMove(i, 0)
                         break
@@ -98,40 +90,40 @@
             }
         }       
 
-        function sort (sortTitle) {
+        // Based on the selected column, it selects the correct Insertion Sort based on data type
+        function sort (col) {
             // No sorting for list types
-            if (['URL', 'Genres', 'Directors'].includes(sortTitle)) {
+            if (['URL', 'Genres', 'Directors'].includes(col)) {
                 return
             }
 
             // String sorts
-            if (['Title', 'Title Type', 'Const_IMDB'].includes(sortTitle)) {
+            if (['Title', 'Title Type', 'Const_IMDB'].includes(col)) {
                 // Insertion sort for strings
-                insertionSortStrings(sortTitle)
+                insertionSortStrings(col)
                 return
             }
 
-            const titles = ['Date Rated', 'Release Date']
-
             // Number sort
-            if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(sortTitle)) {
-                insertionSortNum(sortTitle)
+            if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(col)) {
+                insertionSortNum(col)
                 return
             }
 
             // Dates sort
-            if (['Date Rated', 'Release Date'].includes(sortTitle)) {
-                insertionSortDate(sortTitle)
+            if (['Date Rated', 'Release Date'].includes(col)) {
+                insertionSortDate(col)
                 return
             }
         }
 
-        sort(sortTitle.value)
+        sort(sortEl.value)
         updateTable()
     })
 
+    // When sort arrows by is clicked
     sortAscDes.addEventListener('click', () => {
-        displayList.reverse()
+        displayList.reverse()                                   // Reverses the array
         updateTable()
     })
 </script>

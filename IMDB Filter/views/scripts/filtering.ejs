@@ -1,0 +1,140 @@
+<script>
+    let displayList = <%- JSON.stringify(displayList.activeList) %>
+    let notDisplayList = []
+    let filtersSelected = []
+    let filterOperators = ['greater than', 'less than', 'equal to', 'not equal to', 'between', 'not between', 'greater than or equal to', 'less than or equal to']
+    let filterOperatorSelector = document.getElementById('filterOperator')
+    let filterOperator = document.getElementById('filterOperator')
+    let filterSpan = document.getElementById('filterSpan')
+    let filter = document.getElementById('filter')
+    let filterButton = document.getElementById('filterButton')
+
+    // Creating the dropdown options for the filter
+    for (let i = 0; i < filterOperators.length; i++) {
+        let newSelector = document.createElement('option')
+        newSelector.value = filterOperators[i]
+        newSelector.innerHTML = filterOperators[i]
+        filterOperatorSelector.appendChild(newSelector)
+    }
+
+    function updateDropdownsFilters() {
+        while (filterSpan.firstChild) {
+            filterSpan.removeChild(filterSpan.firstChild)
+        }
+
+        let filterSelector = document.createElement('select')
+        filterSelector.id = "filterSelector"
+        filterSpan.appendChild(filterSelector)
+
+        // Creates two dropdowns if between's are selected
+        if (['between', 'not between'].includes(filterOperator.value)) {
+            let filterSelector2 = document.createElement('select')
+            filterSelector2.id = "filterSelector2"
+            filterSpan.appendChild(filterSelector2)
+        }
+
+        // Creates the dropdown without filtering and sorting the dropdown
+        let filterList = []
+
+        for (let i = 0; i < displayList.length; i++) {
+
+            // Seperate to show elements in an array type
+            if (['Genres', 'Directors'].includes(filter.value)) {
+
+                for (let j = 0; j < displayList[i][filter.value].length; j++) {
+                    // If not empty
+                    if (displayList[i][filter.value][j]) {
+                        filterList.push(displayList[i][filter.value][j])
+                    }
+                }
+            }
+            else {
+                // If not empty
+                if (displayList[i][filter.value]) {
+                    filterList.push(displayList[i][filter.value])
+                    }
+            }
+        }
+
+        // Removes duplicates from the filter list
+        filterList = [...new Set(filterList)]
+
+        // Sort the filter list
+        
+
+        // Creates the dropdown list
+        for (let i = 0; i < filterList.length; i++) {
+            let newOption = document.createElement('option')
+            newOption.value = filterList[i]
+            newOption.innerHTML = filterList[i]
+            filterSelector.appendChild(newOption)
+            if (['between', 'not between'].includes(filterOperator.value)) {
+                filterSelector2.appendChild(newOption.cloneNode(true))
+            }
+        }
+    }
+
+    // Adds the dropdown when filter operator is changed
+    filterOperator.addEventListener('change', updateDropdownsFilters)
+    filter.addEventListener('change', updateDropdownsFilters)
+    window.onload = updateDropdownsFilters()
+
+    function filterDisplay() {
+
+        let tempDisplay = []
+
+    }
+
+
+    // When filter button by is clicked
+    filterButton.addEventListener('click', () => {
+
+        // No sorting for list types
+        if (['URL'].includes(filter.value)) {
+            return
+        }
+
+        // String filters
+        if (['Title', 'Title Type', 'Const_IMDB'].includes(filter.value)) {
+            
+        }
+
+        // Number filters
+        if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(filter.value)) {
+            
+        }
+
+        // Dates filters
+        if (['Date Rated', 'Release Date'].includes(filter.value)) {
+            
+        }
+
+        // List filters
+        if (['Genres', 'Directors'].includes(filter.value)) {
+            
+        }
+
+        updateTable()
+    })
+
+    // switch (filterOperator.value) {
+    //         case 'greater than':
+    //             break
+    //         case 'less than':
+    //             break
+    //         case 'equal to':
+    //             break
+    //         case 'not equal to':
+    //             break
+    //         case 'between':
+    //             break
+    //         case 'not between':
+    //             break
+    //         case 'greater than or equal to':
+    //             break
+    //         case 'less than or equal to':
+    //             break
+    //         default:
+    //             return
+    //     }
+</script>
