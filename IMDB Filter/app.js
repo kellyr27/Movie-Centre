@@ -157,7 +157,7 @@ app.get('/movies', (req, res) => {
     }
 
     masterMovieList.reset()
-    res.render('master', { displayList: masterMovieList, titles, isMasterList: true})
+    res.render('movies', { displayList: masterMovieList, titles, isMasterList: true})
 })
 
 // Show movie details
@@ -172,7 +172,7 @@ app.get('/movies/:str', (req, res) => {
         // masterMovieList.queryChange(currentSearchSortFilters)
         masterMovieList.search(req.query['q'])
 
-        res.render('master', { displayList: masterMovieList, titles, isMasterList: false})
+        res.render('movies', { displayList: masterMovieList, titles, isMasterList: false})
     }
     else {
         const movie = masterList.find(m => m["Const_IMDB"] === str)

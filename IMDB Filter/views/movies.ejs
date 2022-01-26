@@ -1,0 +1,172 @@
+<% layout('layouts/boilerplate') %>
+<h1>Movies Page</h1>
+
+<!-- Search/Sort/Filter Bar -->
+<div>
+
+    <!-- Search -->
+    <form method="get" action="/movies/search">
+        <div>
+            <label for="q">Search: </label>
+            <input type="text" name="q" required>
+            <button>Search</button>
+        </div>
+        
+    </form>
+    
+    <!-- Sort -->
+    <div>
+        <label for="sort">Sort by: </label>
+        <select name="sort" id="sort">
+            <% for (let i = 0; i < titles.length; i++) { %> 
+                <option value="<%= titles[i] %>"><%= titles[i] %></option>
+            <% } %> 
+        </select>
+        <button id="sortButton">Sort</button>
+        <button id="sortAscDes">&#x2191&#x2193</button>
+    </div>
+
+    <!-- Filter -->
+    <div>
+        <label for="filter">Filter by: </label>
+        <select name="filter" id="filter">
+            <% for (let i = 0; i < titles.length; i++) { %> 
+                <option value="<%= titles[i] %>"><%= titles[i] %></option>
+            <% } %> 
+        </select>
+        <select name="filterOperator" id="filterOperator"></select>
+        <span id="filterSpan"></span>
+        <button>Filter</button>
+    </div>
+
+    <!-- Clear filters -->
+    <form method="get" action="/master">
+        <button>Clear All</button>
+    </form>
+</div>
+
+<!-- Display of the movies in table form -->
+<table>
+    <thead>
+        <tr>
+            <th><%= titles[3] %></th>
+            <th><%= titles[6] %></th>
+            <th><%= titles[8] %></th>
+        </tr>
+    </thead>
+
+    <tbody id="tableDisplay">
+    </tbody>
+</table>
+
+<%- include("./scripts/sorting") %> 
+<script type='text/javascript'>
+
+    let displayList = <%- JSON.stringify(displayList.activeList) %>
+    
+    // Updates the table after sort/filter
+    let tableDisplay = document.getElementById('tableDisplay')
+    function updateTable() {
+
+        // Clear table
+        tableDisplay.innerHTML = ''
+
+        for (let i = 0; i < displayList.length; i++) {
+            // Creating variables of the table elements
+            let newTr = document.createElement('tr')
+            let tdTitle = document.createElement('td')
+            let tdIMDBRating = document.createElement('td')
+            let tdYear = document.createElement('td')
+            let newA = document.createElement('a')
+
+            // Creating the Title column
+            newA.href = "/movies/" + displayList[i]['Const_IMDB']
+            newA.innerHTML = displayList[i]['Title']
+            tdTitle.appendChild(newA)
+            newTr.appendChild(tdTitle)
+
+            // Creating the IMDB Rating column
+            tdIMDBRating.innerHTML = displayList[i]['IMDb Rating']
+            newTr.appendChild(tdIMDBRating)
+
+            // Creating Year column
+            tdYear.innerHTML = displayList[i]['Year']
+            newTr.appendChild(tdYear)
+
+            // Append the row to the table
+            tableDisplay.appendChild(newTr)
+        }
+    }
+
+
+    // Onload functions
+    window.onload = function () {
+        updateTable()
+    }
+
+    let filterOperators = ['greater than', 'less than', 'equal to', 'not equal to', 'between', 'not between', 'greater than or equal to', 'less than or equal to']
+    let filterOperatorSelector = document.getElementById('filterOperator')
+
+    for (let i = 0; i < filterOperators.length; i++) {
+        let newSelector = document.createElement('option')
+        newSelector.value = filterOperators[i]
+        newSelector.innerHTML = filterOperators[i]
+
+        filterOperatorSelector.appendChild(newSelector)
+    }
+
+    let filterOperator = document.getElementById('filterOperator')
+    let filterSpan = document.getElementById('filterSpan')
+    let filter = document.getElementById('filter')
+
+    filterOperator.addEventListener('change', () => {
+        while (filterSpan.firstChild) {
+            filterSpan.removeChild(filterSpan.firstChild)
+        }
+
+        let filterSelector = document.createElement('select')
+        filterSelector.id = "filterSelector"
+        filterSpan.appendChild(filterSelector)
+
+        if (['between', 'not between'].includes(filterOperator.value)) {
+            let filterSelector2 = document.createElement('select')
+            filterSelector2.id = "filterSelector2"
+            filterSpan.appendChild(filterSelector2)
+        }
+
+
+
+
+        for (let i = 0; i < displayList.length; i++) {
+            let newOption = document.createElement('option')
+            newOption.value = 'filter-' + displayList[i].Const_IMDB
+            newOption.innerHTML = displayList[i][filter.value]
+            filterSelector.appendChild(newOption)
+            if (['between', 'not between'].includes(filterOperator.value)) {
+                filterSelector2.appendChild(newOption.cloneNode(true))
+            }
+        }
+    })
+
+
+    // switch () {
+    //     case 'greater than':
+    //         break
+    //     case 'less than':
+    //         break
+    //     case 'equal to':
+    //         break
+    //     case 'not equal to':
+    //         break
+    //     case 'between':
+    //         break
+    //     case 'not between':
+    //         break
+    //     case 'greater than or equal to':
+    //         break
+    //     case 'less than or equal to':
+    //         break
+    //     default:
+    // }
+
+</script>

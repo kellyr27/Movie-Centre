@@ -1,0 +1,137 @@
+<script>
+    let sortTitle = document.getElementById('sort')
+    let sortButton = document.getElementById('sortButton')
+    let sortAscDes = document.getElementById('sortAscDes')
+
+    sortButton.addEventListener('click', () => {
+        
+
+        function arrayMove(fromIndex, toIndex) {
+                let element = displayList[fromIndex]
+                displayList.splice(fromIndex, 1)
+                displayList.splice(toIndex, 0, element)
+        }
+
+
+        function insertionSortStrings (sortTitle) {
+
+            for (let i = 1; i < displayList.length; i++) {
+
+                for (let j = i - 1; j >= 0; j--) {
+
+                    // Lexicographical comparison of words
+                    if (displayList[i][sortTitle].toLowerCase() > displayList[j][sortTitle].toLowerCase()) {
+                        // Edge case - if already sorted in place
+                        if (j === i - 1) {
+                            break
+                        }
+                        else {
+                            arrayMove(i, j+1)
+                            break
+                        }
+                    }
+
+                    // Edge case 
+                    if (j === 0) {
+                        arrayMove(i, 0)
+                        break
+                    }
+                }
+            }
+        }
+
+        function insertionSortNum (sortTitle) {
+
+            for (let i = 1; i < displayList.length; i++) {
+
+                for (let j = i - 1; j >= 0; j--) {
+
+                    // Lexicographical comparison of words
+                    if (displayList[i][sortTitle] > displayList[j][sortTitle]) {
+                        // Edge case - if already sorted in place
+                        if (j === i - 1) {
+                            break
+                        }
+                        else {
+                            arrayMove(i, j+1)
+                            break
+                        }
+                    }
+
+                    // Edge case 
+                    if (j === 0) {
+                        arrayMove(i, 0)
+                        break
+                    }
+                }
+            }
+        }
+
+        function insertionSortDate (sortTitle) {
+
+            for (let i = 1; i < displayList.length; i++) {
+
+                for (let j = i - 1; j >= 0; j--) {
+
+                    // Conversion of dates to numeric
+                    let iDate = Date.parse(displayList[i][sortTitle].slice(6, 10) + '-' + displayList[i][sortTitle].slice(3,5) + '-' + displayList[i][sortTitle].slice(0,2))
+                    let jDate = Date.parse(displayList[j][sortTitle].slice(6, 10) + '-' + displayList[j][sortTitle].slice(3,5) + '-' + displayList[j][sortTitle].slice(0,2))
+
+
+                    if (iDate > jDate) {
+                        // Edge case - if already sorted in place
+                        if (j === i - 1) {
+                            break
+                        }
+                        else {
+                            arrayMove(i, j+1)
+                            break
+                        }
+                    }
+
+                    // Edge case 
+                    if (j === 0) {
+                        arrayMove(i, 0)
+                        break
+                    }
+                }
+            }
+        }       
+
+        function sort (sortTitle) {
+            // No sorting for list types
+            if (['URL', 'Genres', 'Directors'].includes(sortTitle)) {
+                return
+            }
+
+            // String sorts
+            if (['Title', 'Title Type', 'Const_IMDB'].includes(sortTitle)) {
+                // Insertion sort for strings
+                insertionSortStrings(sortTitle)
+                return
+            }
+
+            const titles = ['Date Rated', 'Release Date']
+
+            // Number sort
+            if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(sortTitle)) {
+                insertionSortNum(sortTitle)
+                return
+            }
+
+            // Dates sort
+            if (['Date Rated', 'Release Date'].includes(sortTitle)) {
+                insertionSortDate(sortTitle)
+                return
+            }
+        }
+
+        sort(sortTitle.value)
+        updateTable()
+    })
+
+    sortAscDes.addEventListener('click', () => {
+        displayList.reverse()
+        updateTable()
+    })
+</script>
