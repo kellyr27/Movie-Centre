@@ -1,13 +1,30 @@
 <script>
     let displayList = <%- JSON.stringify(displayList.activeList) %>
+    let titles = <%- JSON.stringify(titles) %>
     let notDisplayList = []
-    let filtersSelected = []
+    let filtersSelected = {}
     let filterOperators = ['greater than', 'less than', 'equal to', 'not equal to', 'between', 'not between', 'greater than or equal to', 'less than or equal to']
     let filterOperatorSelector = document.getElementById('filterOperator')
     let filterOperator = document.getElementById('filterOperator')
     let filterSpan = document.getElementById('filterSpan')
     let filter = document.getElementById('filter')
     let filterButton = document.getElementById('filterButton')
+
+    // Creating object for existing filters
+    for (let prop of titles) {
+        filtersSelected[prop] = {}
+        for (let op of filterOperators) {
+            if (['between', 'not between'].includes(op)) {
+                filtersSelected[prop][op] = {
+                    lower: new Set(),
+                    upper: new Set()
+                }
+            }
+            else {
+                filtersSelected[prop][op] = new Set()
+            }
+        }
+    }
 
     // Creating the dropdown options for the filter
     for (let i = 0; i < filterOperators.length; i++) {
@@ -52,7 +69,7 @@
                 // If not empty
                 if (displayList[i][filter.value]) {
                     filterList.push(displayList[i][filter.value])
-                    }
+                }
             }
         }
 
@@ -60,7 +77,35 @@
         filterList = [...new Set(filterList)]
 
         // Sort the filter list
-        
+
+        // String filters
+        if (['Title', 'Title Type', 'Const_IMDB', 'Genres', 'Directors'].includes(filter.value)) {
+            filterList.sort((firstEl, secondEl) => {
+                if (firstEl.toLowerCase() < secondEl.toLowerCase()) {
+                    return -1
+                }
+                else {
+                    return 1
+                }
+            })
+        }
+
+        // Number filters
+        if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(filter.value)) {
+            filterList.sort((firstEl, secondEl) => {
+                return (firstEl - secondEl)
+            })
+        }
+
+        // Dates filters
+        if (['Date Rated', 'Release Date'].includes(filter.value)) {
+            filterList.sort((firstEl, secondEl) => {
+                let iDate = Date.parse(firstEl.slice(6, 10) + '-' + firstEl.slice(3,5) + '-' + firstEl.slice(0,2))
+                let jDate = Date.parse(secondEl.slice(6, 10) + '-' + secondEl.slice(3,5) + '-' + secondEl.slice(0,2))
+                return (iDate - jDate)
+            })
+        }
+
 
         // Creates the dropdown list
         for (let i = 0; i < filterList.length; i++) {
@@ -85,56 +130,270 @@
 
     }
 
+    // Checks if the filter selected was a duplicate
+    function duplicateCheckFilters() {
+        // Check if filter is a duplicate (not betweens)
+        if (filtersSelected[filter.value][filterOperator.value]) {
+            if (['between', 'not between'].includes(filterOperator.value)) {
+                if ((filtersSelected[filter.value][filterOperator.value].lower.has(filterSelector.value)) && (filtersSelected[filter.value][filterOperator.value].upper.has(filterSelector2.value))) {
+                    return false
+                }
+                else {
+                    filtersSelected[filter.value][filterOperator.value].lower.add(filterSelector.value)
+                    filtersSelected[filter.value][filterOperator.value].upper.has(filterSelector2.value)
+                    return true
+                }
+            }
+            else {
+                if (filtersSelected[filter.value][filterOperator.value].has(filterSelector.value)) {
+                    return false
+                }
+                else {
+                    filtersSelected[filter.value][filterOperator.value].add(filterSelector.value)
+                    return true
+                }
+            }
+        }
+    }
+
+    // Function adds filters
+    function addFilters() {
+        let tempDisplayList = []
+        
+        for (let i = 0; i < displayList.length; i++) {
+            switch (filterOperator.value) {
+                case 'greater than':
+                    // String case
+                    if (['Title', 'Title Type', 'Const_IMDB'].includes(filter.value)) {
+                        if (displayList[i][filter.value].toLowerCase() > filterSelector.value.toLowerCase()) {
+                            tempDisplayList.push(displayList[i])
+                        }
+                        else {
+                            notDisplayList.push(displayList[i])
+                        }
+                    }
+
+                    // Number case
+                    if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(filter.value)) {
+                        if (displayList[i][filter.value] > parseInt(filterSelector.value)) {
+                            tempDisplayList.push(displayList[i])
+                        }
+                        else {
+                            notDisplayList.push(displayList[i])
+                        }
+                    }
+
+                    // Date case
+                    if (['Date Rated', 'Release Date'].includes(filter.value)) {
+                        let iDate = Date.parse(displayList[i][filter.value].slice(6, 10) + '-' + displayList[i][filter.value].slice(3,5) + '-' + displayList[i][filter.value].slice(0,2))
+                        let jDate = Date.parse(filterSelector.value.slice(6, 10) + '-' + filterSelector.value.slice(3,5) + '-' + filterSelector.value.slice(0,2))
+
+                        if (iDate > jDate) {
+                                tempDisplayList.push(displayList[i])
+                        }
+                        else {
+                            notDisplayList.push(displayList[i])
+                        }
+
+                    }
+
+                    // Array case
+                    if (['Genres', 'Directors'].includes(filter.value)) {
+                        let found = false
+                        for (let sub of displayList[i][filter.value]) {
+                            if (sub.toLowerCase() > filterSelector.value.toLowerCase()) {
+                                tempDisplayList.push(displayList[i])
+                                found = true
+                                break
+                            }
+                            if (!found) {
+                                notDisplayList.push(displayList[i])
+                            }
+                        }
+                    }
+
+                    break
+                case 'less than':
+                    // String case
+                    if (['Title', 'Title Type', 'Const_IMDB'].includes(filter.value)) {
+                        if (displayList[i][filter.value].toLowerCase() < filterSelector.value.toLowerCase()) {
+                            tempDisplayList.push(displayList[i])
+                        }
+                        else {
+                            notDisplayList.push(displayList[i])
+                        }
+                    }
+
+                    // Number case
+                    if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(filter.value)) {
+                        if (displayList[i][filter.value] < parseInt(filterSelector.value)) {
+                            tempDisplayList.push(displayList[i])
+                        }
+                        else {
+                            notDisplayList.push(displayList[i])
+                        }
+                    }
+
+                    // Date case
+                    if (['Date Rated', 'Release Date'].includes(filter.value)) {
+                        let iDate = Date.parse(displayList[i][filter.value].slice(6, 10) + '-' + displayList[i][filter.value].slice(3,5) + '-' + displayList[i][filter.value].slice(0,2))
+                        let jDate = Date.parse(filterSelector.value.slice(6, 10) + '-' + filterSelector.value.slice(3,5) + '-' + filterSelector.value.slice(0,2))
+
+                        if (iDate < jDate) {
+                                tempDisplayList.push(displayList[i])
+                        }
+                        else {
+                            notDisplayList.push(displayList[i])
+                        }
+
+                    }
+
+                    // Array case
+                    if (['Genres', 'Directors'].includes(filter.value)) {
+                        let found = false
+                        for (let sub of displayList[i][filter.value]) {
+                            if (sub.toLowerCase() < filterSelector.value.toLowerCase()) {
+                                tempDisplayList.push(displayList[i])
+                                found = true
+                                break
+                            }
+                            if (!found) {
+                                notDisplayList.push(displayList[i])
+                            }
+                        }
+                    }
+
+                    break
+                case 'equal to':
+
+                    // String case
+                    if (['Title', 'Title Type', 'Const_IMDB'].includes(filter.value)) {
+                        if (displayList[i][filter.value].toLowerCase() === filterSelector.value.toLowerCase()) {
+                            tempDisplayList.push(displayList[i])
+                        }
+                        else {
+                            notDisplayList.push(displayList[i])
+                        }
+                    }
+
+                    // Number case
+                    if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(filter.value)) {
+                        if (displayList[i][filter.value] === parseInt(filterSelector.value)) {
+                            tempDisplayList.push(displayList[i])
+                        }
+                        else {
+                            notDisplayList.push(displayList[i])
+                        }
+                    }
+
+                    // Date case
+                    if (['Date Rated', 'Release Date'].includes(filter.value)) {
+                        let iDate = Date.parse(displayList[i][filter.value].slice(6, 10) + '-' + displayList[i][filter.value].slice(3,5) + '-' + displayList[i][filter.value].slice(0,2))
+                        let jDate = Date.parse(filterSelector.value.slice(6, 10) + '-' + filterSelector.value.slice(3,5) + '-' + filterSelector.value.slice(0,2))
+
+                        if (iDate === jDate) {
+                                tempDisplayList.push(displayList[i])
+                        }
+                        else {
+                            notDisplayList.push(displayList[i])
+                        }
+
+                    }
+
+                    // Array case
+                    if (['Genres', 'Directors'].includes(filter.value)) {
+                        let found = false
+                        for (let sub of displayList[i][filter.value]) {
+                            if (sub.toLowerCase() === filterSelector.value.toLowerCase()) {
+                                tempDisplayList.push(displayList[i])
+                                found = true
+                                break
+                            }
+                            if (!found) {
+                                notDisplayList.push(displayList[i])
+                            }
+                        }
+                    }
+                    
+                    break
+                case 'not equal to':
+                    // String case
+                    if (['Title', 'Title Type', 'Const_IMDB'].includes(filter.value)) {
+                        if (displayList[i][filter.value].toLowerCase() !== filterSelector.value.toLowerCase()) {
+                            tempDisplayList.push(displayList[i])
+                        }
+                        else {
+                            notDisplayList.push(displayList[i])
+                        }
+                    }
+
+                    // Number case
+                    if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(filter.value)) {
+                        if (displayList[i][filter.value] !== parseInt(filterSelector.value)) {
+                            tempDisplayList.push(displayList[i])
+                        }
+                        else {
+                            notDisplayList.push(displayList[i])
+                        }
+                    }
+
+                    // Date case
+                    if (['Date Rated', 'Release Date'].includes(filter.value)) {
+                        let iDate = Date.parse(displayList[i][filter.value].slice(6, 10) + '-' + displayList[i][filter.value].slice(3,5) + '-' + displayList[i][filter.value].slice(0,2))
+                        let jDate = Date.parse(filterSelector.value.slice(6, 10) + '-' + filterSelector.value.slice(3,5) + '-' + filterSelector.value.slice(0,2))
+
+                        if (iDate !== jDate) {
+                                tempDisplayList.push(displayList[i])
+                        }
+                        else {
+                            notDisplayList.push(displayList[i])
+                        }
+
+                    }
+
+                    // Array case
+                    if (['Genres', 'Directors'].includes(filter.value)) {
+                        let found = false
+                        for (let sub of displayList[i][filter.value]) {
+                            if (sub.toLowerCase() !== filterSelector.value.toLowerCase()) {
+                                tempDisplayList.push(displayList[i])
+                                found = true
+                                break
+                            }
+                            if (!found) {
+                                notDisplayList.push(displayList[i])
+                            }
+                        }
+                    }
+                    break
+                case 'between':
+                    break
+                case 'not between':
+                    break
+                case 'greater than or equal to':
+                    break
+                case 'less than or equal to':
+                    break
+                default:
+                    return
+            }
+        }
+
+        displayList = tempDisplayList
+    }
+
+    function removeFilters() {
+
+    }
+
 
     // When filter button by is clicked
     filterButton.addEventListener('click', () => {
-
-        // No sorting for list types
-        if (['URL'].includes(filter.value)) {
-            return
+        if (duplicateCheckFilters()) {
+            addFilters()
+            updateTable()
         }
-
-        // String filters
-        if (['Title', 'Title Type', 'Const_IMDB'].includes(filter.value)) {
-            
-        }
-
-        // Number filters
-        if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(filter.value)) {
-            
-        }
-
-        // Dates filters
-        if (['Date Rated', 'Release Date'].includes(filter.value)) {
-            
-        }
-
-        // List filters
-        if (['Genres', 'Directors'].includes(filter.value)) {
-            
-        }
-
-        updateTable()
     })
 
-    // switch (filterOperator.value) {
-    //         case 'greater than':
-    //             break
-    //         case 'less than':
-    //             break
-    //         case 'equal to':
-    //             break
-    //         case 'not equal to':
-    //             break
-    //         case 'between':
-    //             break
-    //         case 'not between':
-    //             break
-    //         case 'greater than or equal to':
-    //             break
-    //         case 'less than or equal to':
-    //             break
-    //         default:
-    //             return
-    //     }
+
 </script>
