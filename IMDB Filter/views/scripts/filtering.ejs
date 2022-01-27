@@ -1,9 +1,4 @@
-
-
-
 <script>
-    let displayList = <%- JSON.stringify(displayList.activeList) %>
-    let titles = <%- JSON.stringify(titles) %>
     let notDisplayList = []
     let filtersSelected = {}
     let filterOperators = ['greater than', 'less than', 'equal to', 'not equal to', 'between', 'not between', 'greater than or equal to', 'less than or equal to']
@@ -12,6 +7,8 @@
     let filterSpan = document.getElementById('filterSpan')
     let filter = document.getElementById('filter')
     let filterButton = document.getElementById('filterButton')
+    let filterClose = document.getElementById('filterClose')
+    let closeButtons = document.getElementsByName('filterCloseButton')
 
     // Creating object for existing filters
     for (let prop of titles) {
@@ -19,8 +16,8 @@
         for (let op of filterOperators) {
             if (['between', 'not between'].includes(op)) {
                 filtersSelected[prop][op] = {
-                    lower: new Set(),
-                    upper: new Set()
+                    lower: [],
+                    upper: []
                 }
             }
             else {
@@ -138,12 +135,12 @@
         // Check if filter is a duplicate (not betweens)
         if (filtersSelected[filter.value][filterOperator.value]) {
             if (['between', 'not between'].includes(filterOperator.value)) {
-                if ((filtersSelected[filter.value][filterOperator.value].lower.has(filterSelector.value)) && (filtersSelected[filter.value][filterOperator.value].upper.has(filterSelector2.value))) {
+                if ((filtersSelected[filter.value][filterOperator.value].lower.includes(filterSelector.value)) && (filtersSelected[filter.value][filterOperator.value].upper.includes(filterSelector2.value))) {
                     return false
                 }
                 else {
-                    filtersSelected[filter.value][filterOperator.value].lower.add(filterSelector.value)
-                    filtersSelected[filter.value][filterOperator.value].upper.has(filterSelector2.value)
+                    filtersSelected[filter.value][filterOperator.value].lower.push(filterSelector.value)
+                    filtersSelected[filter.value][filterOperator.value].upper.push(filterSelector2.value)
                     return true
                 }
             }
@@ -165,7 +162,9 @@
         
         for (let i = 0; i < displayList.length; i++) {
             switch (filterOperator.value) {
-                case 'greater than':
+
+                // If greater than is selected (>)
+                case filterOperators[0]:
                     // String case
                     if (['Title', 'Title Type', 'Const_IMDB'].includes(filter.value)) {
                         if (displayList[i][filter.value].toLowerCase() > filterSelector.value.toLowerCase()) {
@@ -216,7 +215,9 @@
                     }
 
                     break
-                case 'less than':
+
+                // If less than is selected (<)
+                case filterOperators[1]:
                     // String case
                     if (['Title', 'Title Type', 'Const_IMDB'].includes(filter.value)) {
                         if (displayList[i][filter.value].toLowerCase() < filterSelector.value.toLowerCase()) {
@@ -267,7 +268,9 @@
                     }
 
                     break
-                case 'equal to':
+
+                // If less than is selected (==)
+                case filterOperators[2]:
 
                     // String case
                     if (['Title', 'Title Type', 'Const_IMDB'].includes(filter.value)) {
@@ -584,15 +587,65 @@
         displayList = tempDisplayList
     }
 
-    function removeFilters() {
+    function removeFilters(prop, op, fil) {
+        console.log("JFHSHL")
+        console.log(prop)
+        console.log(op)
+        console.log(fil)
 
+        if (['between', 'not between'].includes(op)) {
+
+        }
+        else {
+            
+        }
     }
 
+    function displayFilters() {
+
+        filterClose.innerHTML = ""
+
+        for (let prop in filtersSelected) {
+            for (let op in filtersSelected[prop]) {
+                if ((['between', 'not between'].includes(op))) {
+                    for (let i = 0; i < filtersSelected[prop][op]['lower'].length; i++) {
+                        let spanFilter = document.createElement("span")
+                        spanFilter.innerHTML = prop + ':' + op + ':' + filtersSelected[prop][op].lower[i] + ',' + filtersSelected[prop][op].upper[i]
+
+                        let closeButton = document.createElement("button")
+                        closeButton.innerHTML = '&#10006'
+                        closeButton.name = 'filterCloseButton' 
+                        closeButton.addEventListener('click', (evt) => {
+                            removeFilters(prop, op, i)
+                        })
+                        spanFilter.appendChild(closeButton)
+                        filterClose.appendChild(spanFilter)
+                    }
+                }
+                else {
+                    for (let fil of filtersSelected[prop][op]) {
+                        let spanFilter = document.createElement("span")
+                        spanFilter.innerHTML = prop + ':' + op + ':' + fil
+
+                        let closeButton = document.createElement("button")
+                        closeButton.innerHTML = '&#10006'
+                        closeButton.name = 'filterCloseButton'
+                        closeButton.addEventListener('click', (evt) => {
+                            removeFilters(prop, op, fil)
+                        })
+                        spanFilter.appendChild(closeButton)
+                        filterClose.appendChild(spanFilter)
+                    }
+                }
+            }
+        }
+    }
 
     // When filter button by is clicked
     filterButton.addEventListener('click', () => {
         if (duplicateCheckFilters()) {
             addFilters()
+            displayFilters()
             updateTable()
         }
     })

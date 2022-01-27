@@ -43,6 +43,8 @@
         <button id="filterButton">Filter</button>
     </div>
 
+    <div id="filterClose">
+    </div>
     <!-- Clear filters -->
     <form method="get" action="/master">
         <button>Clear All</button>
@@ -63,6 +65,7 @@
     </tbody>
 </table>
 
+<%- include("./scripts/searchvariables") %> 
 <%- include("./scripts/sorting") %> 
 <%- include("./scripts/filtering") %> 
 <script type='text/javascript'>
@@ -101,6 +104,8 @@
             tableDisplay.appendChild(newTr)
         }
     }
+
+    // 
 
     // Onload functions
     window.onload = function () {

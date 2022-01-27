@@ -2,7 +2,7 @@ const {Trie} = require('./trie.js')                    // Functions to create an
 
 class MovieList {
     constructor() {
-        this.masterList
+        this.masterList = []
 
         this.activeList = []
         this.activeTrie
