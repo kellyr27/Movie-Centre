@@ -1,16 +1,6 @@
 <% layout('./layouts/boilerplate') %>
 <h4><i>Search Results</i></h4>
-<ul>
-    <% for (let i = 0; i < searchResults.length; i++) { %>
-        <li><%= searchResults[i]['Title'] %>
-            <form method="post" id="movieSelector">
-                <input type="hidden" name="currentTypedListName">
-                <button name="addID" value="<%= searchResults[i]['Const_IMDB'] %>">Add To List</button>
-            </form>
-        </li>
-    <% } %>  
-</ul>
-
+<%- include("../partials/searchbar") %> 
 
 <h1>Add New List</h1>
 <form action="/created_lists" method="post" id="titleForm">
@@ -20,8 +10,8 @@
     <ol>
         <% for (let movie of currentCreatedList) { %>
             <li><%= movie['Title'] %>, <%= movie['Year'] %></li>
-            <button>&#x2191</button>
-            <button>&#x2193</button>
+            <button name="moveUp" value="<%= movie['Title'] %>">&#x2191</button>
+            <button name="moveDown" value="<%= movie['Title'] %>">&#x2193</button>
         <% } %>     
     </ol>
 
