@@ -19,8 +19,8 @@ app.use(fileUpload())
 app.use(express.urlencoded({ extended: true }))             // To parse form data in POST request body
 app.use(express.json())                                     // To parse incoming JSON in POST request body
 app.use(methodOverride('_method'))                          // To 'fake' put/patch/delete requests
-app.set('views', path.join(__dirname, 'views'))             // Views folder
 app.set('view engine', 'ejs')                               // EJS set up
+app.set('views', path.join(__dirname, 'views'))             // Views folder
 app.engine('ejs', ejsMate)                                  // Use ejsMate with express
 
 // Constants
@@ -34,7 +34,6 @@ let masterList = []                                         // List of all movie
 let createdLists = []                                       // List of all lists created
 let searchResults = []                                                                                  // DEFUNCT - TO REMOVE
 let currentCreatedList = []
-let currentTypedListName = []
 let currentSearchSortFilters = {
     search: [],
     sort: [],
@@ -182,23 +181,15 @@ app.get('/movies/:str', (req, res) => {
 
 // -------------------------------/CREATED_LISTS-----------------------------------------------------------------------------------------
 
+
 app.get('/created_lists', (req, res) => {
+    console.log("GET - /created_lists");
     res.render('./created_lists/index', {displayList: createdLists})
 })
 
 app.get('/created_lists/new', (req, res) => {
-    currentCreatedList = []
-    res.render('./created_lists/new', {displayList: masterMovieList, currentCreatedList, currentTypedListName, titles})
-    console.log();
-})
-
-app.post('/created_lists/new', (req, res) => {
-    const { addID, currentTypedListName } = req.body
-    let foundMovie = searchResults.find(m => m['Const_IMDB'] === addID)
-
-    // Checking for duplicates
-    addMovieToCurrentList(currentCreatedList, foundMovie)
-    res.render('./created_lists/new', {searchResults: masterMovieList.activeList, currentCreatedList, currentTypedListName})
+    console.log("GET REQUEST - /created_lists/new")
+    res.render('./created_lists/new', {displayList: masterMovieList, currentCreatedList, titles})
 })
 
 // Show selected list details
@@ -231,14 +222,23 @@ app.delete('/created_lists/:id', (req, res) => {
     res.redirect('/created_lists')
 })
 
-// Request to create a new list
 app.post('/created_lists', (req, res) => {
-    const {listName} = req.body
-    let newList = {listName: listName, id: uuid(), movies: currentCreatedList}
+    console.log("POST - /created_lists");
+    let newList = {listName: req.body.listName, id: uuid(), movies: JSON.parse(req.body.movies)}
     createdLists.push(newList)
-    currentCreatedList = []
     res.redirect('/created_lists')
 })
+
+
+// Request to create a new list
+// app.post('/created_lists', (req, res) => {
+//     console.log("POST - CREATED_LIST");
+//     const {listName} = req.body
+//     let newList = {listName: listName, id: uuid(), movies: currentCreatedList}
+//     createdLists.push(newList)
+//     currentCreatedList = []
+//     res.redirect('/created_lists')
+// })
 
 // -------------------------------SERVER/START-UP-----------------------------------------------------------------------------------------
 

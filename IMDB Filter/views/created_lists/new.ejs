@@ -1,16 +1,21 @@
 <% layout('./layouts/boilerplate') %>
 
 <h1>Add New List</h1>
-<form action="/created_lists" method="post" id="titleForm">
-    <label for="listName">List Name: </label>
-    <input type="text" name="listName" id="inputTitle" value="<%= currentTypedListName %>" required>
-    <button>Submit</button>
-</form>
-<div>
-    <ol id="showList">
 
-    </ol>
+<form action="/created_lists" method="post">
+<!-- Inputing the list name -->
+<div>
+    <label for="listName">List Name: </label>
+    <input type="text" name="listName" id="inputTitle" required>
+    <input type="hidden" name="listMovies" id="listMovies">
 </div>
+
+<!-- Displaying the created list -->
+<div>
+    <ol id="showList"></ol>
+</div>
+
+<!-- Add movie datalist -->
 <div>
     <label for="addMovie">Add movie: </label>
     <input list="movieList" id="addMovie" name="addMovie">
@@ -19,21 +24,33 @@
             <option value="<%= displayList.activeList[i]['Title'] %>, <%= displayList.activeList[i]['Year'] %>">
         <% } %> 
     </datalist>
-    <button id="addMovieButton">+</button>
+    <input id="addMovieButton" type="button" value="+">
 </div>
+
+<!-- Submitting the post request -->
+<div>
+    <input type="hidden" name="movies" id="movies">
+    <button id="submit">Submit</button>
+</div>
+</form>
 <a href="/created_lists">Back to Created Lists</a>
 
+
+<!-- Script -->
 <%- include("../scripts/searchvariables") %> 
 <script>
     let createdList = []
     let addMovie = document.getElementById("addMovieButton")
     let showList = document.getElementById("showList")
+    let submit = document.getElementById("submit")
+    let movies = document.getElementById("movies")
 
     // Add movie from datalist to created List
     addMovie.addEventListener('click', (e) => {
         let currentSelectedMovie = document.getElementById("addMovie")
         currentSelectedMovieTitle = currentSelectedMovie.value.slice(0,-6)
         currentSelectedMovieYear = parseInt(currentSelectedMovie.value.slice(-5))
+        let listMovies = document.getElementById('listMovies')
         let addedMovie
 
         // Find the selected movie from the datalist and seperate
@@ -58,6 +75,7 @@
             createdList.push(addedMovie)
         }
 
+        currentSelectedMovie.value = ""
         updateList()
     })
 
@@ -123,6 +141,9 @@
             showList.appendChild(li)
             
         }
+
+        // Update the POST request
+        movies.value = JSON.stringify(createdList)
     }
 
 </script>
