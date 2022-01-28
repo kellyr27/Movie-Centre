@@ -183,13 +183,11 @@ app.get('/movies/:str', (req, res) => {
 
 
 app.get('/created_lists', (req, res) => {
-    console.log("GET - /created_lists");
     res.render('./created_lists/index', {displayList: createdLists})
 })
 
 app.get('/created_lists/new', (req, res) => {
-    console.log("GET REQUEST - /created_lists/new")
-    res.render('./created_lists/new', {displayList: masterMovieList, currentCreatedList, titles})
+    res.render('./created_lists/new', {displayList: masterMovieList, titles})
 })
 
 // Show selected list details
@@ -203,15 +201,21 @@ app.get('/created_lists/:id', (req, res) => {
 app.get('/created_lists/:id/edit', (req, res) => {
     const { id } = req.params
     const selectedList = createdLists.find(m => m.id === id)
-    res.render('./created_lists/edit', {selectedList})
+    res.render('./created_lists/edit', {selectedList, displayList: masterMovieList, titles})
 })
 
 // Request to edit selected list
 app.patch('/created_lists/:id', (req, res) => {
     const { id } = req.params
-    const newListName = req.body.editName
+
+    // Updated parameters
+    const newListName = req.body.listName
+    const newMovies = JSON.parse(req.body.movies)
+
     const selectedList = createdLists.find(m => m.id === id)
     selectedList.listName = newListName
+    selectedList.movies = newMovies
+    
     res.redirect('/created_lists')
 })
 
@@ -223,7 +227,6 @@ app.delete('/created_lists/:id', (req, res) => {
 })
 
 app.post('/created_lists', (req, res) => {
-    console.log("POST - /created_lists");
     let newList = {listName: req.body.listName, id: uuid(), movies: JSON.parse(req.body.movies)}
     createdLists.push(newList)
     res.redirect('/created_lists')

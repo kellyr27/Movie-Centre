@@ -101,6 +101,9 @@
         else if (direction === 'd') {
             [createdList[foundIndex], createdList[foundIndex+1]] = [createdList[foundIndex+1], createdList[foundIndex]]
         }
+        else if (direction === 'r') {
+            createdList.splice(foundIndex, 1)
+        }
 
         updateList()
     }
@@ -137,7 +140,16 @@
                 })
                 li.appendChild(downButton)
             }
-            
+
+            // Add the remove button
+            let removeButton = document.createElement("button")
+            removeButton.innerHTML = "&#10006"
+            removeButton.name = "r-" + createdList[i]["Const_IMDB"]
+            removeButton.addEventListener('click', (e) => {
+                moveList(e.target.name)
+            })
+            li.appendChild(removeButton)
+
             showList.appendChild(li)
             
         }
