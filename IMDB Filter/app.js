@@ -157,7 +157,6 @@ app.get('/movies', (req, res) => {
     }
 
     masterMovieList.reset()
-    console.log(masterMovieList.activeList);
     res.render('movies', { displayList: masterMovieList, titles, isMasterList: true})
 })
 
