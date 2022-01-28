@@ -4,31 +4,125 @@
 <form action="/created_lists" method="post" id="titleForm">
     <label for="listName">List Name: </label>
     <input type="text" name="listName" id="inputTitle" value="<%= currentTypedListName %>" required>
-
-    <ol>
-        <% for (let movie of currentCreatedList) { %>
-            <li><%= movie['Title'] %>, <%= movie['Year'] %></li>
-            <button name="moveUp" value="<%= movie['Title'] %>">&#x2191</button>
-            <button name="moveDown" value="<%= movie['Title'] %>">&#x2193</button>
-        <% } %>     
-    </ol>
-
     <button>Submit</button>
 </form>
+<div>
+    <ol id="showList">
+
+    </ol>
+</div>
+<div>
+    <label for="addMovie">Add movie: </label>
+    <input list="movieList" id="addMovie" name="addMovie">
+    <datalist id="movieList">
+        <% for (let i = 0; i < displayList.activeList.length; i++) { %> 
+            <option value="<%= displayList.activeList[i]['Title'] %>, <%= displayList.activeList[i]['Year'] %>">
+        <% } %> 
+    </datalist>
+    <button id="addMovieButton">+</button>
+</div>
 <a href="/created_lists">Back to Created Lists</a>
+
+<%- include("../scripts/searchvariables") %> 
 <script>
-    let inputTitle = document.getElementById("inputTitle")
-    let titleForm = document.querySelector("#titleForm")
-    let name = document.getElementsByName("currentTypedListName")
+    let createdList = []
+    let addMovie = document.getElementById("addMovieButton")
+    let showList = document.getElementById("showList")
 
-    inputTitle.oninput = handleInput2
-    let currentTitle = ""
+    // Add movie from datalist to created List
+    addMovie.addEventListener('click', (e) => {
+        let currentSelectedMovie = document.getElementById("addMovie")
+        currentSelectedMovieTitle = currentSelectedMovie.value.slice(0,-6)
+        currentSelectedMovieYear = parseInt(currentSelectedMovie.value.slice(-5))
+        let addedMovie
 
-    function handleInput2(e) {
-        currentTitle = e.target.value
-        for (let el of name) {
-            el.value = currentTitle
+        // Find the selected movie from the datalist and seperate
+        for (let i = 0; i < displayList.length; i++) {
+            if ((currentSelectedMovieTitle === displayList[i]['Title']) && (currentSelectedMovieYear === displayList[i]['Year'])) {
+                addedMovie = displayList[i]
+                break
+            }
+        }
+
+        // Check whether it is already in the list (compare Const_IMDBs)
+        let isDuplicate = false
+        for (let i = 0; i < createdList.length; i++) {
+            if (addedMovie['Const_IMDB'] === createdList[i]['Const_IMDB']) {
+                isDuplicate = true
+                break
+            }
+        }
+
+        // Add to created list if not a duplicate
+        if (!isDuplicate) {
+            createdList.push(addedMovie)
+        }
+
+        updateList()
+    })
+
+    // Move selected movie up/down in the list
+    function moveList(name) {
+        let direction = name.slice(0,1)
+        let constID = name.slice(2)
+
+        // Find index of the movie
+        let foundIndex
+        for (let i = 0; i < createdList.length; i++) {
+            // Isolate the found index
+            if (createdList[i]['Const_IMDB'] === constID) {
+                foundIndex = i
+                break
+            }
+        }
+
+        // Swap the array elements
+        if (direction === 'u') {
+            [createdList[foundIndex], createdList[foundIndex-1]] = [createdList[foundIndex-1], createdList[foundIndex]]
+        }
+        else if (direction === 'd') {
+            [createdList[foundIndex], createdList[foundIndex+1]] = [createdList[foundIndex+1], createdList[foundIndex]]
+        }
+
+        updateList()
+    }
+
+
+    // Update the display list
+    function updateList() {
+
+        showList.innerHTML = ""
+
+        // Iterate through created list and display
+        for (let i = 0; i < createdList.length; i++) {
+            let li = document.createElement("li")
+            li.innerHTML = createdList[i]["Title"] + ", " + createdList[i]["Year"]
+
+            // Up arrows for every move except the first
+            if (i !== 0) {
+                let upButton = document.createElement("button")
+                upButton.innerHTML = "&#x2191"
+                upButton.name = "u-" + createdList[i]["Const_IMDB"]
+                upButton.addEventListener('click', (e) => {
+                    moveList(e.target.name)
+                })
+                li.appendChild(upButton)
+            }
+            
+            // Down arrows for every move except the last element
+            if (i !== createdList.length-1) {
+                let downButton = document.createElement("button")
+                downButton.innerHTML = "&#x2193"
+                downButton.name = "d-" + createdList[i]["Const_IMDB"]
+                downButton.addEventListener('click', (e) => {
+                    moveList(e.target.name)
+                })
+                li.appendChild(downButton)
+            }
+            
+            showList.appendChild(li)
+            
         }
     }
-    
+
 </script>

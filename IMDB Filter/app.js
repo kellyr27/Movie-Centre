@@ -189,11 +189,7 @@ app.get('/created_lists', (req, res) => {
 app.get('/created_lists/new', (req, res) => {
     currentCreatedList = []
     res.render('./created_lists/new', {displayList: masterMovieList, currentCreatedList, currentTypedListName, titles})
-})
-
-app.get('/created_lists/new/search', (req, res) => {
-    const {currentTypedListName} = req.body
-    res.render('./created_lists/new', {searchResults: masterMovieList.activeList, currentCreatedList, currentTypedListName})
+    console.log();
 })
 
 app.post('/created_lists/new', (req, res) => {
