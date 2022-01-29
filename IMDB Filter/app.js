@@ -33,39 +33,12 @@ let searchTrie                                              // Trie of the maste
 let masterList = []                                         // List of all movies uploaded              // DEFUNCT - TO REMOVE --- = masterMoveList.activeList
 let createdLists = []                                       // List of all lists created
 let searchResults = []                                                                                  // DEFUNCT - TO REMOVE
-let currentCreatedList = []
-let currentSearchSortFilters = {
-    search: [],
-    sort: [],
-    filters: []
-}
-// Functions
 
-// Removes duplicates
-function addMovieToCurrentList(currentList, addMovie) {
-    let found = false
-
-    for (let i = 0; i < currentList.length; i++) {
-        if (currentList[i]['Const_IMDB'] === addMovie['Const_IMDB']) {
-            found = true
-        }
-    }
-
-    if (!found) {
-        currentList.push(addMovie)
-    }
-}
-
-function getRandomIntInclusive(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
-}
 
 // -------------------------------/UPLOAD-----------------------------------------------------------------------------------------
 
 app.get('/upload', (req, res) => {
-    res.render('upload')
+    res.render('upload', {pageTitle: 'Upload'})
 })
 
 app.post('/upload', function(req, res) {
@@ -121,6 +94,13 @@ app.post('/upload-test-data', function(req, res) {
     res.redirect('/movies')
 
     setTimeout(() => {
+
+        function getRandomIntInclusive(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min + 1) + min)   //The maximum is inclusive and the minimum is inclusive
+        }
+
         masterMovieList.create(csv([], true, []))
 
         // DEFUNCT - 3 LINES
@@ -156,7 +136,7 @@ app.get('/movies', (req, res) => {
     }
 
     masterMovieList.reset()
-    res.render('movies', { displayList: masterMovieList, titles, isMasterList: true})
+    res.render('movies', { displayList: masterMovieList, titles, isMasterList: true, pageTitle: 'Movies List'})
 })
 
 // Show movie details
@@ -171,11 +151,11 @@ app.get('/movies/:str', (req, res) => {
         // masterMovieList.queryChange(currentSearchSortFilters)
         masterMovieList.search(req.query['q'])
 
-        res.render('movies', { displayList: masterMovieList, titles, isMasterList: false})
+        res.render('movies', { displayList: masterMovieList, titles, isMasterList: false, pageTitle: 'Search ' + req.query['q']})
     }
     else {
         const movie = masterList.find(m => m["Const_IMDB"] === str)
-        res.render('show', {movie, titles, displayList: createdLists})
+        res.render('show', {movie, titles, displayList: createdLists, pageTitle: movie.Title})
     }
 })
 
@@ -183,25 +163,25 @@ app.get('/movies/:str', (req, res) => {
 
 
 app.get('/created_lists', (req, res) => {
-    res.render('./created_lists/index', {displayList: createdLists})
+    res.render('./created_lists/index', {displayList: createdLists, pageTitle: 'Created Lists'})
 })
 
 app.get('/created_lists/new', (req, res) => {
-    res.render('./created_lists/new', {displayList: masterMovieList, titles})
+    res.render('./created_lists/new', {displayList: masterMovieList, titles, pageTitle: 'Create new List'})
 })
 
 // Show selected list details
 app.get('/created_lists/:id', (req, res) => {
     const { id } = req.params
     const selectedList = createdLists.find(m => m["id"] === id)
-    res.render('./created_lists/show', {selectedList})
+    res.render('./created_lists/show', {selectedList, pageTitle: selectedList.listName})
 })
 
 // Edit selected list page
 app.get('/created_lists/:id/edit', (req, res) => {
     const { id } = req.params
     const selectedList = createdLists.find(m => m.id === id)
-    res.render('./created_lists/edit', {selectedList, displayList: masterMovieList, titles})
+    res.render('./created_lists/edit', {selectedList, displayList: masterMovieList, titles, pageTitle: 'Edit List -' + selectedList.listName })
 })
 
 // Request to edit selected list
