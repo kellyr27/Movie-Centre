@@ -129,12 +129,6 @@ app.post('/upload-test-data', function(req, res) {
 
 app.get('/movies', (req, res) => {
 
-    currentSearchSortFilters = {
-        search: [],
-        sort: [],
-        filters: []
-    }
-
     masterMovieList.reset()
     res.render('movies', { displayList: masterMovieList, titles, isMasterList: true, pageTitle: 'Movies List'})
 })
