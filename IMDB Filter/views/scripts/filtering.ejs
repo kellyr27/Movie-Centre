@@ -1,6 +1,5 @@
 <script>
     let notDisplayList = []
-    let filtersSelected = {}
     let filterOperators = ['greater than', 'less than', 'equal to', 'not equal to', 'between', 'not between', 'greater than or equal to', 'less than or equal to']
     let filterOperatorSelector = document.getElementById('filterOperator')
     let filterOperator = document.getElementById('filterOperator')
@@ -11,6 +10,7 @@
     let closeButtons = document.getElementsByName('filterCloseButton')
 
     // Creating object for existing filters
+    let filtersSelected = {}
     for (let prop of titles) {
         filtersSelected[prop] = {}
         for (let op of filterOperators) {
@@ -28,12 +28,15 @@
 
     // Creating the dropdown options for the filter
     for (let i = 0; i < filterOperators.length; i++) {
+
+        // Creates a new option for every operator
         let newSelector = document.createElement('option')
         newSelector.value = filterOperators[i]
         newSelector.innerHTML = filterOperators[i]
         filterOperatorSelector.appendChild(newSelector)
     }
 
+    // Upates the drop down filters
     function updateDropdownsFilters() {
         while (filterSpan.firstChild) {
             filterSpan.removeChild(filterSpan.firstChild)
@@ -124,13 +127,7 @@
     filter.addEventListener('change', updateDropdownsFilters)
     window.onload = updateDropdownsFilters()
 
-    function filterDisplay() {
-
-        let tempDisplay = []
-
-    }
-
-    // Checks if the filter selected was a duplicate
+    // Checks if the filter selected was a duplicate. If unique adds the filter and
     function duplicateCheckFilters() {
         // Check if filter is a duplicate (not betweens)
         if (filtersSelected[filter.value][filterOperator.value]) {
@@ -156,877 +153,34 @@
         }
     }
 
-    // Function adds filters
+    // Adds the selected filter, adjusts the display arrays
     function addFilters() {
-        let tempDisplayList = []
-        
-        for (let i = 0; i < displayList.length; i++) {
-            switch (filterOperator.value) {
 
-                // If greater than is selected (>)
-                case filterOperators[0]:
-                    // String case
-                    if (['Title', 'Title Type', 'Const_IMDB'].includes(filter.value)) {
-                        if (displayList[i][filter.value].toLowerCase() > filterSelector.value.toLowerCase()) {
-                            tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-                    }
+        // Adjusts the display/not displayed arrays
 
-                    // Number case
-                    if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(filter.value)) {
-                        if (displayList[i][filter.value] > parseInt(filterSelector.value)) {
-                            tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-                    }
-
-                    // Date case
-                    if (['Date Rated', 'Release Date'].includes(filter.value)) {
-                        let iDate = Date.parse(displayList[i][filter.value].slice(6, 10) + '-' + displayList[i][filter.value].slice(3,5) + '-' + displayList[i][filter.value].slice(0,2))
-                        let jDate = Date.parse(filterSelector.value.slice(6, 10) + '-' + filterSelector.value.slice(3,5) + '-' + filterSelector.value.slice(0,2))
-
-                        if (iDate > jDate) {
-                                tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-
-                    }
-
-                    // Array case
-                    if (['Genres', 'Directors'].includes(filter.value)) {
-                        let found = false
-                        for (let sub of displayList[i][filter.value]) {
-                            if (sub.toLowerCase() > filterSelector.value.toLowerCase()) {
-                                tempDisplayList.push(displayList[i])
-                                found = true
-                                break
-                            }
-                            if (!found) {
-                                notDisplayList.push(displayList[i])
-                            }
-                        }
-                    }
-
-                    break
-
-                // If less than is selected (<)
-                case filterOperators[1]:
-                    // String case
-                    if (['Title', 'Title Type', 'Const_IMDB'].includes(filter.value)) {
-                        if (displayList[i][filter.value].toLowerCase() < filterSelector.value.toLowerCase()) {
-                            tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-                    }
-
-                    // Number case
-                    if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(filter.value)) {
-                        if (displayList[i][filter.value] < parseInt(filterSelector.value)) {
-                            tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-                    }
-
-                    // Date case
-                    if (['Date Rated', 'Release Date'].includes(filter.value)) {
-                        let iDate = Date.parse(displayList[i][filter.value].slice(6, 10) + '-' + displayList[i][filter.value].slice(3,5) + '-' + displayList[i][filter.value].slice(0,2))
-                        let jDate = Date.parse(filterSelector.value.slice(6, 10) + '-' + filterSelector.value.slice(3,5) + '-' + filterSelector.value.slice(0,2))
-
-                        if (iDate < jDate) {
-                                tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-
-                    }
-
-                    // Array case
-                    if (['Genres', 'Directors'].includes(filter.value)) {
-                        let found = false
-                        for (let sub of displayList[i][filter.value]) {
-                            if (sub.toLowerCase() < filterSelector.value.toLowerCase()) {
-                                tempDisplayList.push(displayList[i])
-                                found = true
-                                break
-                            }
-                            if (!found) {
-                                notDisplayList.push(displayList[i])
-                            }
-                        }
-                    }
-
-                    break
-
-                // If less than is selected (==)
-                case filterOperators[2]:
-
-                    // String case
-                    if (['Title', 'Title Type', 'Const_IMDB'].includes(filter.value)) {
-                        if (displayList[i][filter.value].toLowerCase() === filterSelector.value.toLowerCase()) {
-                            tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-                    }
-
-                    // Number case
-                    if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(filter.value)) {
-                        if (displayList[i][filter.value] === parseInt(filterSelector.value)) {
-                            tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-                    }
-
-                    // Date case
-                    if (['Date Rated', 'Release Date'].includes(filter.value)) {
-                        let iDate = Date.parse(displayList[i][filter.value].slice(6, 10) + '-' + displayList[i][filter.value].slice(3,5) + '-' + displayList[i][filter.value].slice(0,2))
-                        let jDate = Date.parse(filterSelector.value.slice(6, 10) + '-' + filterSelector.value.slice(3,5) + '-' + filterSelector.value.slice(0,2))
-
-                        if (iDate === jDate) {
-                                tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-
-                    }
-
-                    // Array case
-                    if (['Genres', 'Directors'].includes(filter.value)) {
-                        let found = false
-                        for (let sub of displayList[i][filter.value]) {
-                            if (sub.toLowerCase() === filterSelector.value.toLowerCase()) {
-                                tempDisplayList.push(displayList[i])
-                                found = true
-                                break
-                            }
-                            if (!found) {
-                                notDisplayList.push(displayList[i])
-                            }
-                        }
-                    }
-                    
-                    break
-                case 'not equal to':
-                    // String case
-                    if (['Title', 'Title Type', 'Const_IMDB'].includes(filter.value)) {
-                        if (displayList[i][filter.value].toLowerCase() !== filterSelector.value.toLowerCase()) {
-                            tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-                    }
-
-                    // Number case
-                    if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(filter.value)) {
-                        if (displayList[i][filter.value] !== parseInt(filterSelector.value)) {
-                            tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-                    }
-
-                    // Date case
-                    if (['Date Rated', 'Release Date'].includes(filter.value)) {
-                        let iDate = Date.parse(displayList[i][filter.value].slice(6, 10) + '-' + displayList[i][filter.value].slice(3,5) + '-' + displayList[i][filter.value].slice(0,2))
-                        let jDate = Date.parse(filterSelector.value.slice(6, 10) + '-' + filterSelector.value.slice(3,5) + '-' + filterSelector.value.slice(0,2))
-
-                        if (iDate !== jDate) {
-                            tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-
-                    }
-
-                    // Array case
-                    if (['Genres', 'Directors'].includes(filter.value)) {
-                        let found = false
-                        for (let sub of displayList[i][filter.value]) {
-                            if (sub.toLowerCase() === filterSelector.value.toLowerCase()) {
-                                found = true
-                                break
-                            }
-                        }
-                        if (found) {
-                            notDisplayList.push(displayList[i])
-                        }
-                        else {
-                            tempDisplayList.push(displayList[i])
-                        }
-                    }
-                    break
-                case 'between':
-                    // String case
-                    if (['Title', 'Title Type', 'Const_IMDB'].includes(filter.value)) {
-                        if ((displayList[i][filter.value].toLowerCase() >= filterSelector.value.toLowerCase()) && (displayList[i][filter.value].toLowerCase() <= filterSelector2.value.toLowerCase())) {
-                            tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-                    }
-
-                    // Number case
-                    if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(filter.value)) {
-                        if ((displayList[i][filter.value] >= parseInt(filterSelector.value)) && (displayList[i][filter.value] <= parseInt(filterSelector2.value))) {
-                            tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-                    }
-
-                    // Date case
-                    if (['Date Rated', 'Release Date'].includes(filter.value)) {
-                        let iDate = Date.parse(displayList[i][filter.value].slice(6, 10) + '-' + displayList[i][filter.value].slice(3,5) + '-' + displayList[i][filter.value].slice(0,2))
-                        let jDate = Date.parse(filterSelector.value.slice(6, 10) + '-' + filterSelector.value.slice(3,5) + '-' + filterSelector.value.slice(0,2))
-                        let jDate2 = Date.parse(filterSelector2.value.slice(6, 10) + '-' + filterSelector2.value.slice(3,5) + '-' + filterSelector2.value.slice(0,2))
-
-                        if ((iDate >= jDate) && (iDate <= jDate2)) {
-                                tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-
-                    }
-
-                    // Array case
-                    if (['Genres', 'Directors'].includes(filter.value)) {
-                        let found = false
-                        for (let sub of displayList[i][filter.value]) {
-                            if ((sub.toLowerCase() >= filterSelector.value.toLowerCase()) && (sub.toLowerCase() >= filterSelector2.value.toLowerCase())) {
-                                tempDisplayList.push(displayList[i])
-                                found = true
-                                break
-                            }
-                            if (!found) {
-                                notDisplayList.push(displayList[i])
-                            }
-                        }
-                    }
-
-                    break
-                case 'not between':
-                    // String case
-                    if (['Title', 'Title Type', 'Const_IMDB'].includes(filter.value)) {
-                        if (!((displayList[i][filter.value].toLowerCase() >= filterSelector.value.toLowerCase()) && (displayList[i][filter.value].toLowerCase() <= filterSelector2.value.toLowerCase()))) {
-                            tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-                    }
-
-                    // Number case
-                    if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(filter.value)) {
-                        if (!((displayList[i][filter.value] >= parseInt(filterSelector.value)) && (displayList[i][filter.value] <= parseInt(filterSelector2.value)))) {
-                            tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-                    }
-
-                    // Date case
-                    if (['Date Rated', 'Release Date'].includes(filter.value)) {
-                        let iDate = Date.parse(displayList[i][filter.value].slice(6, 10) + '-' + displayList[i][filter.value].slice(3,5) + '-' + displayList[i][filter.value].slice(0,2))
-                        let jDate = Date.parse(filterSelector.value.slice(6, 10) + '-' + filterSelector.value.slice(3,5) + '-' + filterSelector.value.slice(0,2))
-                        let jDate2 = Date.parse(filterSelector2.value.slice(6, 10) + '-' + filterSelector2.value.slice(3,5) + '-' + filterSelector2.value.slice(0,2))
-
-                        if (!((iDate >= jDate) && (iDate <= jDate2))) {
-                                tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-
-                    }
-
-                    // Array case
-                    if (['Genres', 'Directors'].includes(filter.value)) {
-                        let found = false
-                        for (let sub of displayList[i][filter.value]) {
-                            if ((sub.toLowerCase() >= filterSelector.value.toLowerCase()) && (sub.toLowerCase() >= filterSelector2.value.toLowerCase())) {
-                                found = true
-                                break
-                            }
-                        }
-                        if (found) {
-                                notDisplayList.push(displayList[i])
-                            }
-                        else {
-                            tempDisplayList.push(displayList[i])
-                        }
-                    }
-                    break
-                case 'greater than or equal to':
-                    // String case
-                    if (['Title', 'Title Type', 'Const_IMDB'].includes(filter.value)) {
-                        if (displayList[i][filter.value].toLowerCase() >= filterSelector.value.toLowerCase()) {
-                            tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-                    }
-
-                    // Number case
-                    if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(filter.value)) {
-                        if (displayList[i][filter.value] >= parseInt(filterSelector.value)) {
-                            tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-                    }
-
-                    // Date case
-                    if (['Date Rated', 'Release Date'].includes(filter.value)) {
-                        let iDate = Date.parse(displayList[i][filter.value].slice(6, 10) + '-' + displayList[i][filter.value].slice(3,5) + '-' + displayList[i][filter.value].slice(0,2))
-                        let jDate = Date.parse(filterSelector.value.slice(6, 10) + '-' + filterSelector.value.slice(3,5) + '-' + filterSelector.value.slice(0,2))
-
-                        if (iDate >= jDate) {
-                                tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-
-                    }
-
-                    // Array case
-                    if (['Genres', 'Directors'].includes(filter.value)) {
-                        let found = false
-                        for (let sub of displayList[i][filter.value]) {
-                            if (sub.toLowerCase() >= filterSelector.value.toLowerCase()) {
-                                tempDisplayList.push(displayList[i])
-                                found = true
-                                break
-                            }
-                            if (!found) {
-                                notDisplayList.push(displayList[i])
-                            }
-                        }
-                    }
-                    break
-                case 'less than or equal to':
-                    // String case
-                    if (['Title', 'Title Type', 'Const_IMDB'].includes(filter.value)) {
-                        if (displayList[i][filter.value].toLowerCase() <= filterSelector.value.toLowerCase()) {
-                            tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-                    }
-
-                    // Number case
-                    if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(filter.value)) {
-                        if (displayList[i][filter.value] <= parseInt(filterSelector.value)) {
-                            tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-                    }
-
-                    // Date case
-                    if (['Date Rated', 'Release Date'].includes(filter.value)) {
-                        let iDate = Date.parse(displayList[i][filter.value].slice(6, 10) + '-' + displayList[i][filter.value].slice(3,5) + '-' + displayList[i][filter.value].slice(0,2))
-                        let jDate = Date.parse(filterSelector.value.slice(6, 10) + '-' + filterSelector.value.slice(3,5) + '-' + filterSelector.value.slice(0,2))
-
-                        if (iDate <= jDate) {
-                                tempDisplayList.push(displayList[i])
-                        }
-                        else {
-                            notDisplayList.push(displayList[i])
-                        }
-
-                    }
-
-                    // Array case
-                    if (['Genres', 'Directors'].includes(filter.value)) {
-                        let found = false
-                        for (let sub of displayList[i][filter.value]) {
-                            if (sub.toLowerCase() <= filterSelector.value.toLowerCase()) {
-                                tempDisplayList.push(displayList[i])
-                                found = true
-                                break
-                            }
-                            if (!found) {
-                                notDisplayList.push(displayList[i])
-                            }
-                        }
-                    }
-                    break
-                default:
-                    return
-            }
+        // If not between/not between (filterSelector2 doesnt exist)
+        if (['between', 'not between'].includes(filterOperator.value)) {
+            [displayList, notDisplayList] = arrayFilteringAlgorithm(displayList, notDisplayList, filterOperator.value, filter.value, filterSelector.value, filterSelector.value, filterSelector2.value)
         }
-
-        displayList = tempDisplayList
+        else {
+            [displayList, notDisplayList] = arrayFilteringAlgorithm(displayList, notDisplayList, filterOperator.value, filter.value, filterSelector.value, filterSelector.value, 0)
+        }
+     
     }
 
+    // Removes the selected filter, adjusts the display arrays
     function removeFilters(prop, op, fil) {
-        console.log("JFHSHL")
-        console.log(prop)
-        console.log(op)
-        console.log(fil)
 
-        let tempNotDisplayList = []
-        
-        for (let i = 0; i < notDisplayList.length; i++) {
-            switch (op) {
-
-                // If greater than is selected (>)
-                case filterOperators[0]:
-                    // String case
-                    if (['Title', 'Title Type', 'Const_IMDB'].includes(prop)) {
-                        if (notDisplayList[i][prop].toLowerCase() > fil.toLowerCase()) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-                    }
-
-                    // Number case
-                    if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(prop)) {
-                        if (notDisplayList[i][prop] > parseInt(fil)) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-                    }
-
-                    // Date case
-                    if (['Date Rated', 'Release Date'].includes(prop)) {
-                        let iDate = Date.parse(notDisplayList[i][prop].slice(6, 10) + '-' + notDisplayList[i][prop].slice(3,5) + '-' + notDisplayList[i][prop].slice(0,2))
-                        let jDate = Date.parse(fil.slice(6, 10) + '-' + fil.slice(3,5) + '-' + fil.slice(0,2))
-
-                        if (iDate > jDate) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-
-                    }
-
-                    // Array case
-                    if (['Genres', 'Directors'].includes(prop)) {
-                        let found = false
-                        for (let sub of notDisplayList[i][prop]) {
-                            if (sub.toLowerCase() > fil.toLowerCase()) {
-                                tempNotDisplayList.push(notDisplayList[i])
-                                found = true
-                                break
-                            }
-                            if (!found) {
-                                displayList.push(notDisplayList[i])
-                            }
-                        }
-                    }
-
-                    break
-
-                // If less than is selected (<)
-                case filterOperators[1]:
-                    // String case
-                    if (['Title', 'Title Type', 'Const_IMDB'].includes(prop)) {
-                        if (notDisplayList[i][prop].toLowerCase() < fil.toLowerCase()) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-                    }
-
-                    // Number case
-                    if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(prop)) {
-                        if (notDisplayList[i][prop] < parseInt(fil)) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-                    }
-
-                    // Date case
-                    if (['Date Rated', 'Release Date'].includes(prop)) {
-                        let iDate = Date.parse(notDisplayList[i][prop].slice(6, 10) + '-' + notDisplayList[i][prop].slice(3,5) + '-' + notDisplayList[i][prop].slice(0,2))
-                        let jDate = Date.parse(fil.slice(6, 10) + '-' + fil.slice(3,5) + '-' + fil.slice(0,2))
-
-                        if (iDate < jDate) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-
-                    }
-
-                    // Array case
-                    if (['Genres', 'Directors'].includes(prop)) {
-                        let found = false
-                        for (let sub of notDisplayList[i][prop]) {
-                            if (sub.toLowerCase() < fil.toLowerCase()) {
-                                tempNotDisplayList.push(notDisplayList[i])
-                                found = true
-                                break
-                            }
-                            if (!found) {
-                                displayList.push(notDisplayList[i])
-                            }
-                        }
-                    }
-
-                    break
-
-                // If less than is selected (==)
-                case filterOperators[2]:
-
-                    // String case
-                    if (['Title', 'Title Type', 'Const_IMDB'].includes(prop)) {
-                        if (notDisplayList[i][prop].toLowerCase() === fil.toLowerCase()) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-                    }
-
-                    // Number case
-                    if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(prop)) {
-                        if (notDisplayList[i][prop] === parseInt(fil)) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-                    }
-
-                    // Date case
-                    if (['Date Rated', 'Release Date'].includes(prop)) {
-                        let iDate = Date.parse(notDisplayList[i][prop].slice(6, 10) + '-' + notDisplayList[i][prop].slice(3,5) + '-' + notDisplayList[i][prop].slice(0,2))
-                        let jDate = Date.parse(fil.slice(6, 10) + '-' + fil.slice(3,5) + '-' + fil.slice(0,2))
-
-                        if (iDate === jDate) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-
-                    }
-
-                    // Array case
-                    if (['Genres', 'Directors'].includes(prop)) {
-                        let found = false
-                        for (let sub of notDisplayList[i][prop]) {
-                            if (sub.toLowerCase() === fil.toLowerCase()) {
-                                tempNotDisplayList.push(notDisplayList[i])
-                                found = true
-                                break
-                            }
-                            if (!found) {
-                                displayList.push(notDisplayList[i])
-                            }
-                        }
-                    }
-                    
-                    break
-                case 'not equal to':
-                    // String case
-                    if (['Title', 'Title Type', 'Const_IMDB'].includes(prop)) {
-                        if (notDisplayList[i][prop].toLowerCase() !== fil.toLowerCase()) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-                    }
-
-                    // Number case
-                    if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(prop)) {
-                        if (notDisplayList[i][prop] !== parseInt(fil)) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-                    }
-
-                    // Date case
-                    if (['Date Rated', 'Release Date'].includes(prop)) {
-                        let iDate = Date.parse(notDisplayList[i][prop].slice(6, 10) + '-' + notDisplayList[i][prop].slice(3,5) + '-' + notDisplayList[i][prop].slice(0,2))
-                        let jDate = Date.parse(fil.slice(6, 10) + '-' + fil.slice(3,5) + '-' + fil.slice(0,2))
-
-                        if (iDate !== jDate) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-
-                    }
-
-                    // Array case
-                    if (['Genres', 'Directors'].includes(prop)) {
-                        let found = false
-                        for (let sub of notDisplayList[i][prop]) {
-                            if (sub.toLowerCase() === fil.toLowerCase()) {
-                                found = true
-                                break
-                            }
-                        }
-                        if (found) {
-                            displayList.push(notDisplayList[i])
-                        }
-                        else {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                    }
-                    break
-                case 'between':
-                    // String case
-                    if (['Title', 'Title Type', 'Const_IMDB'].includes(prop)) {
-                        if ((notDisplayList[i][prop].toLowerCase() >= filtersSelected[prop][op]['lower'][fil].toLowerCase()) && (notDisplayList[i][prop].toLowerCase() <= filtersSelected[prop][op]['upper'][fil].toLowerCase())) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-                    }
-
-                    // Number case
-                    if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(prop)) {
-                        if ((notDisplayList[i][prop] >= parseInt(filtersSelected[prop][op]['lower'][fil])) && (notDisplayList[i][prop] <= parseInt(filtersSelected[prop][op]['upper'][fil]))) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-                    }
-
-                    // Date case
-                    if (['Date Rated', 'Release Date'].includes(prop)) {
-                        let iDate = Date.parse(notDisplayList[i][prop].slice(6, 10) + '-' + notDisplayList[i][prop].slice(3,5) + '-' + notDisplayList[i][prop].slice(0,2))
-                        let jDate = Date.parse(filtersSelected[prop][op]['lower'][fil].slice(6, 10) + '-' + filtersSelected[prop][op]['lower'][fil].slice(3,5) + '-' + filtersSelected[prop][op]['lower'][fil].slice(0,2))
-                        let jDate2 = Date.parse(filtersSelected[prop][op]['upper'][fil].slice(6, 10) + '-' + filtersSelected[prop][op]['upper'][fil].slice(3,5) + '-' + filtersSelected[prop][op]['upper'][fil].slice(0,2))
-
-                        if ((iDate >= jDate) && (iDate <= jDate2)) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-
-                    }
-
-                    // Array case
-                    if (['Genres', 'Directors'].includes(prop)) {
-                        let found = false
-                        for (let sub of notDisplayList[i][prop]) {
-                            if ((sub.toLowerCase() >= filtersSelected[prop][op]['lower'][fil].toLowerCase()) && (sub.toLowerCase() >= filtersSelected[prop][op]['upper'][fil].toLowerCase())) {
-                                tempNotDisplayList.push(notDisplayList[i])
-                                found = true
-                                break
-                            }
-                            if (!found) {
-                                displayList.push(notDisplayList[i])
-                            }
-                        }
-                    }
-
-                    break
-                case 'not between':
-                    // String case
-                    if (['Title', 'Title Type', 'Const_IMDB'].includes(prop)) {
-                        console.log("TESTER")
-                        console.log(notDisplayList[i][prop].toLowerCase())
-                        console.log(filtersSelected[prop][op]['lower'][fil].toLowerCase())
-                        console.log(filtersSelected[prop][op]['upper'][fil].toLowerCase())
-                        if (!((notDisplayList[i][prop].toLowerCase() >= filtersSelected[prop][op]['lower'][fil].toLowerCase()) && (notDisplayList[i][prop].toLowerCase() <= filtersSelected[prop][op]['upper'][fil].toLowerCase()))) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-                    }
-
-                    // Number case
-                    if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(prop)) {
-                        if (!((notDisplayList[i][prop] >= parseInt(filtersSelected[prop][op]['lower'][fil])) && (notDisplayList[i][prop] <= parseInt(filtersSelected[prop][op]['upper'][fil])))) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-                    }
-
-                    // Date case
-                    if (['Date Rated', 'Release Date'].includes(prop)) {
-                        let iDate = Date.parse(notDisplayList[i][prop].slice(6, 10) + '-' + notDisplayList[i][prop].slice(3,5) + '-' + notDisplayList[i][prop].slice(0,2))
-                        let jDate = Date.parse(filtersSelected[prop][op]['lower'][fil].slice(6, 10) + '-' + filtersSelected[prop][op]['lower'][fil].slice(3,5) + '-' + filtersSelected[prop][op]['lower'][fil].slice(0,2))
-                        let jDate2 = Date.parse(filtersSelected[prop][op]['upper'][fil].slice(6, 10) + '-' + filtersSelected[prop][op]['upper'][fil].slice(3,5) + '-' + filtersSelected[prop][op]['upper'][fil].slice(0,2))
-
-                        if (!((iDate >= jDate) && (iDate <= jDate2))) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-
-                    }
-
-                    // Array case
-                    if (['Genres', 'Directors'].includes(prop)) {
-                        let found = false
-                        for (let sub of notDisplayList[i][prop]) {
-                            if ((sub.toLowerCase() >= filtersSelected[prop][op]['lower'][fil].toLowerCase()) && (sub.toLowerCase() >= filtersSelected[prop][op]['upper'][fil].toLowerCase())) {
-                                found = true
-                                break
-                            }
-                        }
-                        if (found) {
-                            displayList.push(notDisplayList[i])
-                        }
-                        else {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                    }
-                    break
-
-                case 'greater than or equal to':
-                    // String case
-                    if (['Title', 'Title Type', 'Const_IMDB'].includes(prop)) {
-                        if (notDisplayList[i][prop].toLowerCase() >= fil.toLowerCase()) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-                    }
-
-                    // Number case
-                    if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(prop)) {
-                        if (notDisplayList[i][prop] >= parseInt(fil)) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-                    }
-
-                    // Date case
-                    if (['Date Rated', 'Release Date'].includes(prop)) {
-                        let iDate = Date.parse(notDisplayList[i][prop].slice(6, 10) + '-' + notDisplayList[i][prop].slice(3,5) + '-' + notDisplayList[i][prop].slice(0,2))
-                        let jDate = Date.parse(fil.slice(6, 10) + '-' + fil.slice(3,5) + '-' + fil.slice(0,2))
-
-                        if (iDate >= jDate) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-
-                    }
-
-                    // Array case
-                    if (['Genres', 'Directors'].includes(prop)) {
-                        let found = false
-                        for (let sub of notDisplayList[i][prop]) {
-                            if (sub.toLowerCase() >= fil.toLowerCase()) {
-                                tempNotDisplayList.push(notDisplayList[i])
-                                found = true
-                                break
-                            }
-                            if (!found) {
-                                displayList.push(notDisplayList[i])
-                            }
-                        }
-                    }
-                    break
-                case 'less than or equal to':
-                    // String case
-                    if (['Title', 'Title Type', 'Const_IMDB'].includes(prop)) {
-                        if (notDisplayList[i][prop].toLowerCase() <= fil.toLowerCase()) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-                    }
-
-                    // Number case
-                    if (['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(prop)) {
-                        if (notDisplayList[i][prop] <= parseInt(fil)) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-                    }
-
-                    // Date case
-                    if (['Date Rated', 'Release Date'].includes(prop)) {
-                        let iDate = Date.parse(notDisplayList[i][prop].slice(6, 10) + '-' + notDisplayList[i][prop].slice(3,5) + '-' + notDisplayList[i][prop].slice(0,2))
-                        let jDate = Date.parse(fil.slice(6, 10) + '-' + fil.slice(3,5) + '-' + fil.slice(0,2))
-
-                        if (iDate <= jDate) {
-                            tempNotDisplayList.push(notDisplayList[i])
-                        }
-                        else {
-                            displayList.push(notDisplayList[i])
-                        }
-
-                    }
-
-                    // Array case
-                    if (['Genres', 'Directors'].includes(prop)) {
-                        let found = false
-                        for (let sub of notDisplayList[i][prop]) {
-                            if (sub.toLowerCase() <= fil.toLowerCase()) {
-                                tempNotDisplayList.push(notDisplayList[i])
-                                found = true
-                                break
-                            }
-                            if (!found) {
-                                displayList.push(notDisplayList[i])
-                            }
-                        }
-                    }
-                    break
-                default:
-                    return
-            }
+        // Adjusts the display/not displayed arrays
+        // If not between/not between (filterSelector2 doesnt exist)
+        if (['between', 'not between'].includes(op)) {
+            [notDisplayList, displayList] = arrayFilteringAlgorithm(notDisplayList, displayList, op, prop, fil, filtersSelected[prop][op]['lower'][fil], filtersSelected[prop][op]['upper'][fil])
+        }
+        else {
+            [notDisplayList, displayList] = arrayFilteringAlgorithm(notDisplayList, displayList, op, prop, fil, 0, 0)
         }
 
-        notDisplayList = tempNotDisplayList
-        
-        // Remove the filter from selected Filters
+        // Remove the filter from selected filters
         if (['between', 'not between'].includes(op)) {
             filtersSelected[prop][op]['upper'].splice(fil, 1)
             filtersSelected[prop][op]['lower'].splice(fil, 1)
@@ -1037,17 +191,21 @@
 
     }
 
+    // Displays the filters under the Filter bar and above the Clear all button
     function displayFilters() {
 
         filterClose.innerHTML = ""
 
         for (let prop in filtersSelected) {
             for (let op in filtersSelected[prop]) {
+
+                // If between/not between's selected
                 if ((['between', 'not between'].includes(op))) {
                     for (let i = 0; i < filtersSelected[prop][op]['lower'].length; i++) {
                         let spanFilter = document.createElement("span")
                         spanFilter.innerHTML = prop + ':' + op + ':' + filtersSelected[prop][op].lower[i] + ',' + filtersSelected[prop][op].upper[i]
 
+                        // Create an button to undo the filter
                         let closeButton = document.createElement("button")
                         closeButton.innerHTML = '&#10006'
                         closeButton.name = 'filterCloseButton' 
@@ -1065,6 +223,7 @@
                         let spanFilter = document.createElement("span")
                         spanFilter.innerHTML = prop + ':' + op + ':' + fil
 
+                        // Create an button to undo the filter
                         let closeButton = document.createElement("button")
                         closeButton.innerHTML = '&#10006'
                         closeButton.name = 'filterCloseButton'
@@ -1090,5 +249,472 @@
         }
     })
 
+    // Adjusts the display/not display array of movies
+    function arrayFilteringAlgorithm(arr1, arr2, op, prop, fil, betweenL, betweenH) {
+
+        function isStringProperty() {
+            return ['Title', 'Title Type', 'Const_IMDB'].includes(prop)
+        }
+
+        function isNumberProperty() {
+            return ['Your Rating', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Num Votes'].includes(prop)
+        }
+
+        function isDateProperty() {
+            return ['Date Rated', 'Release Date'].includes(prop)
+        }
+
+        function isArrayProperty() {
+            return ['Genres', 'Directors'].includes(prop)
+        }
+
+        let tempArr1 = []
+
+        // Filter through the selected movie list (arr1)
+        for (let i = 0; i < arr1.length; i++) {
+            switch (op) {
+                
+                // If greater than is selected (>)
+                case 'greater than':
+
+                    // String greater than
+                    if (isStringProperty()) {
+                        if (arr1[i][prop].toLowerCase() > fil.toLowerCase()) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Number greater than
+                    if (isNumberProperty()) {
+                        if (arr1[i][prop] > parseInt(fil)) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Date greater than
+                    if (isDateProperty()) {
+                        let iDate = Date.parse(arr1[i][prop].slice(6, 10) + '-' + arr1[i][prop].slice(3,5) + '-' + arr1[i][prop].slice(0,2))
+                        let jDate = Date.parse(fil.slice(6, 10) + '-' + fil.slice(3,5) + '-' + fil.slice(0,2))
+
+                        if (iDate > jDate) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Array greater than
+                    if (isArrayProperty()) {
+                        let found = false
+                        for (let sub of arr1[i][prop]) {
+                            if (sub.toLowerCase() > fil.toLowerCase()) {
+                                tempArr1.push(arr1[i])
+                                found = true
+                                break
+                            }
+                            if (!found) {
+                                arr2.push(arr1[i])
+                            }
+                        }
+                    }
+
+                    break
+
+                // If less than is selected (<)
+                case 'less than':
+
+                    // String less than
+                    if (isStringProperty()) {
+                        if (arr1[i][prop].toLowerCase() < fil.toLowerCase()) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Number less than
+                    if (isNumberProperty()) {
+                        if (arr1[i][prop] < parseInt(fil)) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Date less than
+                    if (isDateProperty()) {
+                        let iDate = Date.parse(arr1[i][prop].slice(6, 10) + '-' + arr1[i][prop].slice(3,5) + '-' + arr1[i][prop].slice(0,2))
+                        let jDate = Date.parse(fil.slice(6, 10) + '-' + fil.slice(3,5) + '-' + fil.slice(0,2))
+
+                        if (iDate < jDate) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Array less than
+                    if (isArrayProperty()) {
+                        let found = false
+                        for (let sub of arr1[i][prop]) {
+                            if (sub.toLowerCase() < fil.toLowerCase()) {
+                                tempArr1.push(arr1[i])
+                                found = true
+                                break
+                            }
+                            if (!found) {
+                                arr2.push(arr1[i])
+                            }
+                        }
+                    }
+
+                    break
+
+                // If equal to is selected (==)
+                case 'equal to':
+
+                    // String equal to
+                    if (isStringProperty()) {
+                        if (arr1[i][prop].toLowerCase() === fil.toLowerCase()) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Number equal to
+                    if (isNumberProperty()) {
+                        if (arr1[i][prop] === parseInt(fil)) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Date equal to
+                    if (isDateProperty()) {
+                        let iDate = Date.parse(arr1[i][prop].slice(6, 10) + '-' + arr1[i][prop].slice(3,5) + '-' + arr1[i][prop].slice(0,2))
+                        let jDate = Date.parse(fil.slice(6, 10) + '-' + fil.slice(3,5) + '-' + fil.slice(0,2))
+
+                        if (iDate === jDate) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Array equal to
+                    if (isArrayProperty()) {
+                        let found = false
+                        for (let sub of arr1[i][prop]) {
+                            if (sub.toLowerCase() === fil.toLowerCase()) {
+                                tempArr1.push(arr1[i])
+                                found = true
+                                break
+                            }
+                            if (!found) {
+                                arr2.push(arr1[i])
+                            }
+                        }
+                    }
+                    
+                    break
+
+                // If not equal to is selected (==)
+                case 'not equal to':
+
+                    // String not equal to
+                    if (isStringProperty()) {
+                        if (arr1[i][prop].toLowerCase() !== fil.toLowerCase()) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Number not equal to
+                    if (isNumberProperty()) {
+                        if (arr1[i][prop] !== parseInt(fil)) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Date not equal to
+                    if (isDateProperty()) {
+                        let iDate = Date.parse(arr1[i][prop].slice(6, 10) + '-' + arr1[i][prop].slice(3,5) + '-' + arr1[i][prop].slice(0,2))
+                        let jDate = Date.parse(fil.slice(6, 10) + '-' + fil.slice(3,5) + '-' + fil.slice(0,2))
+
+                        if (iDate !== jDate) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Array not equal to
+                    if (isArrayProperty()) {
+                        let found = false
+                        for (let sub of arr1[i][prop]) {
+                            if (sub.toLowerCase() === fil.toLowerCase()) {
+                                found = true
+                                break
+                            }
+                        }
+                        if (found) {
+                            arr2.push(arr1[i])
+                        }
+                        else {
+                            tempArr1.push(arr1[i])
+                        }
+                    }
+
+                    break
+
+                // If between to is selected (<= <=)
+                case 'between':
+
+                    // String between
+                    if (isStringProperty()) {
+                        if ((arr1[i][prop].toLowerCase() >= betweenL.toLowerCase()) && (arr1[i][prop].toLowerCase() <= betweenH.toLowerCase())) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Number between
+                    if (isNumberProperty()) {
+                        if ((arr1[i][prop] >= parseInt(betweenL)) && (arr1[i][prop] <= parseInt(betweenH))) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Date between
+                    if (isDateProperty()) {
+                        let iDate = Date.parse(arr1[i][prop].slice(6, 10) + '-' + arr1[i][prop].slice(3,5) + '-' + arr1[i][prop].slice(0,2))
+                        let jDate = Date.parse(betweenL.slice(6, 10) + '-' + betweenL.slice(3,5) + '-' + betweenL.slice(0,2))
+                        let jDate2 = Date.parse(betweenH.slice(6, 10) + '-' + betweenH.slice(3,5) + '-' + betweenH.slice(0,2))
+
+                        if ((iDate >= jDate) && (iDate <= jDate2)) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Array between
+                    if (isArrayProperty()) {
+                        let found = false
+                        for (let sub of arr1[i][prop]) {
+                            if ((sub.toLowerCase() >= betweenL.toLowerCase()) && (sub.toLowerCase() <= betweenH.toLowerCase())) {
+                                tempArr1.push(arr1[i])
+                                found = true
+                                break
+                            }
+                            if (!found) {
+                                arr2.push(arr1[i])
+                            }
+                        }
+                    }
+
+                    break
+
+                // If between to is selected !(<= <=)
+                case 'not between':
+
+                    // String not between
+                    if (isStringProperty()) {
+                        if (!((arr1[i][prop].toLowerCase() >= betweenL.toLowerCase()) && (arr1[i][prop].toLowerCase() <= betweenH.toLowerCase()))) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Number not between
+                    if (isNumberProperty()) {
+                        if (!((arr1[i][prop] >= parseInt(betweenL)) && (arr1[i][prop] <= parseInt(betweenH)))) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Date not between
+                    if (isDateProperty()) {
+                        let iDate = Date.parse(arr1[i][prop].slice(6, 10) + '-' + arr1[i][prop].slice(3,5) + '-' + arr1[i][prop].slice(0,2))
+                        let jDate = Date.parse(betweenL.slice(6, 10) + '-' + betweenL.slice(3,5) + '-' + betweenL.slice(0,2))
+                        let jDate2 = Date.parse(betweenH.slice(6, 10) + '-' + betweenH.slice(3,5) + '-' + betweenH.slice(0,2))
+
+                        if (!((iDate >= jDate) && (iDate <= jDate2))) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+
+                    }
+
+                    // Array not between
+                    if (isArrayProperty()) {
+                        let found = false
+                        for (let sub of arr1[i][prop]) {
+                            if ((sub.toLowerCase() >= betweenL.toLowerCase()) && (sub.toLowerCase() <= betweenH.toLowerCase())) {
+                                found = true
+                                break
+                            }
+                        }
+                        if (found) {
+                            arr2.push(arr1[i])
+                        }
+                        else {
+                            tempArr1.push(arr1[i])
+                        }
+                    }
+
+                    break
+
+                // If greater than or equal to to is selected (>=)
+                case 'greater than or equal to':
+
+                    // String greater than or equal to
+                    if (isStringProperty()) {
+                        if (arr1[i][prop].toLowerCase() >= fil.toLowerCase()) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Number greater than or equal to
+                    if (isNumberProperty()) {
+                        if (arr1[i][prop] >= parseInt(fil)) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Date greater than or equal to
+                    if (isDateProperty()) {
+                        let iDate = Date.parse(arr1[i][prop].slice(6, 10) + '-' + arr1[i][prop].slice(3,5) + '-' + arr1[i][prop].slice(0,2))
+                        let jDate = Date.parse(fil.slice(6, 10) + '-' + fil.slice(3,5) + '-' + fil.slice(0,2))
+
+                        if (iDate >= jDate) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Array greater than or equal to
+                    if (isArrayProperty()) {
+                        let found = false
+                        for (let sub of arr1[i][prop]) {
+                            if (sub.toLowerCase() >= fil.toLowerCase()) {
+                                tempArr1.push(arr1[i])
+                                found = true
+                                break
+                            }
+                            if (!found) {
+                                arr2.push(arr1[i])
+                            }
+                        }
+                    }
+
+                    break
+
+                // If less than or equal to to is selected (<=)
+                case 'less than or equal to':
+
+                    // String less than or equal to
+                    if (isStringProperty()) {
+                        if (arr1[i][prop].toLowerCase() <= fil.toLowerCase()) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Number less than or equal to
+                    if (isNumberProperty()) {
+                        if (arr1[i][prop] <= parseInt(fil)) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Date less than or equal to
+                    if (isDateProperty()) {
+                        let iDate = Date.parse(arr1[i][prop].slice(6, 10) + '-' + arr1[i][prop].slice(3,5) + '-' + arr1[i][prop].slice(0,2))
+                        let jDate = Date.parse(fil.slice(6, 10) + '-' + fil.slice(3,5) + '-' + fil.slice(0,2))
+
+                        if (iDate <= jDate) {
+                            tempArr1.push(arr1[i])
+                        }
+                        else {
+                            arr2.push(arr1[i])
+                        }
+                    }
+
+                    // Array less than or equal to
+                    if (isArrayProperty()) {
+                        let found = false
+                        for (let sub of arr1[i][prop]) {
+                            if (sub.toLowerCase() <= fil.toLowerCase()) {
+                                tempArr1.push(arr1[i])
+                                found = true
+                                break
+                            }
+                            if (!found) {
+                                arr2.push(arr1[i])
+                            }
+                        }
+                    }
+
+                    break
+                
+                default:
+
+                    return
+            }
+        }
+
+        arr1 = tempArr1
+
+        return [arr1, arr2]
+    }
+    
 
 </script>
