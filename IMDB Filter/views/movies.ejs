@@ -58,9 +58,9 @@
             <th><%= titles[3] %></th>
             <th><%= titles[6] %></th>
             <th><%= titles[8] %></th>
+            <th><datalist id="addCol"></datalist></th>
         </tr>
     </thead>
-
     <tbody id="tableDisplay">
     </tbody>
 </table>
@@ -75,35 +75,87 @@
 <script type='text/javascript'>
 
     let tableDisplay = document.getElementById('tableDisplay')
+    let tableColumns = [3, 6, 8]
     
-    
+    let headerTr = document.querySelector('thead').children[0]
+
+    // Add dropdown list to display at the end of the table
+    function addDropDownTableHeadings() {
+
+        // Add dropdown for adding column
+        let thDropdown = document.createElement('select')
+        thDropdown.id = 'thDropdown'
+
+        // Add blank select entry
+        let headerOptionBlank = document.createElement('option')
+        headerOptionBlank.value = -1
+        headerOptionBlank.innerHTML = ''
+        headerOptionBlank.selected = true
+        thDropdown.appendChild(headerOptionBlank)
+
+        headerTr.appendChild(thDropdown)
+
+        // Add entries for all titles not currently displayed
+        for (let i = 0; i < titles.length; i++) {
+            
+            // If the column isnt already displayed
+            if (!tableColumns.includes(i)) {
+                let headerOption = document.createElement('option')
+                headerOption.value = i
+                headerOption.innerHTML = titles[i]
+                thDropdown.appendChild(headerOption)
+            }
+        }
+    }
+
+    // When new column is selected
+    headerTr.addEventListener('change', (evt) => {
+        if (evt.target.value !== -1) {
+            tableColumns.push(parseInt(evt.target.value))
+            updateTable()
+            
+        }
+    })
+
     // Updates the table after sort/filter
     function updateTable() {
 
-        // Clear table
+        // Update Table Headings
+        headerTr.innerHTML = ''
+        for (let col of tableColumns) {
+            let th = document.createElement('th')
+            th.innerHTML = titles[col]
+            headerTr.appendChild(th)
+        }
+
+        // Update dropdown for the table
+        addDropDownTableHeadings()
+
+        // Update Table body
         tableDisplay.innerHTML = ''
 
         for (let i = 0; i < displayList.length; i++) {
-            // Creating variables of the table elements
             let newTr = document.createElement('tr')
-            let tdTitle = document.createElement('td')
-            let tdIMDBRating = document.createElement('td')
-            let tdYear = document.createElement('td')
-            let newA = document.createElement('a')
 
-            // Creating the Title column
-            newA.href = "/movies/" + displayList[i]['Const_IMDB']
-            newA.innerHTML = displayList[i]['Title']
-            tdTitle.appendChild(newA)
-            newTr.appendChild(tdTitle)
+            for (let col of tableColumns) {
+                let newTd = document.createElement('td')
 
-            // Creating the IMDB Rating column
-            tdIMDBRating.innerHTML = displayList[i]['IMDb Rating']
-            newTr.appendChild(tdIMDBRating)
+                // If the column is 'Title', put in a link tag
+                if (col === 3) {
+                    let newA = document.createElement('a')
+                    newA.href = "/movies/" + displayList[i]['Const_IMDB']
+                    newA.innerHTML = displayList[i][titles[col]]
+                    newTd.appendChild(newA)
+                }
 
-            // Creating Year column
-            tdYear.innerHTML = displayList[i]['Year']
-            newTr.appendChild(tdYear)
+                else {
+                    newTd.innerHTML = displayList[i][titles[col]]
+                }
+
+                // Append the column to the row
+                newTr.appendChild(newTd)
+
+            }
 
             // Append the row to the table
             tableDisplay.appendChild(newTr)
@@ -114,5 +166,7 @@
     window.onload = function () {
         updateTable()
     }
+
+    // 
 
 </script>
