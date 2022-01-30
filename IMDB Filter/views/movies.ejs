@@ -126,6 +126,31 @@
             let th = document.createElement('th')
             th.innerHTML = titles[col]
             headerTr.appendChild(th)
+
+            // Create close buttons for each button
+            let removeColButton = document.createElement('button')
+            removeColButton.name = 'removeCol'
+            removeColButton.value = col
+            removeColButton.innerHTML = '-'
+            th.appendChild(removeColButton)
+
+            removeColButton.addEventListener('click', (evt) => {
+
+                let index = tableColumns.findIndex((el) => el === parseInt(evt.target.value))
+                
+                // Remove from the table headers array
+                tableColumns.splice(index, 1)
+
+                // Delete the header
+                let deleteHeader = document.querySelectorAll('th')[index]
+                deleteHeader.remove()
+
+                // Delete the body
+                for (let child of tableDisplay.children) {
+                    let grandchild = child.children[index]
+                    grandchild.remove()
+                }
+            })
         }
 
         // Update dropdown for the table
