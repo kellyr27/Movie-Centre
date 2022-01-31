@@ -89,6 +89,14 @@ const runCSV = function(importedList, isTestUpload, newFileList) {
 			for (let i = 0; i < obj['Directors'].length; i++) {
 				obj['Directors'][i] = obj['Directors'][i].trim()
 		  	}
+
+			// Check the date formatsobj['Runtime (mins)']
+			if (obj['Date Rated'].length === 9) {
+				obj['Date Rated'] = '0' + obj['Date Rated']
+			}
+			if (obj['Release Date'].length === 9) {
+				obj['Release Date'] = '0' + obj['Release Date']
+			}
 		}
   
 	  	// Remove duplicates when inserting into the master list

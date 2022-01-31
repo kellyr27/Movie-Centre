@@ -173,12 +173,17 @@
 
         // Adjusts the display/not displayed arrays
         // If not between/not between (filterSelector2 doesnt exist)
+        let tempDisplayList = []
+
         if (['between', 'not between'].includes(op)) {
-            [notDisplayList, displayList] = arrayFilteringAlgorithm(notDisplayList, displayList, op, prop, fil, filtersSelected[prop][op]['lower'][fil], filtersSelected[prop][op]['upper'][fil])
+            [notDisplayList, tempDisplayList] = arrayFilteringAlgorithm(notDisplayList, tempDisplayList, op, prop, fil, filtersSelected[prop][op]['lower'][fil], filtersSelected[prop][op]['upper'][fil])
         }
         else {
-            [notDisplayList, displayList] = arrayFilteringAlgorithm(notDisplayList, displayList, op, prop, fil, 0, 0)
+            [notDisplayList, tempDisplayList] = arrayFilteringAlgorithm(notDisplayList, tempDisplayList, op, prop, fil, 0, 0)
         }
+
+        // Check all of the tempDisplay movies whether they match the other existing filters
+        displayList = displayList.concat(tempDisplayList)
 
         // Remove the filter from selected filters
         if (['between', 'not between'].includes(op)) {
