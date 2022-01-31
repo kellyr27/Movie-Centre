@@ -103,6 +103,7 @@
                 thDropdown.appendChild(headerOption)
             }
         }
+        
     }
 
     // When new column is selected
@@ -146,6 +147,33 @@
                 for (let child of tableDisplay.children) {
                     let grandchild = child.children[index]
                     grandchild.remove()
+                }
+
+                // Update the datalist
+
+                // Add dropdown for adding column
+                let foundDropdown = document.getElementById('thDropdown')
+                foundDropdown.innerHTML = ''
+
+                // Add blank select entry
+                let headerOptionBlank = document.createElement('option')
+                headerOptionBlank.value = -1
+                headerOptionBlank.innerHTML = ''
+                headerOptionBlank.selected = true
+                foundDropdown.appendChild(headerOptionBlank)
+
+                headerTr.appendChild(foundDropdown)
+
+                // Add entries for all titles not currently displayed
+                for (let i = 0; i < titles.length; i++) {
+                    
+                    // If the column isnt already displayed
+                    if (!tableColumns.includes(i)) {
+                        let headerOption = document.createElement('option')
+                        headerOption.value = i
+                        headerOption.innerHTML = titles[i]
+                        foundDropdown.appendChild(headerOption)
+                    }
                 }
             })
         }
