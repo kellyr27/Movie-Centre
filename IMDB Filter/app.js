@@ -29,7 +29,6 @@ const titles = ['Const_IMDB', 'Your Rating', 'Date Rated', 'Title', 'URL', 'Titl
 // Variables
 let masterMovieList = new MovieList()
 
-let searchTrie                                              // Trie of the masterList                   // DEFUNCT - TO REMOVE
 let masterList = []                                         // List of all movies uploaded              // DEFUNCT - TO REMOVE --- = masterMoveList.activeList
 let createdLists = []                                       // List of all lists created
 let searchResults = []                                                                                  // DEFUNCT - TO REMOVE
@@ -205,17 +204,6 @@ app.post('/created_lists', (req, res) => {
     createdLists.push(newList)
     res.redirect('/created_lists')
 })
-
-
-// Request to create a new list
-// app.post('/created_lists', (req, res) => {
-//     console.log("POST - CREATED_LIST");
-//     const {listName} = req.body
-//     let newList = {listName: listName, id: uuid(), movies: currentCreatedList}
-//     createdLists.push(newList)
-//     currentCreatedList = []
-//     res.redirect('/created_lists')
-// })
 
 // -------------------------------SERVER/START-UP-----------------------------------------------------------------------------------------
 

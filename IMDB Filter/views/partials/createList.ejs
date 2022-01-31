@@ -56,6 +56,7 @@
     let showList = document.getElementById('showList')
     let submit = document.getElementById('submit')
     let movies = document.getElementById('movies')
+    let movieList = document.getElementById('movieList')
 
     // Add movie from datalist to created List
     addMovieButton.addEventListener('click', (e) => {
@@ -189,6 +190,27 @@
 
         // Update the POST request for the current Created List
         movies.value = JSON.stringify(createdList)
+
+
+        // Update datalist - add movie
+        movieList.innerHTML = ''
+        
+        // Created list for the datalist
+        let dataListMovies = displayList.filter((mov) => {
+            for (let createdMov of createdList) {
+                if (createdMov['Const_IMDB'] === mov['Const_IMDB']) {
+                    return false
+                }
+            }
+            return true
+        })
+        
+        // Display the datalist 
+        for (let mov of dataListMovies) {
+            let newOption = document.createElement('option')
+            newOption.innerHTML = `${mov['Title']}, ${mov['Year']}`
+            movieList.appendChild(newOption)
+        }
     }
 
 </script>

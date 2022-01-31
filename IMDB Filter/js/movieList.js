@@ -9,12 +9,6 @@ class MovieList {
 
         this.inactiveList = []
         this.inactiveTrie = new Trie(this.inactiveList)
-
-        this.searchSortFilter = {
-            search: "",
-            sort: [],
-            filter: new Set()
-        }
     }
 
     #updateTries () {
@@ -27,11 +21,6 @@ class MovieList {
         this.inactiveList = []
         this.#updateTries()
         
-        this.searchSortFilter = {
-            search: "",
-            sort: [],
-            filter: new Set()
-        }
     }
 
     create (masterList) {
@@ -43,7 +32,6 @@ class MovieList {
     // Performs a search in place
     search (query) {
 
-        this.searchSortFilter.search = query
         let foundMovies = this.activeTrie.search(query)
 
         for (let movie of this.activeList) {
