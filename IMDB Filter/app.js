@@ -4,6 +4,19 @@ const fileUpload = require('express-fileupload')            // Middleware used t
 const methodOverride = require('method-override')           // Middleware used to use HTTP verbs such as PUT or DELETE
 const { v4: uuid } = require('uuid')                        // Universally unique identifier for createdLists
 const ejsMate = require('ejs-mate')                         // Use templating with EJS
+const mongoose = require('mongoose')
+const list = require('./models')
+
+mongoose.connect('mongodb://localhost:27017/imdb-filter', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'Mongoose connection error: '))
+db.once('open', () => {
+    console.log('Database connected.')
+})
 
 const path = require('path')                                // Path module
 const fs = require('fs')                                    // File System module

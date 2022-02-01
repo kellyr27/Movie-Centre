@@ -183,7 +183,9 @@
         }
 
         // Check all of the tempDisplay movies whether they match the other existing filters
-        displayList = displayList.concat(tempDisplayList)
+        // displayList = displayList.concat(tempDisplayList)
+        let tempNotDisplayList = []
+        
 
         // Remove the filter from selected filters
         if (['between', 'not between'].includes(op)) {
