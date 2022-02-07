@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const movieSchema = newSchema({
+const movieSchema = new Schema({
     constIMDB: {
         type: String,
         required: true,
@@ -38,17 +38,17 @@ const movieSchema = newSchema({
         min: 0,
         max: 10
     },
-    Runtime: {
+    runtime: {
         type: Number,
         required: true,
         min: 0
     },
-    Year: {
+    year: {
         type: Number,
         required: true,
         min: 1800
     },
-    Genres: [{
+    genres: [{
         type: String
     }],
     numVotes: {
@@ -61,10 +61,10 @@ const movieSchema = newSchema({
         required: true,
         match: /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/
     },
-    Directors: [{
+    directors: [{
         type: String,
         }],
         required: false
 })
 
-module.exports = mongoose.model('movie', movieSchema)
+module.exports = mongoose.model('Movie', movieSchema)

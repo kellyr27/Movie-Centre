@@ -1,11 +1,14 @@
 <% layout('layouts/boilerplate') %>
 <h1>Upload CSV File</h1>
-<form method="post" action="/upload" enctype="multipart/form-data">
-    <input type="file" name="uploadFiles" multiple>
-    <button>Submit</button>
-</form>
 <div>
-    <p>To upload test data into the master list and created lists: </p>
+    <p>Upload exported IMDB file(s) and press submit.</p>
+    <form method="post" action="/upload" enctype="multipart/form-data">
+        <input type="file" name="uploadFiles" multiple>
+        <button>Submit</button>
+    </form>
+</div>
+<div>
+    <p>To upload test data into the master list and created lists, press the below button. </p>
     <form method="post" action="/upload-test-data">
         <button>Upload Test Data</button>
     </form>

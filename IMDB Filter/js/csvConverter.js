@@ -74,7 +74,7 @@ const runCSV = function(importedList, isTestUpload, newFileList) {
 		  
 			// Convert "Your Rating", "IMDB Rating", "Runtime" and "Year" to number type
 			obj['Your Rating'] = parseInt(obj['Your Rating'])
-			obj['IMDb Rating'] = parseInt(obj['IMDb Rating'])
+			obj['IMDb Rating'] = parseFloat(obj['IMDb Rating'])
 			obj['Runtime (mins)'] = parseInt(obj['Runtime (mins)'])
 			obj['Year'] = parseInt(obj['Year'])
 	

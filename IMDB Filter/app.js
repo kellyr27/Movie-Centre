@@ -4,19 +4,20 @@ const fileUpload = require('express-fileupload')            // Middleware used t
 const methodOverride = require('method-override')           // Middleware used to use HTTP verbs such as PUT or DELETE
 const { v4: uuid } = require('uuid')                        // Universally unique identifier for createdLists
 const ejsMate = require('ejs-mate')                         // Use templating with EJS
-const mongoose = require('mongoose')
-const list = require('./models')
+const morgan = require('morgan')
+// const mongoose = require('mongoose')
+// const list = require('./models')
 
-mongoose.connect('mongodb://localhost:27017/imdb-filter', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
+// mongoose.connect('mongodb://localhost:27017/imdb-filter', {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true
+// })
 
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'Mongoose connection error: '))
-db.once('open', () => {
-    console.log('Database connected.')
-})
+// const db = mongoose.connection;
+// db.on('error', console.error.bind(console, 'Mongoose connection error: '))
+// db.once('open', () => {
+//     console.log('Database connected.')
+// })
 
 const path = require('path')                                // Path module
 const fs = require('fs')                                    // File System module
@@ -29,6 +30,7 @@ const {MovieList} = require('./js/movieList.js')
 
 const app = express()
 app.use(fileUpload())
+app.use(morgan('tiny'))
 app.use(express.urlencoded({ extended: true }))             // To parse form data in POST request body
 app.use(express.json())                                     // To parse incoming JSON in POST request body
 app.use(methodOverride('_method'))                          // To 'fake' put/patch/delete requests
@@ -43,11 +45,18 @@ const titles = ['Const_IMDB', 'Your Rating', 'Date Rated', 'Title', 'URL', 'Titl
 let masterMovieList = new MovieList()
 let createdLists = []                                       // List of all lists created
 
+// MIDDLEWARE
+app.use((req, res, next) => {
+    // console.log('Middleware')
+    req.requestTime = Date.now()
+    next()
+})
+
 
 // -------------------------------/UPLOAD-----------------------------------------------------------------------------------------
 
 app.get('/upload', (req, res) => {
-    res.render('upload', {pageTitle: 'Upload'})
+    res.render("upload", { pageTitle: "Upload" });
 })
 
 app.post('/upload', function(req, res) {
@@ -131,8 +140,11 @@ app.get('/movies', (req, res) => {
     res.render('movies', { displayList: masterMovieList, titles, isMasterList: true, pageTitle: 'Movies List'})
 })
 
+
 // Show movie details
 app.get('/movies/:str', (req, res) => {
+
+    console.log(req.route)
     const { str } = req.params
     if (str.startsWith('search')) {
         // Save search queries
@@ -223,7 +235,11 @@ app.listen(3000, () => {
     })
 })
 
-// Redirect routes to /movies
-app.get('*', (req, res) => {
-    res.redirect('/movies')
+// // Redirect routes to /movies
+// app.get('*', (req, res) => {
+//     res.redirect('/movies')
+// })
+
+app.use((req, res) => {
+    res.status(404).send('Not found!')
 })
