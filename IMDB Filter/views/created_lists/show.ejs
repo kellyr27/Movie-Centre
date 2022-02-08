@@ -1,12 +1,27 @@
 <% layout('layouts/boilerplate') %>
-<h1><%= selectedList["listName"] %> </h1>
-<ol>
-    <% for (let i = 0; i < selectedList["movies"].length; i++) { %> 
-        <li><a href="/movies/<%= selectedList["movies"][i]["Const_IMDB"] %>"><%= selectedList["movies"][i]["Title"] %></a></li>
-    <% } %> 
-</ol>
-<a href="/created_lists/<%= selectedList["id"] %>/edit">Edit List</a>
-<form method="post" action="/created_lists/<%= selectedList["id"] %>?_method=DELETE" >
-    <button>Delete</button>
-</form>
-<a href="/created_lists%>">Back to created lists</a>
+
+<div class="row">
+    <div class="col-6 offset-3">
+        <div class="card mb-3" style="width: 18rem;">
+            <div class="card-body">
+              <h5 class="card-title"><%= selectedList["listName"] %></h5>
+              <p class="card-text">Some description of the movie list.</p>
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <ol>
+                    <% for (let i = 0; i < selectedList["movies"].length; i++) { %> 
+                        <li><a href="/movies/<%= selectedList["movies"][i]["Const_IMDB"] %>"><%= selectedList["movies"][i]["Title"] %></a></li>
+                    <% } %> 
+                </ol>
+              </li>
+            </ul>
+            <div class="card-body">
+              <a class="card-link btn btn-warning" href="/created_lists/<%= selectedList["id"] %>/edit">Edit</a>
+              <form class="d-inline" method="post" action="/created_lists/<%= selectedList["id"] %>?_method=DELETE" >
+                <button class="btn btn-danger">Delete</button>
+            </form>
+            </div>
+          </div>
+    </div>
+</div>

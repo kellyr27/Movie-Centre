@@ -5,47 +5,53 @@
 -->
 
 <!-- POST request for submission -->
-<form method="post">
+<div class="col-8 offset-2">
+    <form method="post">
 
-    <!-- Body of post request -->
-    <div>
-        <!-- Input the List Name -->
-        <label for="listName">List Name: </label>
-        <input type="text" name="listName" id="inputTitle" required>
+        <!-- Body of post request -->
+        <div class="mb-3">
+            <!-- Input the List Name -->
+            <label class="form-label" for="listName">List Name: </label>
+            <input class="form-control" type="text" name="listName" id="inputTitle" required>
 
-        <!-- Set the value as Movie List -->
-        <input type="hidden" name="movies" id="movies">
-    </div>
-    
-    <!-- Displaying the created list -->
-    <div>
-        <ol id="showList"></ol>
-    </div>
-    
+            <!-- Set the value as Movie List -->
+            <input type="hidden" name="movies" id="movies">
+        </div>
 
-    <!-- Add movie to the Movie List -->
-    <div>
-        <label for="addMovie">Add movie: </label>
-        <input list="movieList" id="addMovie" name="addMovie">
-        <datalist id="movieList">
-            <% for (let i = 0; i < displayList.activeList.length; i++) { %> 
-                <option value="<%= displayList.activeList[i]['Title'] %>, <%= displayList.activeList[i]['Year'] %>">
-            <% } %> 
-        </datalist>
+        <div class="mb-3">
+            <!-- Input the description for the list -->
+            <label for="listDescription" class="form-label">Description: </label>
+            <textarea type="text" class="form-control" name="listDescription" id="listDescription"></textarea>
+        </div>
+        
+        <!-- Displaying the created list -->
+        <div class="mb-3">
+            <ol id="showList"></ol>
+        </div>
+        
 
-        <!-- Button to add movie to the Movie List -->
-        <input id="addMovieButton" type="button" value="+">
-    </div>
-    
-    <!-- Submitting the post request -->
-    <div>
-        <button id="submit">Submit</button>
-    </div>
+        <!-- Add movie to the Movie List -->
+        <div class="mb-3">
+            <label class="form-label" for="addMovie">Add movie: </label>
+            <input class="form-control" list="movieList" id="addMovie" name="addMovie">
+            <datalist id="movieList">
+                <% for (let i = 0; i < displayList.activeList.length; i++) { %> 
+                    <option value="<%= displayList.activeList[i]['Title'] %>, <%= displayList.activeList[i]['Year'] %>">
+                <% } %> 
+            </datalist>
 
-</form>
+            <!-- Button to add movie to the Movie List -->
+            <input id="addMovieButton" type="button" value="+">
+        </div>
+        
+        <!-- Submitting the post request -->
+        <div class="mb-3">
+            <button class="btn btn-success" id="submit">Submit</button>
+        </div>
 
-<a href="/created_lists">Back to Created Lists</a>
-    
+    </form>
+    <a href="/created_lists">Back to Created Lists</a>
+</div> 
 
 <!-- Script -->
 <%- include("../scripts/variables/displayList") %> 

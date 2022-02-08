@@ -5,25 +5,27 @@ const methodOverride = require('method-override')           // Middleware used t
 const { v4: uuid } = require('uuid')                        // Universally unique identifier for createdLists
 const ejsMate = require('ejs-mate')                         // Use templating with EJS
 const morgan = require('morgan')
-// const mongoose = require('mongoose')
-// const list = require('./models')
+const mongoose = require('mongoose')
+const Movie = require('./models/movie')
 
-// mongoose.connect('mongodb://localhost:27017/imdb-filter', {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true
-// })
 
-// const db = mongoose.connection;
-// db.on('error', console.error.bind(console, 'Mongoose connection error: '))
-// db.once('open', () => {
-//     console.log('Database connected.')
-// })
+// Database connection
+mongoose.connect('mongodb://localhost:27017/movie-centre', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'Mongoose connection error: '))
+db.once('open', () => {
+    console.log('Database connected.')
+})
+
 
 const path = require('path')                                // Path module
 const fs = require('fs')                                    // File System module
 
 // Personal libraries
-const csv = require('../IMDB Filter/js/csvConverter.js')    // Function converts CSV data to a list of objects
 const {Trie} = require('./js/trie.js')                    // Functions to create and search tries for searching
 const {MovieList} = require('./js/movieList.js')
 
@@ -55,82 +57,8 @@ app.use((req, res, next) => {
 
 // -------------------------------/UPLOAD-----------------------------------------------------------------------------------------
 
-app.get('/upload', (req, res) => {
-    res.render("upload", { pageTitle: "Upload" });
-})
-
-app.post('/upload', function(req, res) {
-  
-    if (!req.files || Object.keys(req.files).length === 0) {
-        return res.status(400).send('No files were uploaded.')
-    }
-
-
-    let uploadFiles = req.files.uploadFiles                               // The name of the input field ("uploadFiles") is used to retrieve the uploaded file
-    let uploadPath = __dirname + '/uploads/'
-    let newFiles = []
-    
-    // If only one file uploaded
-    if (!Array.isArray(uploadFiles)) {
-        newFiles.push(uploadFiles.name)
-        
-        uploadFiles.mv(uploadPath + uploadFiles.name, function(err) {                       // mv() method places the file somewhere in server
-            if (err) {
-                return res.status(500).send(err)
-            }
-        })
-    }
-    // If there are multiple files uploaded
-    else {
-
-        for (let file of uploadFiles) {
-            newFiles.push(file.name)
-
-            file.mv(uploadPath + file.name, function(err) {                       // mv() method places the file somewhere in server
-                if (err) {
-                    return res.status(500).send(err)
-                }
-            })
-        }
-    }
-
-    res.redirect('/movies')
-
-    setTimeout(() => {
-        masterMovieList.create(csv(masterMovieList.activeList, false, newFiles))
-    }, 2000)
-})
-
-app.post('/upload-test-data', function(req, res) {
-    res.redirect('/movies')
-
-    setTimeout(() => {
-
-        function getRandomIntInclusive(min, max) {
-            min = Math.ceil(min);
-            max = Math.floor(max);
-            return Math.floor(Math.random() * (max - min + 1) + min)   //The maximum is inclusive and the minimum is inclusive
-        }
-
-        masterMovieList.create(csv([], true, []))
-
-        // Create random lists
-        // let testListNames = ['apple', 'KELLY27', '9873', 'Banana', 'X12Tron']
-
-        // for (let name of testListNames) {
-        //     let testMovies = []
-
-        //     for (let i = 0; i < getRandomIntInclusive(10, 35); i++) {
-        //         let j = getRandomIntInclusive(0, 51)
-        //         addMovieToCurrentList(testMovies, masterMovieList.activeList[j])
-        //     }
-
-        //     createdLists.push({listName: name, id: uuid(), movies: testMovies})
-        // }
-
-    }, 2000)
-
-})
+const uploadRoutes = require('./routes/upload.js')
+app.use('/upload', uploadRoutes)
 
 // -------------------------------/MOVIES-----------------------------------------------------------------------------------------
 
@@ -144,7 +72,6 @@ app.get('/movies', (req, res) => {
 // Show movie details
 app.get('/movies/:str', (req, res) => {
 
-    console.log(req.route)
     const { str } = req.params
     if (str.startsWith('search')) {
         // Save search queries

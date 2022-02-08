@@ -1,12 +1,23 @@
 <% layout('layouts/boilerplate') %>
 <h1>Created Lists</h1>
+
+<!-- If there are no created lists to display -->
 <% if (displayList.length === 0) { %>
     <p>You have no created lists!</p>
+
+<!-- Display created lists -->
 <% } else { %>
-    <ol>
     <% for (let i = 0; i < displayList.length; i++) { %>
-        <li><a href="/created_lists/<%= displayList[i]['id']%>"><%= displayList[i]['listName'] %></a></li>
+        <div class="card mb-3">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title"><a href="/created_lists/<%= displayList[i]['id']%>"><%= displayList[i]['listName'] %></a></h5>
+                        <p class="card-text">Add movie list description</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     <% } %> 
-    </ol>
 <% } %> 
 <a href="/created_lists/new">Create new list</a>
