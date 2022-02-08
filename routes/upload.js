@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const csv = require('../js/csvConverter')    // Function converts CSV data to a list of objects
+const csvConverter = require('../js/newCSVConverter')    // Function converts CSV data to a list of objects
 
 // Display upload page
 router.get('/', (req, res) => {
@@ -10,44 +10,43 @@ router.get('/', (req, res) => {
 // Upload file(s) and save Movies to database
 router.post('/', (req, res) => {
     
-    if (!req.files || Object.keys(req.files).length === 0) {
-        return res.status(400).send('No files were uploaded.')
-    }
+    function saveFiles () {
+        let uploadFiles = req.files.uploadFiles
+        let uploadPath = __dirname + '/uploads/'
 
-
-    let uploadFiles = req.files.uploadFiles                                                 // The name of the input field ("uploadFiles") is used to retrieve the uploaded file
-    let uploadPath = __dirname + '/uploads/'
-    let newFiles = []
-    
-    // If only one file uploaded
-    if (!Array.isArray(uploadFiles)) {
-        newFiles.push(uploadFiles.name)
+        // Check if any files were uploaded
+        if (!req.files || Object.keys(req.files).length === 0) {
+            return res.status(400).send('No files were uploaded.')
+        }
         
-        uploadFiles.mv(uploadPath + uploadFiles.name, function(err) {                       // mv() method places the file somewhere in server
-            if (err) {
-                return res.status(500).send(err)
-            }
-        })
-    }
-    // If there are multiple files uploaded
-    else {
-
-        for (let file of uploadFiles) {
-            newFiles.push(file.name)
-
-            file.mv(uploadPath + file.name, function(err) {                       // mv() method places the file somewhere in server
+        // If only one file was uploaded
+        if (!Array.isArray(uploadFiles)) {
+            
+            uploadFiles.mv(uploadPath + uploadFiles.name, function(err) {
                 if (err) {
                     return res.status(500).send(err)
                 }
             })
         }
+
+        // If there are multiple files uploaded
+        else {
+
+            for (let file of uploadFiles) {
+
+                file.mv(uploadPath + file.name, function(err) {
+                    if (err) {
+                        return res.status(500).send(err)
+                    }
+                })
+            }
+        }
     }
 
-    res.redirect('/movies')
+    saveFiles()
+    csvConverter(false)
 
-    setTimeout(() => {
-        // masterMovieList.create(csv(masterMovieList.activeList, false, newFiles))
-    }, 2000)
+    res.redirect('/movies')
 })
 
 // Uploads seeds to database

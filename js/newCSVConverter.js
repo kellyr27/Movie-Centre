@@ -1,28 +1,25 @@
-// Step 1 - Determine what the file(s) in the directory are
-
-// Step 2 - Check that the files are CSVs
-
-// Step 3 - Upload data from each file
-
-    // Convert the CSV to an array
-
-        // Remove empties and Headings
-
-    // Upload each movie into the database
-        
-        // Remove duplicates
-
-
-// Step 4 - Delete files
-
 const fs = require('fs')
 const path = require('path')
+const mongoose = require('mongoose')
+const Movie = require('../models/movie')
+
+// Database connection
+mongoose.connect('mongodb://localhost:27017/movie-centre-test', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+
+const db = mongoose.connection;
+    db.on('error', console.error.bind(console, 'Mongoose connection error: '))
+    db.once('open', () => {
+    console.log('Database connected.')
+})
 
 
 // Reads the file names
-function readFileNames () {
+function readFileNames (dir) {
     return new Promise((res, rej) => {
-        fs.readdir(path.join(__dirname,'../seeds'), (err, data) => {
+        fs.readdir(path.join(__dirname,'../', dir), (err, data) => {
             if (err) {
                 return rej(err)
             }
@@ -32,9 +29,9 @@ function readFileNames () {
 }
 
 // Read the file contents
-function readFileData (file) {
+function readFileData (dir, file) {
     return new Promise ((res, rej) => {
-        fs.readFile(path.join(__dirname,'../seeds/', file), 'utf8' , (err, data) => {
+        fs.readFile(path.join(__dirname,'../', dir, '/', file), 'utf8' , (err, data) => {
             if (err) {
                 return rej(err)
             }
@@ -183,8 +180,37 @@ function convertCSVtoObject (fileRaw) {
     return objArr
 }
 
-async function run () {
-    const files = await readFileNames()
+// Delete everything in the existing Movie database
+async function deleteDatabase () {
+    return new Promise ((res, rej) => {
+        Movie.deleteMany({})
+            .then(msg => {
+                console.log('Existing database deleted')
+                res()
+            })
+            .catch(err => {
+                console.error('Failed to delete existing movie database.')
+                rej()
+            })
+    })
+}
+
+// 
+async function run (isSeed) {
+
+    // Delete everything in current directory
+    await deleteDatabase()
+
+    // Direct path based on whether test upload or not
+    let dir
+    if (isSeed) {
+        dir = 'seeds'
+    }
+    else {
+        dir = 'uploads'
+    }
+
+    const files = await readFileNames(dir)
     
     // Iterate through every file
     for (let file of files) {
@@ -194,13 +220,25 @@ async function run () {
             continue
         }
 
-        let fileRaw = await readFileData(file)
+        let fileRaw = await readFileData(dir, file)
         let objectArray = convertCSVtoObject(fileRaw)
         
+        // Iterate through movies and add to database
+        for (let obj of objectArray) {
+           
+            // Check if movie is already in database
+            let isDatabase = await Movie.find({constIMDB: obj.constIMDB}).exec()
+
+            if (isDatabase.length === 0) {
+                // Save movie to the database
+                const movie = new Movie(obj)
+                await movie.save()
+            }
+        }
         
     }
 }
 
-run()
+run(true)
 
 module.exports = run

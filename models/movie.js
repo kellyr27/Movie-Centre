@@ -14,9 +14,8 @@ const movieSchema = new Schema({
         max: 10,
     },
     dateRated: {
-        type: String,
-        required: true,
-        match: /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/
+        type: Date,
+        required: false
     },
     title: {
         type: String,
@@ -57,9 +56,8 @@ const movieSchema = new Schema({
         min: 0
     },
     releaseDate: {
-        type: String,
-        required: true,
-        match: /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/
+        type: Date,
+        required: true
     },
     directors: [{
         type: String,
