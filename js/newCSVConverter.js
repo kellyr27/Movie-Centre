@@ -1,20 +1,6 @@
 const fs = require('fs')
 const path = require('path')
-const mongoose = require('mongoose')
 const Movie = require('../models/movie')
-
-// Database connection
-mongoose.connect('mongodb://localhost:27017/movie-centre-test', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-
-const db = mongoose.connection;
-    db.on('error', console.error.bind(console, 'Mongoose connection error: '))
-    db.once('open', () => {
-    console.log('Database connected.')
-})
-
 
 // Reads the file names
 function readFileNames (dir) {
@@ -32,6 +18,18 @@ function readFileNames (dir) {
 function readFileData (dir, file) {
     return new Promise ((res, rej) => {
         fs.readFile(path.join(__dirname,'../', dir, '/', file), 'utf8' , (err, data) => {
+            if (err) {
+                return rej(err)
+            }
+            res(data)
+        })
+    })
+}
+
+// Delete the file from uploads
+function deleteFile (dir, file) {
+    return new Promise ((res, rej) => {
+        fs.unlink(path.join(__dirname,'../', dir, '/', file), (err, data) => {
             if (err) {
                 return rej(err)
             }
@@ -180,26 +178,9 @@ function convertCSVtoObject (fileRaw) {
     return objArr
 }
 
-// Delete everything in the existing Movie database
-async function deleteDatabase () {
-    return new Promise ((res, rej) => {
-        Movie.deleteMany({})
-            .then(msg => {
-                console.log('Existing database deleted')
-                res()
-            })
-            .catch(err => {
-                console.error('Failed to delete existing movie database.')
-                rej()
-            })
-    })
-}
-
 // 
 async function run (isSeed) {
 
-    // Delete everything in current directory
-    await deleteDatabase()
 
     // Direct path based on whether test upload or not
     let dir
@@ -235,10 +216,12 @@ async function run (isSeed) {
                 await movie.save()
             }
         }
-        
+
+        // Delete file once complete
+        if (!isSeed) {
+            await deleteFile(dir, file)
+        }
     }
 }
-
-run(true)
 
 module.exports = run

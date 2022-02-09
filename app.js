@@ -9,8 +9,14 @@ const mongoose = require('mongoose')
 const Movie = require('./models/movie')
 
 
+function getRandomIntInclusive(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min)   //The maximum is inclusive and the minimum is inclusive
+}
+
 // Database connection
-mongoose.connect('mongodb://localhost:27017/movie-centre', {
+mongoose.connect('mongodb://localhost:27017/movie-centre-test', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
@@ -160,6 +166,23 @@ app.listen(3000, () => {
             })
         }
     })
+
+    // Delete everything in the existing Movie database
+    async function deleteDatabase () {
+        return new Promise ((res, rej) => {
+            Movie.deleteMany({})
+                .then(msg => {
+                    console.log('Existing database deleted')
+                    res()
+                })
+                .catch(err => {
+                    console.error('Failed to delete existing movie database.')
+                    rej()
+                })
+        })
+    }
+
+    deleteDatabase()
 })
 
 // // Redirect routes to /movies
