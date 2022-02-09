@@ -2,7 +2,8 @@ const express = require('express')
 const router = express.Router()
 const path = require('path')
 const csvConverter = require('../js/newCSVConverter')    // Function converts CSV data to a list of objects
-const fs = require('fs')
+const convertOldMovie = require('../js/convertOldMovie')
+const Movie = require('../models/movie')
 
 // Display upload page
 router.get('/', (req, res) => {
@@ -10,7 +11,7 @@ router.get('/', (req, res) => {
 })
 
 // Upload file(s) and save Movies to database
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     
     const uploadsDirectory = path.join(__dirname, '../uploads/')
 
@@ -48,15 +49,16 @@ router.post('/', (req, res) => {
     saveFiles(req.files)
     csvConverter(false)
 
-    res.redirect('/movies')
+    // res.redirect('/movies')
 })
 
 // Uploads seeds to database
-router.post('/seed', function(req, res) {
+router.post('/seed', async function (req, res) {
 
     csvConverter(true)
-
-    res.redirect('/movies')
+    const databaseMovies = await Movie.find({})
+    convertOldMovie(databaseMovies)
+    // res.redirect('/movies')
 })
 
 module.exports = router
