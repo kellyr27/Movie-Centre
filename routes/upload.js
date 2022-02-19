@@ -2,7 +2,6 @@ const express = require('express')
 const router = express.Router()
 const path = require('path')
 const csvConverter = require('../js/newCSVConverter')    // Function converts CSV data to a list of objects
-const convertOldMovie = require('../js/convertOldMovie')
 const Movie = require('../models/movie')
 
 // Display upload page
@@ -17,48 +16,51 @@ router.post('/', async (req, res) => {
 
     // Saves files in the uploads directory
     function saveFiles (files) {
-        let uploadFiles = files.uploadFiles
+        return new Promise((res, rej) => {
+            let uploadFiles = files.uploadFiles
 
-        // Uploads and saves a file
-        function uploadFile (fil) {
-            fil.mv(uploadsDirectory + fil.name, (err) => {
-                if (err) {
-                    return res.status(500).send(err)
-                }
-            })
-        }
-
-        // Check if any files were uploaded
-        if (!files || Object.keys(files).length === 0) {
-            return res.status(400).send('No files were uploaded.')
-        }
-        
-        // If only one file was uploaded
-        if (!Array.isArray(uploadFiles)) {
-            uploadFile(uploadFiles)
-        }
-
-        // If there are multiple files uploaded
-        else {
-            for (let file of uploadFiles) {
-                uploadFile(file)
+            // Uploads and saves a file
+            function uploadFile (fil) {
+                fil.mv(uploadsDirectory + fil.name, (err) => {
+                    if (err) {
+                        return rej(err)
+                    }
+                })
             }
-        }
+
+            // Check if any files were uploaded
+            if (!files || Object.keys(files).length === 0) {
+                return rej(err)
+            }
+            
+            // If only one file was uploaded
+            if (!Array.isArray(uploadFiles)) {
+                uploadFile(uploadFiles)
+                return res()
+            }
+
+            // If there are multiple files uploaded
+            else {
+                for (let file of uploadFiles) {
+                    uploadFile(file)
+                }
+                return res()
+            }
+        })
     }
 
-    saveFiles(req.files)
-    csvConverter(false)
-
+    await saveFiles(req.files)
+    
     // res.redirect('/movies')
 })
 
 // Uploads seeds to database
-router.post('/seed', async function (req, res) {
+router.post('/seed', async (req, res) => {
 
-    csvConverter(true)
+    await csvConverter(true)
     const databaseMovies = await Movie.find({})
-    convertOldMovie(databaseMovies)
-    // res.redirect('/movies')
+    console.log("my list is ", databaseMovies)
+    res.redirect('/movies')
 })
 
 module.exports = router

@@ -2,64 +2,64 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const movieSchema = new Schema({
-    constIMDB: {
+    'Const_IMDB': {
         type: String,
         required: true,
         match: /^(tt)/
     },
-    yourRating: {
+    'Your Rating': {
         type: Number,
         required: false,
         min: 0,
         max: 10,
     },
-    dateRated: {
+    'Date Rated': {
         type: Date,
         required: false
     },
-    title: {
+    'Title': {
         type: String,
         required: true
     },
-    url: {
+    'URL': {
         type: String,
         required: true,
         match: /^(https:\/\/www.imdb.com\/title\/)/
     },
-    titleType: {
+    'Title Type': {
         type: String,
         required: true,
         enum: ['tvSeries', 'video', 'tvSpecial', 'movie', 'tvMiniSeries', 'tvMovie', 'tvEpisode']
     },
-    imdbRating: {
+    'IMDb Rating': {
         type: Number,
         required: true,
         min: 0,
         max: 10
     },
-    runtime: {
+    'Runtime (mins)': {
         type: Number,
         required: true,
         min: 0
     },
-    year: {
+    'Year': {
         type: Number,
         required: true,
         min: 1800
     },
-    genres: [{
+    'Genres': [{
         type: String
     }],
-    numVotes: {
+    'Num Votes': {
         type: Number,
         required: true,
         min: 0
     },
-    releaseDate: {
+    'Release Date': {
         type: Date,
         required: true
     },
-    directors: [{
+    'Directors': [{
         type: String,
         required: false
     }]

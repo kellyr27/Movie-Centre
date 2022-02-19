@@ -26,6 +26,9 @@ function readFileData (dir, file) {
     })
 }
 
+// Save the file in the uploads folder
+
+
 // Delete the file from uploads
 function deleteFile (dir, file) {
     return new Promise ((res, rej) => {
@@ -97,12 +100,12 @@ function convertCSVtoObject (fileRaw) {
         let currentMovie = {}
 
         // Const
-        currentMovie.constIMDB = row[0]
+        currentMovie['Const_IMDB'] = row[0]
 
         // Your Rating
         // Check if it is inputted
         if (row[1]) {
-            currentMovie.yourRating = parseInt(row[1])
+            currentMovie['Your Rating'] = parseInt(row[1])
         }
 
         // Date Rated
@@ -115,29 +118,29 @@ function convertCSVtoObject (fileRaw) {
                 dateRatedArr[0] = '0' + dateRatedArr[0]
             }
 
-            currentMovie.dateRated = Date.parse(`${dateRatedArr[2]}-${dateRatedArr[1]}-${dateRatedArr[0]}`)
+            currentMovie['Date Rated'] = Date.parse(`${dateRatedArr[2]}-${dateRatedArr[1]}-${dateRatedArr[0]}`)
         }
 
         // Title
-        currentMovie.title = row[3]
+        currentMovie['Title'] = row[3]
 
         // URL
-        currentMovie.url = row[4]
+        currentMovie['URL'] = row[4]
 
         // Title Type
-        currentMovie.titleType = row[5]
+        currentMovie['Title Type'] = row[5]
 
         // IMDB Rating
         // Check if it is inputted
         if (row[6]) {
-            currentMovie.imdbRating = parseFloat(row[6])
+            currentMovie['IMDb Rating'] = parseFloat(row[6])
         }
 
         // Runtime (mins)
-        currentMovie.runtime = parseInt(row[7])
+        currentMovie['Runtime (mins)'] = parseInt(row[7])
 
         // Year
-        currentMovie.year = parseInt(row[8])
+        currentMovie['Year'] = parseInt(row[8])
 
         // Genres
         let genres = row[9]
@@ -145,10 +148,10 @@ function convertCSVtoObject (fileRaw) {
         if (genres.charAt(0) === '"') {
             genres = genres.slice(1, -1)
         }
-        currentMovie.genres = genres.split(', ')
+        currentMovie['Genres'] = genres.split(', ')
 
         // Num Votes
-        currentMovie.numVotes = parseInt(row[10])
+        currentMovie['Num Votes'] = parseInt(row[10])
 
         // Release Date
         let dateReleasedArr = row[11].split('/')
@@ -158,7 +161,7 @@ function convertCSVtoObject (fileRaw) {
             dateReleasedArr[0] = '0' + dateReleasedArr[0]
         }
 
-        currentMovie.releaseDate = Date.parse(`${dateReleasedArr[2]}-${dateReleasedArr[1]}-${dateReleasedArr[0]}`)
+        currentMovie['Release Date'] = Date.parse(`${dateReleasedArr[2]}-${dateReleasedArr[1]}-${dateReleasedArr[0]}`)
 
         // Directors
         let directors = row[12]
@@ -168,7 +171,7 @@ function convertCSVtoObject (fileRaw) {
             if (directors.charAt(0) === '"') {
                 directors = directors.slice(1, -1)
             }
-            currentMovie.directors = directors.split(', ')
+            currentMovie['Directors'] = directors.split(', ')
         }
 
         // Add movie Object to Array
@@ -180,7 +183,6 @@ function convertCSVtoObject (fileRaw) {
 
 // 
 async function run (isSeed) {
-
 
     // Direct path based on whether test upload or not
     let dir
@@ -208,7 +210,7 @@ async function run (isSeed) {
         for (let obj of objectArray) {
            
             // Check if movie is already in database
-            let isDatabase = await Movie.find({constIMDB: obj.constIMDB}).exec()
+            let isDatabase = await Movie.find({'Const_IMDB': obj['Const_IMDB']}).exec()
 
             if (isDatabase.length === 0) {
                 // Save movie to the database
@@ -224,4 +226,10 @@ async function run (isSeed) {
     }
 }
 
-module.exports = run
+function promiseRun (isSeed) {
+    return new Promise((res, rej) => {
+        return res(run(isSeed))
+    })
+}
+
+module.exports = promiseRun
