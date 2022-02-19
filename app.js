@@ -23,8 +23,16 @@ mongoose.connect('mongodb://localhost:27017/movie-centre-test', {
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Mongoose connection error: '))
-db.once('open', () => {
+db.once('open', async () => {
     console.log('Database connected.')
+    // Delete everything in the existing Movie database
+    await Movie.deleteMany({})
+        .then(msg => {
+            console.log('Existing database deleted')
+        })
+        .catch(err => {
+            console.log('Failed to delete existing movie database.')
+        })
 })
 
 
@@ -86,23 +94,6 @@ app.use('/movies', movieRoutes)
 
 app.listen(3000, () => {
     console.log('Listening on Port 3000')
-
-    // Delete everything in the existing Movie database
-    async function deleteDatabase () {
-        return new Promise ((res, rej) => {
-            Movie.deleteMany({})
-                .then(msg => {
-                    console.log('Existing database deleted')
-                    res()
-                })
-                .catch(err => {
-                    console.error('Failed to delete existing movie database.')
-                    rej()
-                })
-        })
-    }
-
-    deleteDatabase()
 })
 
 // // Redirect routes to /movies

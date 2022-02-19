@@ -50,8 +50,11 @@ router.post('/', async (req, res) => {
     }
 
     await saveFiles(req.files)
-    
-    // res.redirect('/movies')
+    // await csvConverter(false)
+    // const databaseMovies = await Movie.find({})
+    // console.log("my list is ", databaseMovies)
+
+    res.redirect('/movies')
 })
 
 // Uploads seeds to database
