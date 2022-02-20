@@ -2,38 +2,41 @@
 const express = require('express')
 const router = express.Router()
 const Movie = require('../models/movie')
-const titles = ['Const_IMDB', 'Your Rating', 'Date Rated', 'Title', 'URL', 'Title Type', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Genres', 'Num Votes', 'Release Date', 'Directors']
+const List = require('../models/lists')
 const {MovieList} = require('../js/movieList')
+const {titles} = require('./variables/titles')
+const { listenerCount } = require('../models/movie')
 
 let masterMovieList = new MovieList()
 
-router.get('/', async (req, res) => {
 
+router.use((req, res, next) => {
+    next()
+})
+
+// Display all movies
+router.get('/', async (req, res) => {
     const databaseMovies = await Movie.find({})
     masterMovieList.create(databaseMovies)
     res.render('movies', { displayList: masterMovieList, titles, isMasterList: true, pageTitle: 'Movies List'})
 })
 
+// Middleware checks if query string is available
+router.use((req, res, next) => {
+    if (!req.query.q) {
+        return next()
+    }
+    
+    masterMovieList.search(req.query.q)
+    res.render('movies', { displayList: masterMovieList, titles, isMasterList: false, pageTitle: 'Search ' + req.query['q']})
+    
+})
 
 // Show movie details
-router.get('/:str', async (req, res) => {
-
-    const { str } = req.params
-
-    // Search query
-    if (str.startsWith('search')) {
-        // Save search queries
-
-        masterMovieList.search(req.query['q'])
-
-        res.render('movies', { displayList: masterMovieList, titles, isMasterList: false, pageTitle: 'Search ' + req.query['q']})
-    }
-
-    // Show
-    else {
-        const movie = await Movie.findOne({'Const_IMDB': str})
-        res.render('show', {movie, titles, displayList: [], pageTitle: movie.Title})
-    }
+router.get('/:id', async (req, res) => {
+    const movie = await Movie.findOne({'Const_IMDB': req.params.id})
+    const appearsInLists = await List.find({movies: movie})
+    res.render('show', {movie, titles, displayList: appearsInLists, pageTitle: movie.Title})
 })
 
 module.exports = router

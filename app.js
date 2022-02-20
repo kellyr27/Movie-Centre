@@ -38,12 +38,6 @@ db.once('open', async () => {
 
 
 const path = require('path')                                // Path module
-const fs = require('fs')                                    // File System module
-
-// Personal libraries
-const {Trie} = require('./js/trie.js')                    // Functions to create and search tries for searching
-const {MovieList} = require('./js/movieList.js')
-
 
 const app = express()
 app.use(fileUpload())
@@ -55,8 +49,6 @@ app.set('view engine', 'ejs')                               // EJS set up
 app.set('views', path.join(__dirname, 'views'))             // Views folder
 app.engine('ejs', ejsMate)                                  // Use ejsMate with express
 
-// Constants
-const titles = ['Const_IMDB', 'Your Rating', 'Date Rated', 'Title', 'URL', 'Title Type', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Genres', 'Num Votes', 'Release Date', 'Directors']
 
 // MIDDLEWARE
 app.use((req, res, next) => {

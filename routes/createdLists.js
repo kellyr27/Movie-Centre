@@ -4,16 +4,15 @@ const List = require('../models/lists')
 const Movie = require('../models/movie')
 const { v4: uuid } = require('uuid')                        // Universally unique identifier for createdLists
 const {MovieList} = require('../js/movieList')
+const {titles} = require('./variables/titles')
 
-// Constants
-const titles = ['Const_IMDB', 'Your Rating', 'Date Rated', 'Title', 'URL', 'Title Type', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Genres', 'Num Votes', 'Release Date', 'Directors']
-
-
+// Display all created lists
 router.get('/', async (req, res) => {
     const databaseLists = await List.find({})
     res.render('./created_lists/index', {displayList: databaseLists, pageTitle: 'Created Lists'})
 })
 
+// Display the page for creating a new list
 router.get('/new', async (req, res) => {
 
     let masterMovieList = new MovieList()
@@ -53,12 +52,10 @@ router.patch('/:id', async (req, res) => {
     }
 
 
-    const selectedList = await List.findOneAndUpdate({id: req.params.id}, {
+    await List.findOneAndUpdate({id: req.params.id}, {
         listName: req.body.listName,
         description: req.body.listDescription,
         movies: newMovieList
-    }, {
-        new: true
     })
     
     res.redirect(`/created_lists/${req.params.id}`)

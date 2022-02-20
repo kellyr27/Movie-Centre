@@ -22,18 +22,9 @@ class MovieList {
     }
 
     // Performs a search in place
-    // search (query) {
-
-    //     let foundMovies = this.masterTrie.search(query)
-        
-    //     for (let movie of this.activeList) {
-
-    //         // If a movie in the active display is not in the found movies, move to inactive list
-    //         if (!foundMovies.includes(movie)) {
-    //             this.inactiveList.push(movie)
-    //         }
-    //     }  
-    // }
+    search (query) {
+        this.masterList = this.masterTrie.search(query)
+    }
 
 
 }

@@ -15,12 +15,8 @@
 <div>
     <p><b><i>Appears in the following lists: </i></b></p>
     <ul>
-        <% for (let i = 0; i < displayList.length; i++) { %>            
-            <% for (let j = 0; j < displayList[i]['movies'].length; j++) { %> 
-                <% if (movie['Const_IMDB'] === displayList[i]['movies'][j]['Const_IMDB']) { %> 
-                    <li><a href="/created_lists/<%= displayList[i]['id'] %>"><%= displayList[i]['listName'] %></a></li>
-                <% } %> 
-            <% } %>
+        <% for (let list of displayList) { %> 
+            <li><a href="/created_lists/<%= list['id'] %>"><%= list['listName'] %></a></li>
         <% } %> 
     </ul>
 
