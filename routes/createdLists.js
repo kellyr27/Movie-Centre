@@ -1,12 +1,25 @@
 const express = require('express')
 const router = express.Router()
+const List = require('../models/lists')
+const Movie = require('../models/movie')
+const { v4: uuid } = require('uuid')                        // Universally unique identifier for createdLists
+const {MovieList} = require('../js/movieList')
+
+// Constants
+const titles = ['Const_IMDB', 'Your Rating', 'Date Rated', 'Title', 'URL', 'Title Type', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Genres', 'Num Votes', 'Release Date', 'Directors']
 
 
-router.get('/', (req, res) => {
-    res.render('./created_lists/index', {displayList: createdLists, pageTitle: 'Created Lists'})
+router.get('/', async (req, res) => {
+    const databaseLists = await List.find({})
+    res.render('./created_lists/index', {displayList: databaseLists, pageTitle: 'Created Lists'})
 })
 
-router.get('/new', (req, res) => {
+router.get('/new', async (req, res) => {
+
+    let masterMovieList = new MovieList()
+    const databaseMovies = await Movie.find({})
+    masterMovieList.create(databaseMovies)
+
     res.render('./created_lists/new', {displayList: masterMovieList, titles, pageTitle: 'Create new List'})
 })
 
@@ -46,8 +59,27 @@ router.delete('/:id', (req, res) => {
     res.redirect('/created_lists')
 })
 
-router.post('/', (req, res) => {
-    let newList = {listName: req.body.listName, id: uuid(), movies: JSON.parse(req.body.movies)}
-    createdLists.push(newList)
+router.post('/', async (req, res) => {
+
+    // Create list to save to database
+    let newList = {
+        listName: req.body.listName, 
+        id: uuid(), 
+        description: req.body.listDescription,
+        movies: []
+    }
+    // Add movies to the new list
+    const parsedMovies = JSON.parse(req.body.movies)
+    for (let i = 0; i < parsedMovies.length; i++) {
+        const foundMovie = await Movie.findById(parsedMovies[i]._id)
+        console.log(foundMovie)
+        newList.movies.push(foundMovie)
+    }
+
+    const createdList = new List(newList)
+    await createdList.save()
+
     res.redirect('/created_lists')
 })
+
+module.exports = router

@@ -3,47 +3,37 @@ const {Trie} = require('./trie.js')                    // Functions to create an
 class MovieList {
     constructor() {
         this.masterList = []
-
-        this.activeList = []
-        this.activeTrie
-
-        this.inactiveList = []
-        this.inactiveTrie = new Trie(this.inactiveList)
-    }
-
-    #updateTries () {
-        this.activeTrie = new Trie(this.activeList)
-        this.inactiveTrie = new Trie(this.inactiveList)
-    }
-
-    reset () {
-        this.activeList = this.masterList
-        this.inactiveList = []
-        this.#updateTries()
-        
+        this.masterTrie
     }
 
     create (masterList) {
         this.masterList = masterList
-        this.activeList = this.masterList
-        this.activeTrie = new Trie(this.activeList)
+
+        // Remove BSON properties to create the trie
+        let alteredList = []
+        for (let i = 0; i < masterList.length; i++) {
+            let alteredMovie = JSON.parse(JSON.stringify(masterList[i]))
+            delete alteredMovie._id            
+            delete alteredMovie.__v            
+            alteredList.push(alteredMovie)
+        }
+
+        this.masterTrie = new Trie(alteredList)
     }
 
     // Performs a search in place
-    search (query) {
+    // search (query) {
 
-        let foundMovies = this.activeTrie.search(query)
+    //     let foundMovies = this.masterTrie.search(query)
+        
+    //     for (let movie of this.activeList) {
 
-        for (let movie of this.activeList) {
-
-            // If a movie in the active display is not in the found movies, move to inactive list
-            if (!foundMovies.includes(movie)) {
-                this.inactiveList.push(movie)
-            }
-        }
-        this.activeList = foundMovies
-        this.#updateTries()
-    }
+    //         // If a movie in the active display is not in the found movies, move to inactive list
+    //         if (!foundMovies.includes(movie)) {
+    //             this.inactiveList.push(movie)
+    //         }
+    //     }  
+    // }
 
 
 }

@@ -35,8 +35,8 @@
             <label class="form-label" for="addMovie">Add movie: </label>
             <input class="form-control" list="movieList" id="addMovie" name="addMovie">
             <datalist id="movieList">
-                <% for (let i = 0; i < displayList.activeList.length; i++) { %> 
-                    <option value="<%= displayList.activeList[i]['Title'] %>, <%= displayList.activeList[i]['Year'] %>">
+                <% for (let i = 0; i < displayList.masterList.length; i++) { %> 
+                    <option value="<%= displayList.masterList[i]['Title'] %>, <%= displayList.masterList[i]['Year'] %>">
                 <% } %> 
             </datalist>
 

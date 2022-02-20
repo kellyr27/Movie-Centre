@@ -2,7 +2,6 @@
 const express = require('express')                          // Web pplication framework
 const fileUpload = require('express-fileupload')            // Middleware used to upload files with express
 const methodOverride = require('method-override')           // Middleware used to use HTTP verbs such as PUT or DELETE
-const { v4: uuid } = require('uuid')                        // Universally unique identifier for createdLists
 const ejsMate = require('ejs-mate')                         // Use templating with EJS
 const morgan = require('morgan')
 const mongoose = require('mongoose')
@@ -57,10 +56,6 @@ app.engine('ejs', ejsMate)                                  // Use ejsMate with 
 // Constants
 const titles = ['Const_IMDB', 'Your Rating', 'Date Rated', 'Title', 'URL', 'Title Type', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Genres', 'Num Votes', 'Release Date', 'Directors']
 
-// Variables
-let masterMovieList = new MovieList()
-let createdLists = []                                       // List of all lists created
-
 // MIDDLEWARE
 app.use((req, res, next) => {
     // console.log('Middleware')
@@ -76,19 +71,13 @@ app.use('/upload', uploadRoutes)
 
 // -------------------------------/MOVIES-----------------------------------------------------------------------------------------
 
-app.get('/test', async (req, res) => {
-    let movies = await Movie.find({})
-    console.log(movies)
-})
-
-
 const movieRoutes = require('./routes/movies.js')
 app.use('/movies', movieRoutes)
 
 // -------------------------------/CREATED_LISTS-----------------------------------------------------------------------------------------
 
-// const createdListsRoutes = require('./routes/createdLists.js')
-// app.use('/created_lists', createdListsRoutes)
+const createdListsRoutes = require('./routes/createdLists.js')
+app.use('/created_lists', createdListsRoutes)
 
 // -------------------------------SERVER/START-UP-----------------------------------------------------------------------------------------
 

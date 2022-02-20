@@ -50,9 +50,7 @@ router.post('/', async (req, res) => {
     }
 
     await saveFiles(req.files)
-    // await csvConverter(false)
-    // const databaseMovies = await Movie.find({})
-    // console.log("my list is ", databaseMovies)
+    await csvConverter(false)
 
     res.redirect('/movies')
 })
@@ -61,8 +59,6 @@ router.post('/', async (req, res) => {
 router.post('/seed', async (req, res) => {
 
     await csvConverter(true)
-    const databaseMovies = await Movie.find({})
-    console.log("my list is ", databaseMovies)
     res.redirect('/movies')
 })
 

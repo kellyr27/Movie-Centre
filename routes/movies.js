@@ -3,32 +3,37 @@ const express = require('express')
 const router = express.Router()
 const Movie = require('../models/movie')
 const titles = ['Const_IMDB', 'Your Rating', 'Date Rated', 'Title', 'URL', 'Title Type', 'IMDb Rating', 'Runtime (mins)', 'Year', 'Genres', 'Num Votes', 'Release Date', 'Directors']
+const {MovieList} = require('../js/movieList')
+
+let masterMovieList = new MovieList()
 
 router.get('/', async (req, res) => {
 
-    // const databaseMovies = await Movie.find({})
-    let masterMovieList = []
-    // let masterMovieList = convertOldMovie(databaseMovies)
+    const databaseMovies = await Movie.find({})
+    masterMovieList.create(databaseMovies)
     res.render('movies', { displayList: masterMovieList, titles, isMasterList: true, pageTitle: 'Movies List'})
 })
 
 
 // Show movie details
-// router.get('/:str', (req, res) => {
+router.get('/:str', (req, res) => {
 
-//     const { str } = req.params
-//     if (str.startsWith('search')) {
-//         // Save search queries
+    const { str } = req.params
 
-//         masterMovieList.search(req.query['q'])
+    // Search query
+    if (str.startsWith('search')) {
+        // Save search queries
 
-//         res.render('movies', { displayList: masterMovieList, titles, isMasterList: false, pageTitle: 'Search ' + req.query['q']})
-//     }
-//     else {
+        masterMovieList.search(req.query['q'])
 
-//         const movie = masterMovieList.activeList.find(m => m["Const_IMDB"] === str)
-//         res.render('show', {movie, titles, displayList: createdLists, pageTitle: movie.Title})
-//     }
-// })
+        res.render('movies', { displayList: masterMovieList, titles, isMasterList: false, pageTitle: 'Search ' + req.query['q']})
+    }
+
+    // Show
+    else {
+        const movie = masterMovieList.masterList.find(m => m["Const_IMDB"] === str)
+        res.render('show', {movie, titles, displayList: createdLists, pageTitle: movie.Title})
+    }
+})
 
 module.exports = router
