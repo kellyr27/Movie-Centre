@@ -71,11 +71,13 @@ router.post('/', async (req, res) => {
         movies: []
     }
     // Add movies to the new list
-    const parsedMovies = JSON.parse(req.body.movies)
-    for (let i = 0; i < parsedMovies.length; i++) {
-        const foundMovie = await Movie.findById(parsedMovies[i]._id)
-        console.log(foundMovie)
-        newList.movies.push(foundMovie)
+    if (req.body.movies) {
+        const parsedMovies = JSON.parse(req.body.movies)
+        for (let i = 0; i < parsedMovies.length; i++) {
+            const foundMovie = await Movie.findById(parsedMovies[i]._id)
+            console.log(foundMovie)
+            newList.movies.push(foundMovie)
+        }
     }
 
     const createdList = new List(newList)
