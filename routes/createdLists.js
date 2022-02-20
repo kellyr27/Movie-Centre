@@ -31,28 +31,37 @@ router.get('/:id', async (req, res) => {
 
 // Edit selected list page
 router.get('/:id/edit', async (req, res) => {
-    const selectedList = List.findOne({id: req.params.id}).populate('movies')
-
-    // let masterMovieList = new MovieList()
-    // const databaseMovies = await Movie.find({})
-    // masterMovieList.create(databaseMovies)
+    const selectedList = await List.findOne({id: req.params.id}).populate('movies')
+    let masterMovieList = new MovieList()
+    const databaseMovies = await Movie.find({})
+    masterMovieList.create(databaseMovies)
 
     res.render('./created_lists/edit', {selectedList, displayList: masterMovieList, titles, pageTitle: 'Edit List -' + selectedList.listName })
 })
 
 // Request to edit selected list
-router.patch('/:id', (req, res) => {
-    const { id } = req.params
+router.patch('/:id', async (req, res) => {
 
-    // Updated parameters
-    const newListName = req.body.listName
-    const newMovies = JSON.parse(req.body.movies)
+    // Get new list
+    let newMovieList = []
+    if (req.body.movies) {
+        const parsedMovies = JSON.parse(req.body.movies)
+        for (let i = 0; i < parsedMovies.length; i++) {
+            const foundMovie = await Movie.findById(parsedMovies[i]._id)
+            newMovieList.push(foundMovie)
+        }
+    }
 
-    const selectedList = createdLists.find(m => m.id === id)
-    selectedList.listName = newListName
-    selectedList.movies = newMovies
+
+    const selectedList = await List.findOneAndUpdate({id: req.params.id}, {
+        listName: req.body.listName,
+        description: req.body.listDescription,
+        movies: newMovieList
+    }, {
+        new: true
+    })
     
-    res.redirect('/created_lists')
+    res.redirect(`/created_lists/${req.params.id}`)
 })
 
 // Request to delete selected list
@@ -75,7 +84,6 @@ router.post('/', async (req, res) => {
         const parsedMovies = JSON.parse(req.body.movies)
         for (let i = 0; i < parsedMovies.length; i++) {
             const foundMovie = await Movie.findById(parsedMovies[i]._id)
-            console.log(foundMovie)
             newList.movies.push(foundMovie)
         }
     }

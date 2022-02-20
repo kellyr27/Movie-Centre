@@ -6,13 +6,7 @@ const ejsMate = require('ejs-mate')                         // Use templating wi
 const morgan = require('morgan')
 const mongoose = require('mongoose')
 const Movie = require('./models/movie')
-
-
-function getRandomIntInclusive(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1) + min)   //The maximum is inclusive and the minimum is inclusive
-}
+const List = require('./models/lists')
 
 // Database connection
 mongoose.connect('mongodb://localhost:27017/movie-centre-test', {
@@ -27,10 +21,18 @@ db.once('open', async () => {
     // Delete everything in the existing Movie database
     await Movie.deleteMany({})
         .then(msg => {
-            console.log('Existing database deleted')
+            console.log('Existing Movie database deleted')
         })
         .catch(err => {
-            console.log('Failed to delete existing movie database.')
+            console.log('Failed to delete existing Movie database.')
+        })
+    // Delete everything in the existing List database
+    await List.deleteMany({})
+        .then(msg => {
+            console.log('Existing List database deleted')
+        })
+        .catch(err => {
+            console.log('Failed to delete existing List database.')
         })
 })
 

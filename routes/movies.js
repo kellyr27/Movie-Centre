@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
 
 
 // Show movie details
-router.get('/:str', (req, res) => {
+router.get('/:str', async (req, res) => {
 
     const { str } = req.params
 
@@ -31,8 +31,8 @@ router.get('/:str', (req, res) => {
 
     // Show
     else {
-        const movie = masterMovieList.masterList.find(m => m["Const_IMDB"] === str)
-        res.render('show', {movie, titles, displayList: createdLists, pageTitle: movie.Title})
+        const movie = await Movie.findOne({'Const_IMDB': str})
+        res.render('show', {movie, titles, displayList: [], pageTitle: movie.Title})
     }
 })
 

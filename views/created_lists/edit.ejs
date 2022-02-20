@@ -19,6 +19,10 @@
     let listName = document.querySelector('#inputTitle')
     listName.value = selectedList.listName
 
+    // Preset the description in the input
+    let listDescription = document.querySelector('#listDescription')
+    listDescription.value = selectedList.description
+
     // Load the imported list and display when page is first loaded
     window.onload = function () {
         updateDisplayList()
