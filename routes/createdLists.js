@@ -24,16 +24,19 @@ router.get('/new', async (req, res) => {
 })
 
 // Show selected list details
-router.get('/:id', (req, res) => {
-    const { id } = req.params
-    const selectedList = createdLists.find(m => m["id"] === id)
+router.get('/:id', async (req, res) => {
+    const selectedList = await List.findOne({id: req.params.id}).populate('movies')
     res.render('./created_lists/show', {selectedList, pageTitle: selectedList.listName})
 })
 
 // Edit selected list page
-router.get('/:id/edit', (req, res) => {
-    const { id } = req.params
-    const selectedList = createdLists.find(m => m.id === id)
+router.get('/:id/edit', async (req, res) => {
+    const selectedList = List.findOne({id: req.params.id}).populate('movies')
+
+    // let masterMovieList = new MovieList()
+    // const databaseMovies = await Movie.find({})
+    // masterMovieList.create(databaseMovies)
+
     res.render('./created_lists/edit', {selectedList, displayList: masterMovieList, titles, pageTitle: 'Edit List -' + selectedList.listName })
 })
 
@@ -53,9 +56,8 @@ router.patch('/:id', (req, res) => {
 })
 
 // Request to delete selected list
-router.delete('/:id', (req, res) => {
-    const { id } = req.params
-    createdLists = createdLists.filter(m => m.id !== id)
+router.delete('/:id', async (req, res) => {
+    await List.deleteOne({id: req.params.id})
     res.redirect('/created_lists')
 })
 
