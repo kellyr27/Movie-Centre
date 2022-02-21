@@ -1,5 +1,5 @@
 const express = require('express')
-const router = express.Router()
+const router = express.Router({mergeParams: true})
 const List = require('../models/lists')
 const Movie = require('../models/movie')
 const { v4: uuid } = require('uuid')                        // Universally unique identifier for createdLists
@@ -58,12 +58,15 @@ router.patch('/:id', async (req, res) => {
         movies: newMovieList
     })
     
+    req.flash('success', 'Successfully edited list!')
     res.redirect(`/created_lists/${req.params.id}`)
 })
 
 // Request to delete selected list
 router.delete('/:id', async (req, res) => {
     await List.deleteOne({id: req.params.id})
+
+    req.flash('success', 'Successfully deleted list!')
     res.redirect('/created_lists')
 })
 
@@ -88,6 +91,7 @@ router.post('/', async (req, res) => {
     const createdList = new List(newList)
     await createdList.save()
 
+    req.flash('success', 'Successfully made a new list!')
     res.redirect('/created_lists')
 })
 

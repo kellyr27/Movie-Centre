@@ -5,6 +5,8 @@ const methodOverride = require('method-override')           // Middleware used t
 const ejsMate = require('ejs-mate')                         // Use templating with EJS
 const morgan = require('morgan')
 const mongoose = require('mongoose')
+const session = require('express-session')
+const flash = require('connect-flash')
 const Movie = require('./models/movie')
 const List = require('./models/lists')
 
@@ -45,6 +47,21 @@ app.use(morgan('tiny'))
 app.use(express.urlencoded({ extended: true }))             // To parse form data in POST request body
 app.use(express.json())                                     // To parse incoming JSON in POST request body
 app.use(methodOverride('_method'))                          // To 'fake' put/patch/delete requests
+app.use(express.static(path.join(__dirname, 'public')))
+
+const sessionConfig = {
+    secret: 'tempsecret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        expires: Date.now() + 1000*60*60*24*7,
+        maxAge: 1000*60*60*24*7
+    }
+}
+app.use(session(sessionConfig))
+app.use(flash())
+
 app.set('view engine', 'ejs')                               // EJS set up
 app.set('views', path.join(__dirname, 'views'))             // Views folder
 app.engine('ejs', ejsMate)                                  // Use ejsMate with express
@@ -53,7 +70,9 @@ app.engine('ejs', ejsMate)                                  // Use ejsMate with 
 // MIDDLEWARE
 app.use((req, res, next) => {
     // console.log('Middleware')
-    req.requestTime = Date.now()
+    // req.requestTime = Date.now()
+    res.locals.success = req.flash('success')
+    res.locals.error = req.flash('error')
     next()
 })
 

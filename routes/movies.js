@@ -1,6 +1,6 @@
 
 const express = require('express')
-const router = express.Router()
+const router = express.Router({mergeParams: true})
 const Movie = require('../models/movie')
 const List = require('../models/lists')
 const {MovieList} = require('../js/movieList')

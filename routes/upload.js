@@ -1,5 +1,5 @@
 const express = require('express')
-const router = express.Router()
+const router = express.Router({mergeParams: true})
 const path = require('path')
 
 const csvConverter = require('../js/newCSVConverter')       // Function converts CSV data to a list of objects
