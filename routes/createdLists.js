@@ -5,6 +5,8 @@ const Movie = require('../models/movie')
 const { v4: uuid } = require('uuid')                        // Universally unique identifier for createdLists
 const {MovieList} = require('../js/movieList')
 const {titles} = require('./variables/titles')
+const {isLoggedIn} = require('../middleware')
+
 
 // Display all created lists
 router.get('/', async (req, res) => {
@@ -13,7 +15,7 @@ router.get('/', async (req, res) => {
 })
 
 // Display the page for creating a new list
-router.get('/new', async (req, res) => {
+router.get('/new', isLoggedIn, async (req, res) => {
 
     let masterMovieList = new MovieList()
     const databaseMovies = await Movie.find({})
@@ -29,7 +31,7 @@ router.get('/:id', async (req, res) => {
 })
 
 // Edit selected list page
-router.get('/:id/edit', async (req, res) => {
+router.get('/:id/edit', isLoggedIn, async (req, res) => {
     const selectedList = await List.findOne({id: req.params.id}).populate('movies')
     let masterMovieList = new MovieList()
     const databaseMovies = await Movie.find({})
@@ -39,7 +41,7 @@ router.get('/:id/edit', async (req, res) => {
 })
 
 // Request to edit selected list
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', isLoggedIn, async (req, res) => {
 
     // Get new list
     let newMovieList = []
@@ -63,14 +65,14 @@ router.patch('/:id', async (req, res) => {
 })
 
 // Request to delete selected list
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', isLoggedIn, async (req, res) => {
     await List.deleteOne({id: req.params.id})
 
     req.flash('success', 'Successfully deleted list!')
     res.redirect('/created_lists')
 })
 
-router.post('/', async (req, res) => {
+router.post('/', isLoggedIn, async (req, res) => {
 
     // Create list to save to database
     let newList = {

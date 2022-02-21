@@ -5,10 +5,48 @@ const methodOverride = require('method-override')           // Middleware used t
 const ejsMate = require('ejs-mate')                         // Use templating with EJS
 const morgan = require('morgan')
 const mongoose = require('mongoose')
+const passport = require('passport')
+const localStrategy = require('passport-local')
 const session = require('express-session')
 const flash = require('connect-flash')
+
 const Movie = require('./models/movie')
 const List = require('./models/lists')
+const User = require('./models/user')
+
+const path = require('path')                                // Path module
+
+const app = express()
+app.use(fileUpload())
+app.use(morgan('tiny'))
+app.use(express.urlencoded({ extended: true }))             // To parse form data in POST request body
+app.use(express.json())                                     // To parse incoming JSON in POST request body
+app.use(methodOverride('_method'))                          // To 'fake' put/patch/delete requests
+app.use(express.static(path.join(__dirname, 'public')))
+
+const sessionConfig = {
+    secret: 'tempsecret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        expires: Date.now() + 1000*60*60*24*7,
+        maxAge: 1000*60*60*24*7
+    }
+}
+app.use(session(sessionConfig))
+app.use(flash())
+app.use(passport.initialize())
+app.use(passport.session())
+passport.use(new localStrategy(User.authenticate()))
+passport.serializeUser(User.serializeUser())
+passport.deserializeUser(User.deserializeUser())
+
+
+app.set('view engine', 'ejs')                               // EJS set up
+app.set('views', path.join(__dirname, 'views'))             // Views folder
+app.engine('ejs', ejsMate)                                  // Use ejsMate with express
+
 
 // Database connection
 mongoose.connect('mongodb://localhost:27017/movie-centre-test', {
@@ -39,43 +77,29 @@ db.once('open', async () => {
 })
 
 
-const path = require('path')                                // Path module
-
-const app = express()
-app.use(fileUpload())
-app.use(morgan('tiny'))
-app.use(express.urlencoded({ extended: true }))             // To parse form data in POST request body
-app.use(express.json())                                     // To parse incoming JSON in POST request body
-app.use(methodOverride('_method'))                          // To 'fake' put/patch/delete requests
-app.use(express.static(path.join(__dirname, 'public')))
-
-const sessionConfig = {
-    secret: 'tempsecret',
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-        httpOnly: true,
-        expires: Date.now() + 1000*60*60*24*7,
-        maxAge: 1000*60*60*24*7
-    }
-}
-app.use(session(sessionConfig))
-app.use(flash())
-
-app.set('view engine', 'ejs')                               // EJS set up
-app.set('views', path.join(__dirname, 'views'))             // Views folder
-app.engine('ejs', ejsMate)                                  // Use ejsMate with express
-
-
 // MIDDLEWARE
 app.use((req, res, next) => {
     // console.log('Middleware')
     // req.requestTime = Date.now()
+    res.locals.currentUser = req.user
     res.locals.success = req.flash('success')
     res.locals.error = req.flash('error')
     next()
 })
 
+
+app.get('/testuser', async (req, res) => {
+    const user = new User({
+        email: 'kelly@gmail.com',
+        username: 'kellly'
+    })
+    const newUser = await User.register(user, 'chicken')
+    res.send(newUser)
+})
+
+
+const userRoutes = require('./routes/users.js')
+app.use('/', userRoutes)
 
 // -------------------------------/UPLOAD-----------------------------------------------------------------------------------------
 
