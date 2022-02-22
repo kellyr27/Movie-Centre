@@ -6,13 +6,20 @@
 
 <!-- POST request for submission -->
 <div class="col-8 offset-2">
-    <form method="post">
+    <form method="post" novalidate class="validated-form">
 
         <!-- Body of post request -->
         <div class="mb-3">
             <!-- Input the List Name -->
             <label class="form-label" for="listName">List Name: </label>
             <input class="form-control" type="text" name="listName" id="inputTitle" required>
+            <div class="valid-feedback">
+                Looks good
+            </div>
+            <div class="invalid-feedback">
+                List must have a name!
+            </div>
+
 
             <!-- Set the value as Movie List -->
             <input type="hidden" name="movies" id="movies">
@@ -52,6 +59,8 @@
     </form>
     <a href="/created_lists">Back to Created Lists</a>
 </div> 
+
+<script src="/js/validatedForm.js"></script>
 
 <!-- Script -->
 <%- include("../scripts/variables/displayList") %> 

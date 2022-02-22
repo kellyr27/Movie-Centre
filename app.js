@@ -10,6 +10,8 @@ const passport = require('passport')
 const localStrategy = require('passport-local')
 const session = require('express-session')
 const flash = require('connect-flash')
+const catchAsync = require('./utils/catchAsync')
+const ExpressError = require('./utils/ExpressError')
 
 const Movie = require('./models/movie')
 const List = require('./models/lists')
@@ -129,11 +131,15 @@ app.listen(3000, () => {
     console.log('Listening on Port 3000')
 })
 
-// // Redirect routes to /movies
-// app.get('*', (req, res) => {
-//     res.redirect('/movies')
-// })
+// Redirect routes to /movies
+app.get('*', (req, res, next) => {
+    next(new ExpressError('Page not found.', 404))
+})
 
-app.use((req, res) => {
-    res.status(404).send('Not found!')
+app.use((err, req, res, next) => {
+    const {statusCode = 500} = err
+    if (!err.message) {
+        err.message = 'Error. Something went wrong!'
+    }
+    res.status(statusCode).render('error', {pageTitle: 'Error Page', err})
 })

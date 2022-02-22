@@ -6,7 +6,9 @@ const { v4: uuid } = require('uuid')                        // Universally uniqu
 const {MovieList} = require('../js/movieList')
 const {titles} = require('./variables/titles')
 const {isLoggedIn} = require('../middleware')
-
+const catchAsync = require('../utils/catchAsync')
+const { application } = require('express')
+const ExpressError = require('../utils/ExpressError')
 
 // Display all created lists
 router.get('/', async (req, res) => {
@@ -25,10 +27,10 @@ router.get('/new', isLoggedIn, async (req, res) => {
 })
 
 // Show selected list details
-router.get('/:id', async (req, res) => {
+router.get('/:id', catchAsync(async (req, res) => {
     const selectedList = await List.findOne({id: req.params.id}).populate('movies')
     res.render('./created_lists/show', {selectedList, pageTitle: selectedList.listName})
-})
+}))
 
 // Edit selected list page
 router.get('/:id/edit', isLoggedIn, async (req, res) => {
@@ -41,7 +43,7 @@ router.get('/:id/edit', isLoggedIn, async (req, res) => {
 })
 
 // Request to edit selected list
-router.patch('/:id', isLoggedIn, async (req, res) => {
+router.patch('/:id', isLoggedIn, catchAsync(async (req, res) => {
 
     const foundList = await List.findById({id: req.params.id})
     if (!foundList.owner.equals(req.user._id)) {
@@ -68,17 +70,21 @@ router.patch('/:id', isLoggedIn, async (req, res) => {
     
     req.flash('success', 'Successfully edited list!')
     res.redirect(`/created_lists/${req.params.id}`)
-})
+}))
 
 // Request to delete selected list
-router.delete('/:id', isLoggedIn, async (req, res) => {
+router.delete('/:id', isLoggedIn, catchAsync(async (req, res) => {
     await List.deleteOne({id: req.params.id})
 
     req.flash('success', 'Successfully deleted list!')
     res.redirect('/created_lists')
-})
+}))
 
-router.post('/', isLoggedIn, async (req, res) => {
+router.post('/', isLoggedIn, catchAsync(async (req, res) => {
+
+    if (!req.body.listName) {
+        throw new ExpressError('Invalid list data', 400)
+    }
 
     // Create list to save to database
     let newList = {
@@ -88,6 +94,7 @@ router.post('/', isLoggedIn, async (req, res) => {
         movies: [],
         owner: req.user._id
     }
+
     // Add movies to the new list
     if (req.body.movies) {
         const parsedMovies = JSON.parse(req.body.movies)
@@ -102,6 +109,8 @@ router.post('/', isLoggedIn, async (req, res) => {
 
     req.flash('success', 'Successfully made a new list!')
     res.redirect('/created_lists')
-})
+}))
+
+
 
 module.exports = router
