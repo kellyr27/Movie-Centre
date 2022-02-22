@@ -9,6 +9,21 @@ const {isLoggedIn} = require('../middleware')
 const catchAsync = require('../utils/catchAsync')
 const { application } = require('express')
 const ExpressError = require('../utils/ExpressError')
+const Joi = require('joi')
+const {listSchema} = require('../schemas')
+
+const validateList = (req, res, next) => {
+    
+
+    const {error} = listSchema.validate(req.body)
+    if (result.error) {
+        const msg = error.details.map(el => el.message).join(', ')
+        throw new ExpressError(msg, 400)
+    }
+    else {
+        next()
+    }
+}
 
 // Display all created lists
 router.get('/', async (req, res) => {
@@ -43,7 +58,7 @@ router.get('/:id/edit', isLoggedIn, async (req, res) => {
 })
 
 // Request to edit selected list
-router.patch('/:id', isLoggedIn, catchAsync(async (req, res) => {
+router.patch('/:id', validateList, isLoggedIn, catchAsync(async (req, res) => {
 
     const foundList = await List.findById({id: req.params.id})
     if (!foundList.owner.equals(req.user._id)) {
@@ -80,11 +95,12 @@ router.delete('/:id', isLoggedIn, catchAsync(async (req, res) => {
     res.redirect('/created_lists')
 }))
 
-router.post('/', isLoggedIn, catchAsync(async (req, res) => {
+router.post('/', validateList, isLoggedIn, catchAsync(async (req, res) => {
 
-    if (!req.body.listName) {
-        throw new ExpressError('Invalid list data', 400)
-    }
+    // if (!req.body.listName) {
+    //     throw new ExpressError('Invalid list data', 400)
+    // }
+
 
     // Create list to save to database
     let newList = {
