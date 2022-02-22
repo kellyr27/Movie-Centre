@@ -43,6 +43,12 @@ router.get('/:id/edit', isLoggedIn, async (req, res) => {
 // Request to edit selected list
 router.patch('/:id', isLoggedIn, async (req, res) => {
 
+    const foundList = await List.findById({id: req.params.id})
+    if (!foundList.owner.equals(req.user._id)) {
+        req.flash('error', 'You do not have permission!')
+        return res.redirect(`/created_lists/${req.params.id}`)
+    }
+
     // Get new list
     let newMovieList = []
     if (req.body.movies) {
@@ -79,7 +85,8 @@ router.post('/', isLoggedIn, async (req, res) => {
         listName: req.body.listName, 
         id: uuid(), 
         description: req.body.listDescription,
-        movies: []
+        movies: [],
+        owner: req.user._id
     }
     // Add movies to the new list
     if (req.body.movies) {

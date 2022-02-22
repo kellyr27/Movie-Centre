@@ -3,7 +3,8 @@ const express = require('express')                          // Web pplication fr
 const fileUpload = require('express-fileupload')            // Middleware used to upload files with express
 const methodOverride = require('method-override')           // Middleware used to use HTTP verbs such as PUT or DELETE
 const ejsMate = require('ejs-mate')                         // Use templating with EJS
-const morgan = require('morgan')
+// const morgan = require('morgan')
+const responseTime = require('response-time')
 const mongoose = require('mongoose')
 const passport = require('passport')
 const localStrategy = require('passport-local')
@@ -18,7 +19,8 @@ const path = require('path')                                // Path module
 
 const app = express()
 app.use(fileUpload())
-app.use(morgan('tiny'))
+// app.use(morgan(':method :url :status :response-time ms - :res[content-length]'))
+app.use(responseTime())
 app.use(express.urlencoded({ extended: true }))             // To parse form data in POST request body
 app.use(express.json())                                     // To parse incoming JSON in POST request body
 app.use(methodOverride('_method'))                          // To 'fake' put/patch/delete requests
@@ -78,6 +80,11 @@ db.once('open', async () => {
 
 
 // MIDDLEWARE
+app.use(responseTime((req, res, time) => {
+    console.log(`${req.method.padEnd(6)} ${res.statusCode} ${time.toFixed(1).padStart(7).padEnd(7+3)} ${req.originalUrl}`)
+}))
+
+
 app.use((req, res, next) => {
     // console.log('Middleware')
     // req.requestTime = Date.now()

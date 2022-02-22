@@ -18,7 +18,12 @@ const listSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Movie',
         required: false  
-    }]
+    }],
+    owner: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    }
 
 })
 

@@ -5,7 +5,6 @@ const Movie = require('../models/movie')
 const List = require('../models/lists')
 const {MovieList} = require('../js/movieList')
 const {titles} = require('./variables/titles')
-const { listenerCount } = require('../models/movie')
 
 let masterMovieList = new MovieList()
 
