@@ -5,9 +5,13 @@
 <div>
     <p>Upload exported IMDB file(s) and press submit.</p>
     <form method="post" action="/upload" enctype="multipart/form-data">
-        <input type="file" name="uploadFiles" multiple>
-        <button>Submit</button>
+        <div class="mb-3">
+            <label for="formFileMultiple" class="form-label">Multiple files input example</label>
+            <input class="form-control" type="file" id="formFileMultiple" name="csvs" multiple>
+        </div>
+          <button>Submit</button>
     </form>
+
 </div>
 
 <!-- Upload seeds option -->

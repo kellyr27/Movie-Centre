@@ -5,47 +5,22 @@ const Movie = require('../models/movie')
 const { v4: uuid } = require('uuid')                        // Universally unique identifier for createdLists
 const {MovieList} = require('../js/movieList')
 const {titles} = require('./variables/titles')
-const {isLoggedIn} = require('../middleware')
+const {isLoggedIn, isAuthor, validateList} = require('../middleware')
 const catchAsync = require('../utils/catchAsync')
 const { application } = require('express')
-const ExpressError = require('../utils/ExpressError')
 const Joi = require('joi')
-const {listSchema} = require('../schemas')
+const createdLists = require('../controllers/createdLists')
 
-const validateList = (req, res, next) => {
-    
 
-    const {error} = listSchema.validate(req.body)
-    if (result.error) {
-        const msg = error.details.map(el => el.message).join(', ')
-        throw new ExpressError(msg, 400)
-    }
-    else {
-        next()
-    }
-}
-
-// Display all created lists
-router.get('/', async (req, res) => {
-    const databaseLists = await List.find({})
-    res.render('./created_lists/index', {displayList: databaseLists, pageTitle: 'Created Lists'})
-})
+router.route('/')
+    .get(catchAsync(createdLists.index))
+    .post(validateList, isLoggedIn, catchAsync(createdLists.renderNewForm))
 
 // Display the page for creating a new list
-router.get('/new', isLoggedIn, async (req, res) => {
-
-    let masterMovieList = new MovieList()
-    const databaseMovies = await Movie.find({})
-    masterMovieList.create(databaseMovies)
-
-    res.render('./created_lists/new', {displayList: masterMovieList, titles, pageTitle: 'Create new List'})
-})
+router.get('/new', isLoggedIn, createdLists.index)
 
 // Show selected list details
-router.get('/:id', catchAsync(async (req, res) => {
-    const selectedList = await List.findOne({id: req.params.id}).populate('movies')
-    res.render('./created_lists/show', {selectedList, pageTitle: selectedList.listName})
-}))
+router.get('/:id', isLoggedIn, isAuthor, catchAsync(createdLists.showList))
 
 // Edit selected list page
 router.get('/:id/edit', isLoggedIn, async (req, res) => {
@@ -58,13 +33,9 @@ router.get('/:id/edit', isLoggedIn, async (req, res) => {
 })
 
 // Request to edit selected list
-router.patch('/:id', validateList, isLoggedIn, catchAsync(async (req, res) => {
+router.patch('/:id', validateList, isLoggedIn, isAuthor, catchAsync(async (req, res) => {
 
     const foundList = await List.findById({id: req.params.id})
-    if (!foundList.owner.equals(req.user._id)) {
-        req.flash('error', 'You do not have permission!')
-        return res.redirect(`/created_lists/${req.params.id}`)
-    }
 
     // Get new list
     let newMovieList = []
@@ -88,44 +59,13 @@ router.patch('/:id', validateList, isLoggedIn, catchAsync(async (req, res) => {
 }))
 
 // Request to delete selected list
-router.delete('/:id', isLoggedIn, catchAsync(async (req, res) => {
+router.delete('/:id', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
     await List.deleteOne({id: req.params.id})
 
     req.flash('success', 'Successfully deleted list!')
     res.redirect('/created_lists')
 }))
 
-router.post('/', validateList, isLoggedIn, catchAsync(async (req, res) => {
-
-    // if (!req.body.listName) {
-    //     throw new ExpressError('Invalid list data', 400)
-    // }
-
-
-    // Create list to save to database
-    let newList = {
-        listName: req.body.listName, 
-        id: uuid(), 
-        description: req.body.listDescription,
-        movies: [],
-        owner: req.user._id
-    }
-
-    // Add movies to the new list
-    if (req.body.movies) {
-        const parsedMovies = JSON.parse(req.body.movies)
-        for (let i = 0; i < parsedMovies.length; i++) {
-            const foundMovie = await Movie.findById(parsedMovies[i]._id)
-            newList.movies.push(foundMovie)
-        }
-    }
-
-    const createdList = new List(newList)
-    await createdList.save()
-
-    req.flash('success', 'Successfully made a new list!')
-    res.redirect('/created_lists')
-}))
 
 
 

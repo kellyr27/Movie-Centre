@@ -1,6 +1,6 @@
 // Packages and frameworks
 const express = require('express')                          // Web pplication framework
-const fileUpload = require('express-fileupload')            // Middleware used to upload files with express
+// const fileUpload = require('express-fileupload')            // Middleware used to upload files with express
 const methodOverride = require('method-override')           // Middleware used to use HTTP verbs such as PUT or DELETE
 const ejsMate = require('ejs-mate')                         // Use templating with EJS
 // const morgan = require('morgan')
@@ -12,7 +12,6 @@ const session = require('express-session')
 const flash = require('connect-flash')
 const catchAsync = require('./utils/catchAsync')
 const ExpressError = require('./utils/ExpressError')
-
 const Movie = require('./models/movie')
 const List = require('./models/lists')
 const User = require('./models/user')
@@ -20,7 +19,7 @@ const User = require('./models/user')
 const path = require('path')                                // Path module
 
 const app = express()
-app.use(fileUpload())
+// app.use(fileUpload())
 // app.use(morgan(':method :url :status :response-time ms - :res[content-length]'))
 app.use(responseTime())
 app.use(express.urlencoded({ extended: true }))             // To parse form data in POST request body
