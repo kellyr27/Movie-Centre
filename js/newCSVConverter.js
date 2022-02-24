@@ -26,9 +26,6 @@ function readFileData (dir, file) {
     })
 }
 
-// Save the file in the uploads folder
-
-
 // Delete the file from uploads
 function deleteFile (dir, file) {
     return new Promise ((res, rej) => {
@@ -181,7 +178,7 @@ function convertCSVtoObject (fileRaw) {
     return objArr
 }
 
-// 
+// Convert data to the database
 async function run (isSeed) {
 
     // Direct path based on whether test upload or not
@@ -197,11 +194,6 @@ async function run (isSeed) {
     
     // Iterate through every file
     for (let file of files) {
-
-        // If the file is not a csv, do nothing
-        if (!file.endsWith('.csv')) {
-            continue
-        }
 
         let fileRaw = await readFileData(dir, file)
         let objectArray = convertCSVtoObject(fileRaw)
@@ -226,6 +218,7 @@ async function run (isSeed) {
     }
 }
 
+// Run as a promise for async function
 function promiseRun (isSeed) {
     return new Promise((res, rej) => {
         return res(run(isSeed))

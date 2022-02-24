@@ -5,19 +5,31 @@
 <div>
     <p>Upload exported IMDB file(s) and press submit.</p>
     <form method="post" action="/upload" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label for="formFileMultiple" class="form-label">Multiple files input example</label>
+        <div class="mb-3 custom-file">
+            <label for="formFileMultiple" class="form-label custom-file-label"></label>
             <input class="form-control" type="file" id="formFileMultiple" name="csvs" multiple>
         </div>
-          <button>Submit</button>
+        <button name="uploadButton">Upload</button>
     </form>
-
 </div>
 
 <!-- Upload seeds option -->
 <div>
     <p>To upload test data into the master list, press the below button. </p>
     <form method="post" action="/upload/seed">
-        <button>Upload Test Data</button>
+        <button name="uploadSeeds">Upload Test Data</button>
     </form>
 </div>
+
+
+<!-- Script enables/disables the buttons depending on login status -->
+<%- include("./scripts/variables/enableButtons") %> 
+<script>
+    let uploadButton = document.querySelector('button[name="uploadButton"]')
+    let uploadSeeds = document.querySelector('button[name="uploadSeeds"]')
+
+    if (!enableButtons) {
+        uploadButton.disabled = true
+        uploadSeeds.disabled = true
+    }
+</script>
