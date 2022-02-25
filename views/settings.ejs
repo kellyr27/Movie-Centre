@@ -1,0 +1,6 @@
+<% layout('layouts/boilerplate') %>
+<h1>User Settings</h1>
+<p>To delete all movies and lists currently in your database:</p>
+<form action="/<%= username %>/settings?_method=DELETE" method="post">
+    <button>Delete database</button>
+</form>

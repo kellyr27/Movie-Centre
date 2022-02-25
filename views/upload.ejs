@@ -9,17 +9,14 @@
                 <label for="formFileMultiple" class="form-label custom-file-label"></label>
                 <input class="form-control" type="file" id="formFileMultiple" name="csvs" multiple>
             </div>
-            <div class="mb-3 custom-file" name="">
-                <button type="submit" class="btn btn-primary btn-sm">Upload</button>
-            </div>
         <% } else { %> 
             <div class="col-6 mb-1">
                 <input class="form-control" type="file" id="formFileDisabled" disabled>
             </div>
-            <div class="mb-3">
-                <button type="button" class="btn btn-primary btn-sm" disabled>Upload</button>
-            </div>
         <% } %> 
+        <div class="mb-3" name="divUploadButton">
+            <button type="button" class="btn btn-primary btn-sm" name="uploadButton" disabled>Upload</button>
+        </div>
     </form>
 </div>
 
@@ -35,3 +32,27 @@
     </form>
     </div>
 </div>
+
+<script>
+    let uploadButton = document.getElementsByName('divUploadButton')
+    console.log(uploadButton)
+    let formFile = document.getElementById('formFileMultiple')
+
+    formFile.addEventListener('change', (e) => {
+        if (e.target.value) {
+            let activeButton = document.createElement('button')
+
+            activeButton.type = 'submit'
+            activeButton.name = 'uploadButton'
+            activeButton.className = 'btn btn-primary btn-sm'
+            activeButton.innerHTML = 'Upload'
+            
+            console.log(activeButton)
+            uploadButton[0].replaceChildren(activeButton)
+
+        }
+    }, { once: true })
+
+    console.log(formFile.value)
+    console.log(uploadButton[0].disabled)
+</script>

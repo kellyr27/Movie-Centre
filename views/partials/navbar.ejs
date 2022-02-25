@@ -8,26 +8,32 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
-            <a class="nav-link nav-lhs" href="/movies">Movies</a>
-            <a class="nav-link nav-lhs" href="/upload">Upload</a>
-            <a class="nav-link nav-lhs" href="/created_lists">Created Lists</a>
+                <a class="nav-link nav-lhs" href="/upload">Upload</a>
+                <a class="nav-link nav-lhs" href="/movies">Movies</a>
+                <a class="nav-link nav-lhs" href="/created_lists">Created Lists</a>
+                
+                <!-- Adds admin route if admin privledges -->
+                <% if (currentUser && currentUser.isAdmin) { %> 
+                    <a class="nav-link nav-lhs" href="/admin">Admin</a>
+                <% } %> 
             </div>
 
             <!-- RHS of the navbar -->
             <div class="navbar-nav ms-auto">
-            <% if (!currentUser) { %> 
-                <a class="nav-link" href="/login">Login</a>
-                <a class="nav-link" href="/register">Register</a>
-            <% } else { %> 
-                <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    &#128100 <%= username %>
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="/logout">Logout</a></li>
-                </ul>
-                </li>
-            <% } %> 
+                <% if (!currentUser) { %> 
+                    <a class="nav-link" href="/login">Login</a>
+                    <a class="nav-link" href="/register">Register</a>
+                <% } else { %> 
+                    <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        &#128100 <%= username %>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="/<%= username %>/settings">User Settings</a></li>
+                        <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                    </ul>
+                    </li>
+                <% } %> 
             </div>
         </div>
     </div>

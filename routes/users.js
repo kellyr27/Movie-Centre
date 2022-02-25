@@ -1,46 +1,27 @@
 const express = require('express')
-const User = require('../models/user')
-const router = require('./upload')
+const router = express.Router();
 const passport = require('passport')
+const usersController = require('../controllers/users')
+const mongoose = require('mongoose')
+const Movie = require('../models/movie')
+const List = require('../models/lists')
 
-router.get('/register', (req, res) => {
-    res.render('users/register', {pageTitle: 'Register'})
-})
+router.route('/register')
+    .get(usersController.showRegister)
+    .post(usersController.postRegistration)
 
-router.post('/register', async (req, res) => {
-    try {
-        const { username, email, password} = req.body
-        const user = new User({email, username})
-        registeredUser = await User.register(user, password)
-        req.login(registeredUser, err => {
-            if (err) {
-                return next(err)
-            }
-            req.flash('success', 'Register successful. Welcome to Movie Centre!')
-            res.redirect('/movies')
-        })
-    }
-    catch (e) {
-        req.flash('error', e.message)
-        res.redirect('register')
-    }
-})
+router.route('/login')
+    .get(usersController.showLogin)
+    .post(passport.authenticate('local', {failureFlash: true, failureRedirect: '/login'}), usersController.postLogin)
 
-router.get('/login', (req, res) => {
-    res.render('users/login', {pageTitle: 'Login'})
-})
+router.get('/logout', usersController.showLogout)
 
-router.post('/login', passport.authenticate('local', {failureFlash: true, failureRedirect: '/login'}), (req, res) => {
-    req.flash('success', 'Welcome back!')
-    const redirectURL = req.session.returnTo || '/movies'
-    delete req.session.returnTo
-    res.redirect(redirectURL)
-})
+router.route('/admin')
+    .get(usersController.showAdmin)
+    .post(usersController.postAdmin)
 
-router.get('/logout', (req, res) => {
-    req.logout()
-    req.flash('success', 'You have successfully logged out.')
-    res.redirect('/movies')
-})
+router.route('/:user/settings')
+    .get(usersController.userSettings)
+    .delete(usersController.deleteUserDatabase)
 
 module.exports = router
