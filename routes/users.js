@@ -2,9 +2,7 @@ const express = require('express')
 const router = express.Router();
 const passport = require('passport')
 const usersController = require('../controllers/users')
-const mongoose = require('mongoose')
-const Movie = require('../models/movie')
-const List = require('../models/lists')
+const {isAdmin} = require('../middleware')
 
 router.route('/register')
     .get(usersController.showRegister)
@@ -17,8 +15,8 @@ router.route('/login')
 router.get('/logout', usersController.showLogout)
 
 router.route('/admin')
-    .get(usersController.showAdmin)
-    .post(usersController.postAdmin)
+    .get(isAdmin, usersController.showAdmin)
+    .delete(isAdmin, usersController.deleteUsers)
 
 router.route('/:user/settings')
     .get(usersController.userSettings)

@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router({mergeParams: true})
-const {isLoggedIn, isAuthor, validateList} = require('../middleware')
+const {isLoggedIn, isAuthorList, validateList} = require('../middleware')
 const catchAsync = require('../utils/catchAsync')
 const createdListsRoutes = require('../controllers/createdLists')
 
@@ -13,11 +13,11 @@ router.route('/')
 router.get('/new', isLoggedIn, createdListsRoutes.newForm)
 
 router.route('/:id')
-    .get(isLoggedIn, isAuthor, catchAsync(createdListsRoutes.showList))                         // Show selected list details
-    .patch(validateList, isLoggedIn, isAuthor, catchAsync(createdListsRoutes.editList))       // Request to edit selected list
-    .delete(isLoggedIn, isAuthor, catchAsync(createdListsRoutes.deleteList))            // Request to delete selected list
+    .get(isLoggedIn, isAuthorList, catchAsync(createdListsRoutes.showList))                         // Show selected list details
+    .patch(validateList, isLoggedIn, isAuthorList, catchAsync(createdListsRoutes.editList))       // Request to edit selected list
+    .delete(isLoggedIn, isAuthorList, catchAsync(createdListsRoutes.deleteList))            // Request to delete selected list
 
 // Edit selected list page
-router.get('/:id/edit', isLoggedIn, createdListsRoutes.showEditList)
+router.get('/:id/edit', isLoggedIn, isAuthorList, createdListsRoutes.showEditList)
 
 module.exports = router

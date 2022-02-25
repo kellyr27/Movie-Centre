@@ -19,7 +19,7 @@ module.exports.index = async (req, res) => {
 // Show movie details
 module.exports.showMovie = async (req, res) => {
     // Searches for the movie using the IMDB ID
-    const movie = await Movie.findOne({'Const_IMDB': req.params.id})
+    const movie = await Movie.findOne({owner: mongoose.Types.ObjectId(req.user._id), 'Const_IMDB': req.params.id})
     const appearsInLists = await List.find({movies: movie})
     
     res.render('show', {movie, titles, appearsInLists: appearsInLists, pageTitle: movie.Title})

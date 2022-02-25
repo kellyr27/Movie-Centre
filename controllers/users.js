@@ -51,13 +51,8 @@ module.exports.showAdmin = (req, res) => {
     res.render('admin', {pageTitle: 'Admin'})
 }
 
-module.exports.postAdmin = (req, res) => {
-    res.redirect('admin')
-}
-
 module.exports.deleteUserDatabase = async (req, res) => {
 
-    console.log('Made it')
     // Delete everything in the existing Movie database
     await Movie.deleteMany({owner: mongoose.Types.ObjectId(req.user._id)})
         .then(msg => {

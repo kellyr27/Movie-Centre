@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const Movie = require('../models/movie')
+const mongoose = require('mongoose')
 
 // Reads the file names
 function readFileNames (dir) {
@@ -205,7 +206,7 @@ async function run (isSeed, owner) {
         for (let obj of objectArray) {
            
             // Check if movie is already in database
-            let isDatabase = await Movie.find({'Const_IMDB': obj['Const_IMDB']}).exec()
+            let isDatabase = await Movie.find({'Const_IMDB': obj['Const_IMDB'], owner: mongoose.Types.ObjectId(owner)}).exec()
 
             if (isDatabase.length === 0) {
                 // Save movie to the database

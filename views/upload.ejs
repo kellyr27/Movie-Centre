@@ -35,24 +35,23 @@
 
 <script>
     let uploadButton = document.getElementsByName('divUploadButton')
-    console.log(uploadButton)
     let formFile = document.getElementById('formFileMultiple')
 
-    formFile.addEventListener('change', (e) => {
-        if (e.target.value) {
-            let activeButton = document.createElement('button')
+    if (formFile) {
+        formFile.addEventListener('change', (e) => {
+            if (e.target.value) {
+                let activeButton = document.createElement('button')
 
-            activeButton.type = 'submit'
-            activeButton.name = 'uploadButton'
-            activeButton.className = 'btn btn-primary btn-sm'
-            activeButton.innerHTML = 'Upload'
-            
-            console.log(activeButton)
-            uploadButton[0].replaceChildren(activeButton)
+                activeButton.type = 'submit'
+                activeButton.name = 'uploadButton'
+                activeButton.className = 'btn btn-primary btn-sm'
+                activeButton.innerHTML = 'Upload'
+                
+                console.log(activeButton)
+                uploadButton[0].replaceChildren(activeButton)
 
-        }
-    }, { once: true })
+            }
+        }, { once: true })
+    }
 
-    console.log(formFile.value)
-    console.log(uploadButton[0].disabled)
 </script>
