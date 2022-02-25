@@ -39,7 +39,7 @@ function deleteFile (dir, file) {
 }
 
 // Convert file contents to Objects
-function convertCSVtoObject (fileRaw) {
+function convertCSVtoObject (fileRaw, owner) {
     // Split file into rows
     const rows = fileRaw.split('\r\n')
 
@@ -171,6 +171,9 @@ function convertCSVtoObject (fileRaw) {
             currentMovie['Directors'] = directors.split(', ')
         }
 
+        // Add owner
+        currentMovie['owner'] = owner
+
         // Add movie Object to Array
         objArr.push(currentMovie)
     }
@@ -179,7 +182,7 @@ function convertCSVtoObject (fileRaw) {
 }
 
 // Convert data to the database
-async function run (isSeed) {
+async function run (isSeed, owner) {
 
     // Direct path based on whether test upload or not
     let dir
@@ -196,7 +199,7 @@ async function run (isSeed) {
     for (let file of files) {
 
         let fileRaw = await readFileData(dir, file)
-        let objectArray = convertCSVtoObject(fileRaw)
+        let objectArray = convertCSVtoObject(fileRaw, owner)
         
         // Iterate through movies and add to database
         for (let obj of objectArray) {
@@ -219,9 +222,9 @@ async function run (isSeed) {
 }
 
 // Run as a promise for async function
-function promiseRun (isSeed) {
+function promiseRun (isSeed, owner) {
     return new Promise((res, rej) => {
-        return res(run(isSeed))
+        return res(run(isSeed, owner))
     })
 }
 

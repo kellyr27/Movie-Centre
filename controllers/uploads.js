@@ -5,11 +5,11 @@ module.exports.index = (req, res) => {
 }
 
 module.exports.uploadFiles = async (req, res) => {
-    await csvConverter(false)
+    await csvConverter(false, req.user._id)
     res.redirect('/movies')
 }
 
 module.exports.uploadSeeds = async (req, res) => {
-    await csvConverter(true)
+    await csvConverter(true, req.user._id)
     res.redirect('/movies')
 }

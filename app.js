@@ -62,21 +62,21 @@ db.on('error', console.error.bind(console, 'Mongoose connection error: '))
 db.once('open', async () => {
     console.log('Database connected.')
     // Delete everything in the existing Movie database
-    await Movie.deleteMany({})
-        .then(msg => {
-            console.log('Existing Movie database deleted')
-        })
-        .catch(err => {
-            console.log('Failed to delete existing Movie database.')
-        })
+    // await Movie.deleteMany({})
+    //     .then(msg => {
+    //         console.log('Existing Movie database deleted')
+    //     })
+    //     .catch(err => {
+    //         console.log('Failed to delete existing Movie database.')
+    //     })
     // Delete everything in the existing List database
-    await List.deleteMany({})
-        .then(msg => {
-            console.log('Existing List database deleted')
-        })
-        .catch(err => {
-            console.log('Failed to delete existing List database.')
-        })
+    // await List.deleteMany({})
+    //     .then(msg => {
+    //         console.log('Existing List database deleted')
+    //     })
+    //     .catch(err => {
+    //         console.log('Failed to delete existing List database.')
+    //     })
 })
 
 

@@ -2,12 +2,17 @@ const Movie = require('../models/movie')
 const List = require('../models/lists')
 const {titles} = require('../routes/variables/titles')
 const {MovieList} = require('../js/movieList')
-
-module.exports.findMovies
+const mongoose = require('mongoose')
 
 // Show all movies uploaded
 module.exports.index = async (req, res) => {
-    const databaseMovies = await Movie.find({})
+    let databaseMovies = []
+
+    // If currently logged in
+    if (req.user) {
+        databaseMovies = await Movie.find({owner: mongoose.Types.ObjectId(req.user._id)})
+    }
+
     res.render('movies', { displayList: databaseMovies, titles, pageTitle: 'Movies List', query: null})
 }
 

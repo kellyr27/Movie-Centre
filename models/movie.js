@@ -62,7 +62,12 @@ const movieSchema = new Schema({
     'Directors': [{
         type: String,
         required: false
-    }]
+    }],
+    owner: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    }
 })
 
 module.exports = mongoose.model('Movie', movieSchema)
