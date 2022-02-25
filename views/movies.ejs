@@ -2,13 +2,16 @@
 <h1>Movies Page</h1>
 
 <!-- Search/Sort/Filter Bar -->
-<div>
+<div class="col mt-3 mb-3">
 
     <!-- Search -->
     <form method="get" action="/movies/search">
         <div>
             <label for="q">Search: </label>
-            <input type="text" name="q" required>
+            <input type="text" name="q" placeholder="Search query" 
+            <% if (typeof query !== null) { %> 
+                value="<%= query %>" required>
+            <% } %> 
             <button>Search</button>
         </div>
         
@@ -45,8 +48,9 @@
 
     <div id="filterClose">
     </div>
+    
     <!-- Clear filters -->
-    <form method="get" action="/master">
+    <form method="get" action="/movies">
         <button>Clear All</button>
     </form>
 </div>

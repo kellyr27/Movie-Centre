@@ -1,34 +1,37 @@
 <% layout('layouts/boilerplate') %>
 <h1>Upload CSV File</h1>
-
 <!-- Upload file(s) option -->
-<div>
+<div class="row">
     <p>Upload exported IMDB file(s) and press submit.</p>
     <form method="post" action="/upload" enctype="multipart/form-data">
-        <div class="mb-3 custom-file">
-            <label for="formFileMultiple" class="form-label custom-file-label"></label>
-            <input class="form-control" type="file" id="formFileMultiple" name="csvs" multiple>
-        </div>
-        <button name="uploadButton">Upload</button>
+        <% if (enableButtons) { %> 
+            <div class="col-6 mb-1 custom-file" name="">
+                <label for="formFileMultiple" class="form-label custom-file-label"></label>
+                <input class="form-control" type="file" id="formFileMultiple" name="csvs" multiple>
+            </div>
+            <div class="mb-3 custom-file" name="">
+                <button type="submit" class="btn btn-primary btn-sm">Upload</button>
+            </div>
+        <% } else { %> 
+            <div class="col-6 mb-1">
+                <input class="form-control" type="file" id="formFileDisabled" disabled>
+            </div>
+            <div class="mb-3">
+                <button type="button" class="btn btn-primary btn-sm" disabled>Upload</button>
+            </div>
+        <% } %> 
     </form>
 </div>
 
 <!-- Upload seeds option -->
-<div>
-    <p>To upload test data into the master list, press the below button. </p>
+<div class="row">
+    <div class="col mb-1"></div>
     <form method="post" action="/upload/seed">
-        <button name="uploadSeeds">Upload Test Data</button>
+        <% if (enableButtons) { %> 
+            <button type="submit" class="btn btn-primary btn-sm">Upload Test Data</button>
+        <% } else { %> 
+            <button type="button" class="btn btn-primary btn-sm" disabled>Upload Test Data</button>
+        <% } %> 
     </form>
+    </div>
 </div>
-
-<!-- Script enables/disables the buttons depending on login status -->
-<%- include("./scripts/variables/enableButtons") %> 
-<script>
-    let uploadButton = document.querySelector('button[name="uploadButton"]')
-    let uploadSeeds = document.querySelector('button[name="uploadSeeds"]')
-
-    if (!enableButtons) {
-        uploadButton.disabled = true
-        uploadSeeds.disabled = true
-    }
-</script>

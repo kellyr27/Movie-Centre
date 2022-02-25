@@ -1,34 +1,44 @@
 <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
 
-      <!-- LHS of the navbar -->
-      <a class="navbar-brand" href="/movies">Movie Centre</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
-          <a class="nav-link active" aria-current="page" href="/movies">Movies</a>
-          <a class="nav-link" href="/upload">Upload</a>
-          <a class="nav-link" href="/created_lists">Created Lists</a>
-        </div>
+        <!-- LHS of the navbar -->
+        <a class="navbar-brand" href="/movies">Movie Centre</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+            <a class="nav-link nav-lhs" href="/movies">Movies</a>
+            <a class="nav-link nav-lhs" href="/upload">Upload</a>
+            <a class="nav-link nav-lhs" href="/created_lists">Created Lists</a>
+            </div>
 
-        <!-- RHS of the navbar -->
-        <div class="navbar-nav ms-auto">
-          <% if (!currentUser) { %> 
-            <a class="nav-link" href="/login">Login</a>
-            <a class="nav-link" href="/register">Register</a>
-          <% } else { %> 
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                &#128100 <%= username %>
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="/logout">Logout</a></li>
-              </ul>
-            </li>
-          <% } %> 
+            <!-- RHS of the navbar -->
+            <div class="navbar-nav ms-auto">
+            <% if (!currentUser) { %> 
+                <a class="nav-link" href="/login">Login</a>
+                <a class="nav-link" href="/register">Register</a>
+            <% } else { %> 
+                <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    &#128100 <%= username %>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                </ul>
+                </li>
+            <% } %> 
+            </div>
         </div>
-      </div>
     </div>
-  </nav>
+</nav>
+
+<!-- Bold the currently active page -->
+<script>
+    const navLinks = document.querySelectorAll('.nav-lhs')
+    for (let nav of navLinks) {
+        if (nav.pathname === document.location.pathname) {
+            nav.className += ' active'
+        }
+    }
+</script>

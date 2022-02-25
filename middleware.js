@@ -1,5 +1,7 @@
 const ExpressError = require('./utils/ExpressError')
 const {listSchema} = require('./schemas')
+const {MovieList} = require('./js/movieList')
+const Movie = require('./models/movie')
 
 module.exports.isLoggedIn = (req, res, next) => {
     

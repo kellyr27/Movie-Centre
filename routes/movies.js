@@ -1,41 +1,15 @@
 
 const express = require('express')
 const router = express.Router({mergeParams: true})
-const Movie = require('../models/movie')
-const List = require('../models/lists')
-const {MovieList} = require('../js/movieList')
-const {titles} = require('./variables/titles')
-
-let masterMovieList = new MovieList()
-
-
-router.use((req, res, next) => {
-    next()
-})
+const movieController = require('../controllers/movies')
 
 // Display all movies
-router.get('/', async (req, res) => {
-    const databaseMovies = await Movie.find({})
-    masterMovieList.create(databaseMovies)
-    res.render('movies', { displayList: masterMovieList, titles, isMasterList: true, pageTitle: 'Movies List'})
-})
+router.get('/', movieController.index)
 
-// Middleware checks if query string is available
-router.use((req, res, next) => {
-    if (!req.query.q) {
-        return next()
-    }
-    
-    masterMovieList.search(req.query.q)
-    res.render('movies', { displayList: masterMovieList, titles, isMasterList: false, pageTitle: 'Search ' + req.query['q']})
-    
-})
+// Middleware checks whether there is a query string
+router.use(movieController.movieSearch)
 
 // Show movie details
-router.get('/:id', async (req, res) => {
-    const movie = await Movie.findOne({'Const_IMDB': req.params.id})
-    const appearsInLists = await List.find({movies: movie})
-    res.render('show', {movie, titles, displayList: appearsInLists, pageTitle: movie.Title})
-})
+router.get('/:id', movieController.showMovie)
 
 module.exports = router
