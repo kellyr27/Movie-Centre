@@ -18,7 +18,7 @@ router.route('/admin')
     .get(isAdmin, usersController.showAdmin)
     .delete(isAdmin, usersController.deleteUsers)
 
-router.route('/:user/settings')
+router.route('/users/:user/settings')
     .get(usersController.userSettings)
     .delete(usersController.deleteUserDatabase)
 

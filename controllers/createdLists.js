@@ -82,7 +82,7 @@ module.exports.deleteList = async (req, res) => {
 
 module.exports.showEditList = async (req, res) => {
     const selectedList = await List.findOne({id: req.params.id}).populate('movies')
-    const databaseMovies = await Movie.find({})
+    const databaseMovies = await Movie.find({owner: mongoose.Types.ObjectId(req.user._id)})
 
     res.render('./created_lists/edit', {selectedList, displayList: databaseMovies, titles, pageTitle: 'Edit List -' + selectedList.listName })
 }

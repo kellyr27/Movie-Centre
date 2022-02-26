@@ -20,7 +20,7 @@ module.exports.index = async (req, res) => {
 module.exports.showMovie = async (req, res) => {
     // Searches for the movie using the IMDB ID
     const movie = await Movie.findOne({owner: mongoose.Types.ObjectId(req.user._id), 'Const_IMDB': req.params.id})
-    const appearsInLists = await List.find({movies: movie})
+    const appearsInLists = await List.find({movies: movie, owner: mongoose.Types.ObjectId(req.user._id)})
     
     res.render('show', {movie, titles, appearsInLists: appearsInLists, pageTitle: movie.Title})
 }
@@ -33,7 +33,7 @@ module.exports.movieSearch = async (req, res, next) => {
     }
 
     // If query string present, it displays the searched results
-    const databaseMovies = await Movie.find({})
+    const databaseMovies = await Movie.find({owner: mongoose.Types.ObjectId(req.user._id)})
     const masterMovieList = new MovieList(databaseMovies)
     const searchedMovies = masterMovieList.search(req.query.q)
     res.render('movies', { displayList: searchedMovies, titles, pageTitle: 'Search ' + req.query['q'], query: req.query['q']})

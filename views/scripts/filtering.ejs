@@ -1,4 +1,5 @@
 <script>
+    const masterDisplayList = [...displayList]
     let notDisplayList = []
     let filterOperators = ['greater than', 'less than', 'equal to', 'not equal to', 'between', 'not between', 'greater than or equal to', 'less than or equal to']
     let filterOperatorSelector = document.getElementById('filterOperator')
@@ -153,41 +154,8 @@
         }
     }
 
-    // Adds the selected filter, adjusts the display arrays
-    function addFilters() {
-
-        // Adjusts the display/not displayed arrays
-
-        // If not between/not between (filterSelector2 doesnt exist)
-        if (['between', 'not between'].includes(filterOperator.value)) {
-            [displayList, notDisplayList] = arrayFilteringAlgorithm(displayList, notDisplayList, filterOperator.value, filter.value, filterSelector.value, filterSelector.value, filterSelector2.value)
-        }
-        else {
-            [displayList, notDisplayList] = arrayFilteringAlgorithm(displayList, notDisplayList, filterOperator.value, filter.value, filterSelector.value, filterSelector.value, 0)
-        }
-     
-    }
-
-    // Removes the selected filter, adjusts the display arrays
-    function removeFilters(prop, op, fil) {
-
-        // Adjusts the display/not displayed arrays
-        // If not between/not between (filterSelector2 doesnt exist)
-        let tempDisplayList = []
-
-        if (['between', 'not between'].includes(op)) {
-            [notDisplayList, tempDisplayList] = arrayFilteringAlgorithm(notDisplayList, tempDisplayList, op, prop, fil, filtersSelected[prop][op]['lower'][fil], filtersSelected[prop][op]['upper'][fil])
-        }
-        else {
-            [notDisplayList, tempDisplayList] = arrayFilteringAlgorithm(notDisplayList, tempDisplayList, op, prop, fil, 0, 0)
-        }
-
-        // Check all of the tempDisplay movies whether they match the other existing filters
-        // displayList = displayList.concat(tempDisplayList)
-        let tempNotDisplayList = []
-        
-
-        // Remove the filter from selected filters
+    // Removes filter from selected filters
+    function removeFilter(prop, op, fil) {
         if (['between', 'not between'].includes(op)) {
             filtersSelected[prop][op]['upper'].splice(fil, 1)
             filtersSelected[prop][op]['lower'].splice(fil, 1)
@@ -195,6 +163,33 @@
         else {
             filtersSelected[prop][op].delete(fil)
         }
+    }
+
+    // Applies all filters
+    function applyFilters() {
+
+        // Reset display list
+        let tempDisplayList = masterDisplayList
+        let tempNotDisplayList = []
+
+        // Go through all filters
+        for (let prop of titles) {
+            for (let op of filterOperators) {
+                if (['between', 'not between'].includes(op)) {
+                    for (let i = 0; i < filtersSelected[prop][op]['lower'].length; i++) {
+                        [tempDisplayList, tempNotDisplayList] = arrayFilteringAlgorithm(tempDisplayList, tempNotDisplayList, op, prop, i, filtersSelected[prop][op]['lower'][i], filtersSelected[prop][op]['upper'][i])
+                    }
+                }
+                else {
+                    for (let fil of filtersSelected[prop][op]) {
+                        [tempDisplayList, tempNotDisplayList] = arrayFilteringAlgorithm(tempDisplayList, tempNotDisplayList, op, prop, fil, fil, 0)
+                    }
+                }
+            }
+        }
+
+        displayList = tempDisplayList
+        notDisplayList = tempNotDisplayList
 
     }
 
@@ -217,7 +212,8 @@
                         closeButton.innerHTML = '&#10006'
                         closeButton.name = 'filterCloseButton' 
                         closeButton.addEventListener('click', (evt) => {
-                            removeFilters(prop, op, i)
+                            removeFilter(prop, op, i)
+                            applyFilters()
                             displayFilters()
                             updateTable()
                         })
@@ -235,7 +231,8 @@
                         closeButton.innerHTML = '&#10006'
                         closeButton.name = 'filterCloseButton'
                         closeButton.addEventListener('click', (evt) => {
-                            removeFilters(prop, op, fil)
+                            removeFilter(prop, op, fil)
+                            applyFilters()
                             displayFilters()
                             updateTable()
                         })
@@ -250,7 +247,7 @@
     // When filter button by is clicked
     filterButton.addEventListener('click', () => {
         if (duplicateCheckFilters()) {
-            addFilters()
+            applyFilters()
             displayFilters()
             updateTable()
         }

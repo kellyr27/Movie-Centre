@@ -44,7 +44,7 @@ module.exports.showLogout = (req, res) => {
 }
 
 module.exports.userSettings = (req, res) => {
-    res.render('settings', {pageTitle: req.params.user + ' Settings'})
+    res.render('users/settings', {pageTitle: req.params.user + ' Settings'})
 }
 
 module.exports.showAdmin = (req, res) => {
