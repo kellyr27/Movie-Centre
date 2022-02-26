@@ -2,6 +2,7 @@
 const express = require('express')
 const router = express.Router({mergeParams: true})
 const movieController = require('../controllers/movies')
+const {isLoggedIn} = require('../middleware')
 
 // Display all movies
 router.get('/', movieController.index)
@@ -10,6 +11,6 @@ router.get('/', movieController.index)
 router.use(movieController.movieSearch)
 
 // Show movie details
-router.get('/:id', movieController.showMovie)
+router.get('/:id', isLoggedIn, movieController.showMovie)
 
 module.exports = router

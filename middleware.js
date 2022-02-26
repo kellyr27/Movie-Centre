@@ -1,6 +1,5 @@
 const ExpressError = require('./utils/ExpressError')
 const {listSchema} = require('./schemas')
-const {MovieList} = require('./js/movieList')
 const Movie = require('./models/movie')
 const List = require('./models/lists')
 
@@ -33,7 +32,7 @@ module.exports.isAuthorList = async (req, res, next) => {
 
     if (!foundList.owner.equals(req.user._id)) {
         req.flash('error', 'You are not the owner of this list!')
-        return res.redirect(`/created_lists/${req.params.id}`)
+        return res.redirect(`/created_lists`)
     }
     next()
 }
