@@ -48,7 +48,7 @@
             </datalist>
 
             <!-- Button to add movie to the Movie List -->
-            <input id="addMovieButton" type="button" value="+">
+            <input id="addMovieButton" type="button" value="+" class="btn btn-secondary btn-sm">
         </div>
         
         <!-- Submitting the post request -->
@@ -170,6 +170,7 @@
                 let upButton = document.createElement("button")
                 upButton.innerHTML = "&#x2191"
                 upButton.name = "u-" + createdList[i]["Const_IMDB"]
+                upButton.className = "btn btn-warning btn-sm"
                 upButton.addEventListener('click', (e) => {
                     changeList(e.target.name)
                 })
@@ -181,6 +182,7 @@
                 let downButton = document.createElement("button")
                 downButton.innerHTML = "&#x2193"
                 downButton.name = "d-" + createdList[i]["Const_IMDB"]
+                downButton.className = "btn btn-warning btn-sm"
                 downButton.addEventListener('click', (e) => {
                     changeList(e.target.name)
                 })
@@ -191,6 +193,7 @@
             let removeButton = document.createElement("button")
             removeButton.innerHTML = "&#10006"
             removeButton.name = "r-" + createdList[i]["Const_IMDB"]
+            removeButton.className = "btn btn-danger btn-sm"
             removeButton.addEventListener('click', (e) => {
                 changeList(e.target.name)
             })

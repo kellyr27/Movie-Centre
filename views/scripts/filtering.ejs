@@ -205,17 +205,20 @@
                 if ((['between', 'not between'].includes(op))) {
                     for (let i = 0; i < filtersSelected[prop][op]['lower'].length; i++) {
                         let spanFilter = document.createElement("span")
-                        spanFilter.innerHTML = prop + ':' + op + ':' + filtersSelected[prop][op].lower[i] + ',' + filtersSelected[prop][op].upper[i]
+                        spanFilter.className = 'badge rounded-pill bg-light text-dark'
+                        spanFilter.innerHTML = prop + ': ' + op + ': ' + filtersSelected[prop][op].lower[i] + ', ' + filtersSelected[prop][op].upper[i]
 
                         // Create an button to undo the filter
                         let closeButton = document.createElement("button")
                         closeButton.innerHTML = '&#10006'
                         closeButton.name = 'filterCloseButton' 
+                        closeButton.className = 'btn btn-danger btn-sm'
                         closeButton.addEventListener('click', (evt) => {
                             removeFilter(prop, op, i)
                             applyFilters()
                             displayFilters()
                             updateTable()
+                            includeLRArrows()
                         })
                         spanFilter.appendChild(closeButton)
                         filterClose.appendChild(spanFilter)
@@ -224,17 +227,20 @@
                 else {
                     for (let fil of filtersSelected[prop][op]) {
                         let spanFilter = document.createElement("span")
-                        spanFilter.innerHTML = prop + ':' + op + ':' + fil
+                        spanFilter.className = 'badge rounded-pill bg-light text-dark'
+                        spanFilter.innerHTML = prop + ': ' + op + ': ' + fil
 
                         // Create an button to undo the filter
                         let closeButton = document.createElement("button")
                         closeButton.innerHTML = '&#10006'
                         closeButton.name = 'filterCloseButton'
+                        closeButton.className = 'btn btn-danger btn-sm'
                         closeButton.addEventListener('click', (evt) => {
                             removeFilter(prop, op, fil)
                             applyFilters()
                             displayFilters()
                             updateTable()
+                            includeLRArrows()
                         })
                         spanFilter.appendChild(closeButton)
                         filterClose.appendChild(spanFilter)
@@ -250,6 +256,7 @@
             applyFilters()
             displayFilters()
             updateTable()
+            includeLRArrows()
         }
     })
 

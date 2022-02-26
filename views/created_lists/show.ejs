@@ -9,9 +9,9 @@
             </div>
             <ul class="list-group list-group-flush">
               <li class="list-group-item">
-                <ol>
+                <ol class="list-group list-group-numbered">
                     <% for (let i = 0; i < selectedList["movies"].length; i++) { %> 
-                        <li><a href="/movies/<%= selectedList["movies"][i]["Const_IMDB"] %>"><%= selectedList["movies"][i]["Title"] %></a></li>
+                        <li class="list-group-item"><a href="/movies/<%= selectedList["movies"][i]["Const_IMDB"] %>"><%= selectedList["movies"][i]["Title"] %></a></li>
                     <% } %> 
                 </ol>
               </li>

@@ -13,7 +13,7 @@ module.exports.index = async (req, res) => {
         databaseMovies = await Movie.find({owner: mongoose.Types.ObjectId(req.user._id)})
     }
 
-    res.render('movies', { displayList: databaseMovies, titles, pageTitle: 'Movies List', query: null})
+    res.render('movies', { displayList: databaseMovies, titles, pageTitle: 'Movies List', query: null, tableColumns: [3, 6, 8]})
 }
 
 // Show movie details
@@ -31,10 +31,10 @@ module.exports.movieSearch = async (req, res, next) => {
     if (!req.query.q) {
         return next()
     }
-
+    console.log(req.query)
     // If query string present, it displays the searched results
     const databaseMovies = await Movie.find({owner: mongoose.Types.ObjectId(req.user._id)})
     const masterMovieList = new MovieList(databaseMovies)
     const searchedMovies = masterMovieList.search(req.query.q)
-    res.render('movies', { displayList: searchedMovies, titles, pageTitle: 'Search ' + req.query['q'], query: req.query['q']})
+    res.render('movies', { displayList: searchedMovies, titles, pageTitle: 'Search ' + req.query['q'], query: req.query['q'], tableColumns: JSON.parse(req.query.savedColumns)})
 }

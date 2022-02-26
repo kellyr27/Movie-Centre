@@ -119,11 +119,13 @@
 
         sort(sortEl.value)
         updateTable()
+        includeLRArrows()
     })
 
     // When sort arrows by is clicked
     sortAscDes.addEventListener('click', () => {
         displayList.reverse()                                   // Reverses the array
         updateTable()
+        includeLRArrows()
     })
 </script>

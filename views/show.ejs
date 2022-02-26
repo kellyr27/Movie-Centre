@@ -1,9 +1,9 @@
 <% layout('layouts/boilerplate') %>
 <h1><%= movie.Title %> </h1>
-<table>
+<table class="table">
 <% for (let i = 0; i < titles.length; i++) { %> 
     <tr>
-        <td><%= titles[i] %> </td>
+        <th><%= titles[i] %> </th>
         <% if (titles[i] === "URL") { %>
             <td><a href="<%= movie[titles[i]] %>"><%= movie[titles[i]] %></a></td>
         <% } else { %> 
@@ -14,9 +14,9 @@
 </table>
 <div>
     <p><b><i>Appears in the following lists: </i></b></p>
-    <ul>
+    <ul class="list-group list-group-flush">
         <% for (let list of appearsInLists) { %> 
-            <li><a href="/created_lists/<%= list['id'] %>"><%= list['listName'] %></a></li>
+            <li class="list-group-item"><a href="/created_lists/<%= list['id'] %>"><%= list['listName'] %></a></li>
         <% } %> 
     </ul>
 
