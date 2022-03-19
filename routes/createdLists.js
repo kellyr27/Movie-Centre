@@ -10,7 +10,8 @@ router.route('/')
     .post(validateList, isLoggedIn, catchAsync(createdListsRoutes.renderNewForm))
 
 // Display the page for creating a new list
-router.get('/new', isLoggedIn, createdListsRoutes.newForm)
+router.route('/new')
+    .get(isLoggedIn, createdListsRoutes.newForm)
 
 router.route('/:id')
     .get(isLoggedIn, isAuthorList, catchAsync(createdListsRoutes.showList))                         // Show selected list details
@@ -18,6 +19,7 @@ router.route('/:id')
     .delete(isLoggedIn, isAuthorList, catchAsync(createdListsRoutes.deleteList))            // Request to delete selected list
 
 // Edit selected list page
-router.get('/:id/edit', isLoggedIn, isAuthorList, createdListsRoutes.showEditList)
+router.route('/:id/edit')
+    .get(isLoggedIn, isAuthorList, createdListsRoutes.showEditList)
 
 module.exports = router

@@ -12,7 +12,8 @@ router.route('/login')
     .get(usersController.showLogin)
     .post(passport.authenticate('local', {failureFlash: true, failureRedirect: '/login'}), usersController.postLogin)
 
-router.get('/logout', usersController.showLogout)
+router.route('/logout')
+    .get(usersController.showLogout)
 
 router.route('/admin')
     .get(isAdmin, usersController.showAdmin)

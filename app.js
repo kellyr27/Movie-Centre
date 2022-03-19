@@ -60,7 +60,12 @@ db.once('open', async () => {
 
 // Logger middleware
 app.use(responseTime((req, res, time) => {
-    console.log(`${req.method.padEnd(6)} ${res.statusCode} ${time.toFixed(1).padStart(7).padEnd(7+3)} ${req.originalUrl}`)
+    console.log(
+      `${req.method.padEnd(6)} ${res.statusCode} ${time
+        .toFixed(1)
+        .padStart(7)
+        .padEnd(7 + 3)} ${req.originalUrl}`
+    );
 }))
 
 // Flash middleware
