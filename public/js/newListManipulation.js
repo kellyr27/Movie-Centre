@@ -48,12 +48,12 @@ addMovieButton.addEventListener('click', (e) => {
         console.error('Movie does not exist')
     }
 
-    currentSelectedMovie.value = ""             // Clear the datalist input to blank
-    updateDisplay()                         // Update the display
+    currentSelectedMovie.value = ''
+    updateDisplay()
 })
 
 // Move selected movie up/down in the list
-function updateList(name) {
+function updateList(button) {
 
     /*
     Change codes are:
@@ -62,37 +62,25 @@ function updateList(name) {
         r:  remove movie from the list
     */
 
-    let updateCode = name.slice(0,1)
-    let updateConstID = name.slice(2)
-
-    // Find index of the movie in the list
-    let foundIndex
-    for (let i = 0; i < createdList.length; i++) {
-        if (createdList[i]['Const_IMDB'] === updateConstID) {
-            foundIndex = i
-            break
-        }
+    if (button.name === 'u') {
+        [createdList[button.value], createdList[button.value-1]] = [createdList[button.value-1], createdList[button.value]]
+    }
+    else if (button.name === 'd') {
+        [createdList[button.value], createdList[button.value+1]] = [createdList[button.value+1], createdList[button.value]]
+    }
+    else if (button.name === 'r') {
+        createdList.splice(button.value, 1)
     }
 
-    // Perform the requested change code
-    if (updateCode === 'u') {
-        [createdList[foundIndex], createdList[foundIndex-1]] = [createdList[foundIndex-1], createdList[foundIndex]]
-    }
-    else if (updateCode === 'd') {
-        [createdList[foundIndex], createdList[foundIndex+1]] = [createdList[foundIndex+1], createdList[foundIndex]]
-    }
-    else if (updateCode === 'r') {
-        createdList.splice(foundIndex, 1)
-    }
-
-    updateDisplay()                        // Update the display
+    updateDisplay()
 }
 
 // Creates button
-function createButton(innerHTML, name, className) {
+function createButton(innerHTML, name, className, value) {
     let newButton = document.createElement('button')
     newButton.innerHTML = innerHTML
     newButton.name = name
+    newButton.value = value
     newButton.className = className
     return newButton
 }
@@ -100,12 +88,11 @@ function createButton(innerHTML, name, className) {
 // Add event listener to update List
 function buttonUpdateList(button) {
     button.addEventListener('click', (e) => {
-        updateList(e.target.name)
+        updateList(e.target)
     })
 }
 
 function updateListDisplay() {
-    // Clear the existing list
     showList.innerHTML = ''
 
     // Iterate through created list and display
@@ -115,20 +102,20 @@ function updateListDisplay() {
 
         // Up arrows for every move except the first
         if (i !== 0) {
-            let upButton = createButton('&#x2191', "u-" + createdList[i]["Const_IMDB"], 'btn btn-warning btn-sm')
+            let upButton = createButton('&#x2191', 'u', 'btn btn-warning btn-sm', i)
             buttonUpdateList(upButton)
             li.appendChild(upButton)
         }
         
         // Down arrows for every move except the last element
         if (i !== createdList.length-1) {
-            let downButton = createButton('&#x2193', "d-" + createdList[i]["Const_IMDB"], 'btn btn-warning btn-sm')
+            let downButton = createButton('&#x2193', 'd', 'btn btn-warning btn-sm', i)
             buttonUpdateList(downButton)
             li.appendChild(downButton)
         }
 
         // Add the remove button
-        let removeButton = createButton('&#10006', "r-" + createdList[i]["Const_IMDB"], 'btn btn-danger btn-sm')
+        let removeButton = createButton('&#10006', 'r', 'btn btn-danger btn-sm', i)
         buttonUpdateList(removeButton)
         li.appendChild(removeButton)
 
@@ -171,3 +158,4 @@ function updateDisplay() {
     // Update the POST request for the current Created List
     movies.value = JSON.stringify(createdList)
 }
+

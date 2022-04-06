@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV !== "production") {
+    require('dotenv').config()
+}
+
 // Packages and frameworks
 const express = require('express')                          // Server
 const methodOverride = require('method-override')           // Middleware used to use HTTP verbs such as PUT or DELETE
@@ -12,6 +16,8 @@ const ExpressError = require('./utils/ExpressError')
 const User = require('./models/user')
 const path = require('path')                                // Path module
 const app = express()
+const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require('helmet')
 
 const userRoutes = require('./routes/users.js')
 const uploadRoutes = require('./routes/upload.js')
@@ -24,11 +30,13 @@ app.use(express.json())                                     // To parse incoming
 app.use(methodOverride('_method'))                          // To 'fake' put/patch/delete requests
 app.use(express.static(path.join(__dirname, 'public')))
 const sessionConfig = {
+    name: 'session',
     secret: 'tempsecret',
     resave: false,
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
+        // secure: true,
         expires: Date.now() + 1000*60*60*24*7,
         maxAge: 1000*60*60*24*7
     }
@@ -40,6 +48,8 @@ app.use(passport.session())
 app.set('view engine', 'ejs')                               // EJS set up
 app.set('views', path.join(__dirname, 'views'))             // Views folder
 app.engine('ejs', ejsMate)                                  // Use ejsMate with express
+app.use(mongoSanitize())
+app.use(helmet({ contentSecurityPolicy: false}))
 
 passport.use(new localStrategy(User.authenticate()))
 passport.serializeUser(User.serializeUser())
