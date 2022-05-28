@@ -14,4 +14,4 @@ This a web app that allows you to create and modify lists based on an uploaded m
 * Multiple CRUD implementations
 
 ## Credits
-This web app was created while learning web development from Udemy course _The Web Developer Bootcamp 2022_ by Colt Steele.
+This web app was created while learning web development from the Udemy course _The Web Developer Bootcamp 2022_ by Colt Steele.
