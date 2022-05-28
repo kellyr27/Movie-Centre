@@ -2,12 +2,12 @@
  IMDB Filter and list creator
 
 ## Project Description
-This a web app that always you to create and modify lists based on an uploaded movie list exported from IMDB. 
+This a web app that allows you to create and modify lists based on an uploaded movie list exported from IMDB. 
 
 ## Project Highlights
 * Used Mongoose/MongoDB databases, Express.js for backend
 * Used the Node.js fs module to convert data from CSV uploads to javascript objects
-* Created custom Trie data structure for advanced searching function.
+* Created custom Trie data structure for advanced searching function. Able to search using keywords seperated by spaces.
 * Use Passport npm for authentication
 * Use Helmet & mongoSanitize for security
 * Use EJS to generate HTML markup
